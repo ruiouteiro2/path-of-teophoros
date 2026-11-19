@@ -1,14 +1,8 @@
-import React, { memo, useEffect, useState } from "react";
-import {
-  Animated,
-  Easing,
-  Image,
-  ImageSourcePropType,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import Svg, { ClipPath, Defs, Ellipse, G, Path } from "react-native-svg";
+import React, { useState } from "react";
+import { Image, StyleSheet, Text, View } from "react-native";
+import { AtlasFrame } from "./AtlasFrame";
+import anchors from "../sprite-anchors.json";
+import { LivingEnvironment, Flowers } from "./LivingEnvironment";
 import {
   Facing,
   PetKind,
@@ -24,7 +18,7 @@ export const art = {
   temple: require("../../assets/world/temple.png"),
   atlas: require("../../assets/world/sprites.png"),
   hero: require("../../assets/world/hero-walk.png"),
-  pets: require("../../assets/world/pet-walk.png"),
+  olive: require("../../assets/world/olive-tree.png"),
 };
 export type SpriteName =
   | "thyme"
@@ -63,42 +57,6 @@ const cells: Record<SpriteName, number> = {
 };
 const rows: Record<Facing, number> = { front: 0, back: 1, left: 2, right: 3 };
 
-export const AtlasFrame = memo(function AtlasFrame({
-  source,
-  cell,
-  size,
-  flip = false,
-}: {
-  source: ImageSourcePropType;
-  cell: number;
-  size: number;
-  flip?: boolean;
-}) {
-  return (
-    <View
-      pointerEvents="none"
-      style={{
-        width: size,
-        height: size,
-        overflow: "hidden",
-        transform: [{ scaleX: flip ? -1 : 1 }],
-      }}
-    >
-      <Image
-        source={source}
-        resizeMode="stretch"
-        fadeDuration={0}
-        style={{
-          position: "absolute",
-          width: size * 4,
-          height: size * 4,
-          left: -(cell % 4) * size,
-          top: -Math.floor(cell / 4) * size,
-        }}
-      />
-    </View>
-  );
-});
 export function Sprite({
   name,
   size = 60,
@@ -129,32 +87,50 @@ export function Hero({
     />
   );
 }
+const petArt = {
+  Dog: require("../../assets/world/pets/small-dog.png"),
+  "Small dog": require("../../assets/world/pets/small-dog.png"),
+  Boxer: require("../../assets/world/pets/boxer.png"),
+  Cat: require("../../assets/world/pets/cat.png"),
+  Fox: require("../../assets/world/pets/fox.png"),
+  Owl: require("../../assets/world/pets/owl.png"),
+};
+const petKeys = {
+  Dog: "pets/small-dog",
+  "Small dog": "pets/small-dog",
+  Boxer: "pets/boxer",
+  Cat: "pets/cat",
+  Fox: "pets/fox",
+  Owl: "pets/owl",
+} as const;
+function petCell(facing: Facing, frame: number, moving: boolean, pose: number) {
+  return moving
+    ? (facing === "front" ? 0 : facing === "back" ? 4 : 8) + (frame % 4)
+    : 12 + pose;
+}
 export function Pet({
   kind = "Dog",
   size = 44,
-  frame = 1,
+  frame = 0,
   flip = false,
+  facing = "right",
+  moving = false,
+  pose = 0,
 }: {
   kind?: PetKind;
   size?: number;
   frame?: number;
   flip?: boolean;
+  facing?: Facing;
+  moving?: boolean;
+  pose?: number;
 }) {
-  const [hoverFrame, setHoverFrame] = useState(0);
-  useEffect(() => {
-    if (kind !== "Owl") return;
-    const timer = setInterval(() => setHoverFrame((v) => (v + 1) % 4), 150);
-    return () => clearInterval(timer);
-  }, [kind]);
   return (
     <AtlasFrame
-      source={art.pets}
-      cell={
-        (["Dog", "Cat", "Fox", "Owl"] as PetKind[]).indexOf(kind) * 4 +
-        (kind === "Owl" ? hoverFrame : frame % 4)
-      }
+      source={petArt[kind]}
+      cell={petCell(facing, frame, moving, pose)}
       size={size}
-      flip={flip}
+      flip={facing === "left" || (!moving && flip)}
     />
   );
 }
@@ -180,229 +156,12 @@ export function Resource({
   region: Region;
   size?: number;
 }) {
-  return <Sprite name={region === "forest" ? "thyme" : "olives"} size={size} />;
+  return region === "forest" ? (
+    <Flowers species={3} size={size} time={0} phase={0} />
+  ) : (
+    <Image source={art.olive} style={{ width: size, height: size }} />
+  );
 }
-
-const Wind = memo(function Wind({
-  children,
-  strength = 2,
-  phase = 0,
-}: {
-  children: React.ReactNode;
-  strength?: number;
-  phase?: number;
-}) {
-  const [wind] = useState(() => new Animated.Value(0));
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(wind, {
-          toValue: 1,
-          duration: 1800 + phase * 90,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-        Animated.timing(wind, {
-          toValue: -1,
-          duration: 2400 + phase * 70,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [wind, phase]);
-  return (
-    <Animated.View
-      style={{
-        transformOrigin: "50% 95%",
-        transform: [
-          {
-            rotate: wind.interpolate({
-              inputRange: [-1, 1],
-              outputRange: [-strength + "deg", strength + "deg"],
-            }),
-          },
-          {
-            translateX: wind.interpolate({
-              inputRange: [-1, 1],
-              outputRange: [-0.4, 0.4],
-            }),
-          },
-        ],
-      }}
-    >
-      {children}
-    </Animated.View>
-  );
-});
-
-const Water = memo(function Water({ region }: { region: Region }) {
-  const [time, setTime] = useState(0);
-  useEffect(() => {
-    const start = Date.now();
-    const id = setInterval(() => setTime((Date.now() - start) / 1000), 50);
-    return () => clearInterval(id);
-  }, []);
-  return (
-    <Svg
-      pointerEvents="none"
-      width="100%"
-      height="100%"
-      viewBox="0 0 1000 667"
-      style={StyleSheet.absoluteFill}
-    >
-      <Defs>
-        <ClipPath id="water-mask">
-          <Path d="M768 0H801L797 80 782 125 794 175 790 215 786 289H750L752 230 761 175 750 125 758 70Z M750 367H790L793 430 782 490 788 550 790 667H746L750 590 745 520 757 440Z" />
-        </ClipPath>
-      </Defs>
-      {region === "forest" ? (
-        <G clipPath="url(#water-mask)">
-          {Array.from({ length: 28 }, (_, i) => {
-            const y = ((i * 29 + time * 24) % 710) - 20,
-              x = 755 + ((i * 19) % 29),
-              opacity = 0.16 + 0.2 * (0.5 + 0.5 * Math.sin(time * 2 + i));
-            return (
-              <Path
-                key={i}
-                d={"M" + x + " " + y + "q5 -2 10 0t10 0"}
-                stroke={i % 3 ? "#c4f3ff" : "#237cbe"}
-                strokeWidth={i % 3 ? 1.4 : 2.3}
-                opacity={opacity}
-                fill="none"
-              />
-            );
-          })}
-        </G>
-      ) : (
-        <G>
-          {[0, 1, 2].map((i) => {
-            const p = (time * 0.6 + i / 3) % 1;
-            return (
-              <Ellipse
-                key={i}
-                cx={893}
-                cy={145}
-                rx={8 + p * 25}
-                ry={2 + p * 7}
-                fill="none"
-                stroke="#cbf7ff"
-                strokeWidth={1.1}
-                opacity={(1 - p) * 0.65}
-              />
-            );
-          })}
-          <Path
-            d="M893 105Q890 120 893 139"
-            stroke="#d4faff"
-            strokeWidth={2}
-            opacity={0.6 + 0.15 * Math.sin(time * 8)}
-          />
-        </G>
-      )}
-      {Array.from({ length: 8 }, (_, i) => {
-        const x = (i * 139 + time * (5 + (i % 3))) % 1000,
-          y = 160 + ((i * 67 + Math.sin(time * 0.6 + i) * 15) % 420);
-        return (
-          <G key={i} opacity={0.25 + 0.15 * Math.sin(time + i)}>
-            <Path
-              d={"M" + x + " " + y + "l3 -2 -1 4Z"}
-              fill={i % 2 ? "#f2e8a5" : "#a3c35d"}
-            />
-          </G>
-        );
-      })}
-    </Svg>
-  );
-});
-
-type SceneProps = {
-  region: Region;
-  scale: number;
-  ox: number;
-  oy: number;
-  lively: boolean;
-};
-const Scenery = memo(function Scenery({
-  region,
-  scale,
-  ox,
-  oy,
-  lively,
-}: SceneProps) {
-  const patches =
-    region === "forest"
-      ? [
-          [290, 390],
-          [355, 485],
-          [530, 430],
-          [650, 290],
-          [685, 410],
-          [335, 230],
-          [710, 265],
-          [860, 400],
-        ]
-      : [
-          [250, 330],
-          [365, 510],
-          [645, 485],
-          [720, 330],
-          [335, 270],
-          [640, 270],
-        ];
-  return (
-    <>
-      <Image
-        source={art[region]}
-        style={[StyleSheet.absoluteFill, { width: "100%", height: "100%" }]}
-        resizeMode="cover"
-        fadeDuration={0}
-      />
-      {lively && <Water region={region} />}
-      {patches.map(([x, y], i) => (
-        <View
-          key={i}
-          style={{
-            position: "absolute",
-            left: ox + (x - 14) * scale,
-            top: oy + (y - 25) * scale,
-          }}
-        >
-          {lively ? (
-            <Wind phase={i} strength={3}>
-              <Sprite name={i % 3 ? "grass" : "fern"} size={28 * scale} />
-            </Wind>
-          ) : (
-            <Sprite name="grass" size={28 * scale} />
-          )}
-        </View>
-      ))}
-      {[
-        { x: 180, y: 475, name: "bush" as SpriteName, size: 52 },
-        { x: 675, y: 515, name: "bush" as SpriteName, size: 48 },
-      ].map((p, i) => (
-        <View
-          key={"b" + i}
-          style={{
-            position: "absolute",
-            left: ox + (p.x - p.size / 2) * scale,
-            top: oy + (p.y - p.size * 0.92) * scale,
-          }}
-        >
-          {lively ? (
-            <Wind phase={i + 2} strength={1.2}>
-              <Sprite name={p.name} size={p.size * scale} />
-            </Wind>
-          ) : (
-            <Sprite name={p.name} size={p.size * scale} />
-          )}
-        </View>
-      ))}
-    </>
-  );
-});
 
 export type WorldProps = {
   region?: Region;
@@ -415,6 +174,9 @@ export type WorldProps = {
   petFrame?: number;
   petPosition?: Point;
   petLeft?: boolean;
+  petFacing?: Facing;
+  petMoving?: boolean;
+  petPose?: number;
   lively?: boolean;
 };
 export function World({
@@ -427,6 +189,9 @@ export function World({
   petFrame = 1,
   petPosition,
   petLeft = false,
+  petFacing = "right",
+  petMoving = false,
+  petPose = 0,
   lively = true,
 }: WorldProps) {
   const [layout, setLayout] = useState({ w: 1000, h: 667 });
@@ -445,21 +210,47 @@ export function World({
       x: (hero?.x || 0) - 28,
       y: (hero?.y || 0) + 12,
     };
+  const petSize = pet === "Boxer" ? 43 : pet === "Owl" ? 33 : 32;
+  const petAnchor =
+    anchors[petKeys[pet]][petCell(petFacing, petFrame, petMoving, petPose)];
+  const heroAnchor = anchors["hero-walk"][rows[facing] * 4 + (heroFrame % 4)];
   const renderPet = () =>
     hero && (
-      <View key="pet" style={anchor(companion, 42, 0.83)}>
+      <View
+        key="pet"
+        style={[
+          anchor(companion, petSize, petAnchor.y),
+          { zIndex: Math.round(companion.y) },
+        ]}
+      >
         <View
           style={{
             position: "absolute",
-            bottom: 5 * scale,
-            left: 9 * scale,
-            width: 25 * scale,
-            height: 6 * scale,
+            top: petSize * petAnchor.y * scale - 2 * scale,
+            left: petSize * 0.23 * scale,
+            width: petSize * 0.54 * scale,
+            height: 3 * scale,
             borderRadius: 20,
-            backgroundColor: "#21312260",
+            backgroundColor: "#172b2966",
           }}
         />
-        <Pet kind={pet} size={42 * scale} frame={petFrame} flip={petLeft} />
+        <View
+          style={{
+            transform: [
+              { translateY: pet === "Owl" && petMoving ? -6 * scale : 0 },
+            ],
+          }}
+        >
+          <Pet
+            kind={pet}
+            size={petSize * scale}
+            frame={petFrame}
+            flip={petLeft}
+            facing={petFacing}
+            moving={petMoving}
+            pose={petPose}
+          />
+        </View>
       </View>
     );
   return (
@@ -473,26 +264,47 @@ export function World({
         })
       }
     >
-      <Scenery region={region} scale={scale} ox={ox} oy={oy} lively={lively} />
-      {resources[region].map(
-        (p, i) =>
-          !gathered.includes(region + "-" + i) && (
-            <View key={i} style={anchor(p, 26, 0.79)}>
-              {lively ? (
-                <Wind phase={i} strength={2.6}>
-                  <Resource region={region} size={26 * scale} />
-                </Wind>
-              ) : (
-                <Resource region={region} size={26 * scale} />
-              )}
+      <Image
+        source={art[region]}
+        style={[StyleSheet.absoluteFill, { width: "100%", height: "100%" }]}
+        resizeMode="cover"
+        fadeDuration={0}
+      />
+      <LivingEnvironment
+        region={region}
+        scale={scale}
+        ox={ox}
+        oy={oy}
+        lively={lively}
+      />
+      {resources[region].map((p, i) => {
+        const harvested = gathered.includes(region + "-" + i);
+        if (region === "forest" && harvested) return null;
+        const size = region === "forest" ? 22 : 100;
+        return (
+          <View
+            key={i}
+            style={[
+              anchor(p, size, region === "forest" ? 0.96 : 0.96),
+              { zIndex: Math.round(p.y) },
+            ]}
+          >
+            <Resource region={region} size={size * scale} />
+            {!harvested && (
               <Text
                 style={[styles.spark, { fontSize: 9 * scale, top: -2 * scale }]}
               >
                 ✦
               </Text>
-            </View>
-          ),
-      )}
+            )}
+            {harvested && (
+              <View style={{ position: "absolute", bottom: 0, right: 0 }}>
+                <Sprite name="basket" size={18 * scale} />
+              </View>
+            )}
+          </View>
+        );
+      })}
       <View style={anchor(gate, 43, 0.84)}>
         <Sprite name="sign" size={43 * scale} flip={region === "temple"} />
       </View>
@@ -502,17 +314,21 @@ export function World({
           <View
             style={{
               position: "absolute",
-              left: ox + (hero.x - 13) * scale,
-              top: oy + (hero.y - 5) * scale,
-              width: 26 * scale,
-              height: 9 * scale,
+              left: ox + (hero.x - 8) * scale,
+              top: oy + (hero.y - 2) * scale,
+              width: 16 * scale,
+              height: 3 * scale,
               borderRadius: 30,
-              backgroundColor: "#24311988",
-              borderWidth: 1,
-              borderColor: "#ffedb46b",
+              backgroundColor: "#172b2980",
+              zIndex: Math.round(hero.y),
             }}
           />
-          <View style={anchor(hero, 76, 0.88)}>
+          <View
+            style={[
+              anchor(hero, 76, heroAnchor.y),
+              { zIndex: Math.round(hero.y) },
+            ]}
+          >
             <Hero facing={facing} size={76 * scale} frame={heroFrame} />
           </View>
         </>

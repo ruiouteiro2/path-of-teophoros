@@ -1,5 +1,5 @@
 export type Region = "forest" | "temple";
-export type PetKind = "Dog" | "Cat" | "Fox" | "Owl";
+export type PetKind = "Dog" | "Boxer" | "Small dog" | "Cat" | "Fox" | "Owl";
 export type Point = { x: number; y: number };
 export type Facing = "front" | "back" | "left" | "right";
 export type Save = {
@@ -46,10 +46,10 @@ export const resources: Record<Region, Point[]> = {
     { x: 400, y: 510 },
   ],
   temple: [
-    { x: 320, y: 310 },
-    { x: 650, y: 340 },
-    { x: 610, y: 470 },
-    { x: 400, y: 500 },
+    { x: 270, y: 345 },
+    { x: 735, y: 350 },
+    { x: 650, y: 530 },
+    { x: 350, y: 535 },
   ],
 };
 // Connected navigation zones follow the clearings, paths, and bridge in the artwork.
@@ -104,7 +104,7 @@ export function validSave(value: unknown): value is Save {
     !!s &&
     typeof s.name === "string" &&
     typeof s.petName === "string" &&
-    ["Dog", "Cat", "Fox", "Owl"].includes(s.pet) &&
+    ["Dog", "Boxer", "Small dog", "Cat", "Fox", "Owl"].includes(s.pet) &&
     ["forest", "temple"].includes(s.region) &&
     typeof s.color === "string" &&
     Number.isFinite(s.position?.x) &&

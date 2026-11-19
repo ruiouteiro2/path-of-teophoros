@@ -1,4 +1,4 @@
-import { move } from "./game.ts";
+import { move, walkable } from "./game.ts";
 import type { Facing, Point, Region } from "./game.ts";
 export type MotionState = {
   region: Region;
@@ -8,6 +8,9 @@ export type MotionState = {
   velocity: Point;
   facing: Facing;
   petLeft: boolean;
+  petFacing: Facing;
+  idleTime: number;
+  petPose: number;
   distance: number;
   petDistance: number;
   trail: Point[];
@@ -15,17 +18,26 @@ export type MotionState = {
   petMoving: boolean;
 };
 export function createMotion(region: Region, p: Point): MotionState {
+  const pet = [
+    { x: p.x - 24, y: p.y },
+    { x: p.x + 24, y: p.y },
+    { x: p.x, y: p.y - 24 },
+    { x: p.x, y: p.y + 24 },
+  ].find((q) => walkable(q, region)) || { ...p };
   return {
     region,
     position: { ...p },
-    pet: { ...p, x: p.x - 24 },
+    pet,
     camera: { ...p },
     velocity: { x: 0, y: 0 },
     facing: "front",
     petLeft: false,
+    petFacing: "right",
+    idleTime: 0,
+    petPose: 0,
     distance: 0,
     petDistance: 0,
-    trail: [{ x: p.x - 24, y: p.y }, { ...p }],
+    trail: [{ ...pet }, { ...p }],
     moving: false,
     petMoving: false,
   };
@@ -87,14 +99,42 @@ export function advance(
   const target = trail[index],
     gap = Math.hypot(target.x - state.pet.x, target.y - state.pet.y);
   const petStep = Math.min(gap, Math.min(135, Math.max(0, gap - 1) * 7) * dt);
-  const pet = {
-    x: state.pet.x + (gap ? ((target.x - state.pet.x) / gap) * petStep : 0),
-    y: state.pet.y + (gap ? ((target.y - state.pet.y) / gap) * petStep : 0),
-  };
+  const pet = move(
+    state.pet,
+    gap ? ((target.x - state.pet.x) / gap) * petStep : 0,
+    gap ? ((target.y - state.pet.y) / gap) * petStep : 0,
+    state.region,
+  );
   if (index > 1) trail.splice(0, index - 1);
+  const idleTime = moving || petStep > 0.025 ? 0 : state.idleTime + dt;
+  const phase = idleTime % 17;
+  // Hold meaningful poses; do not cycle sniff/blink/sit as walking frames.
+  const petPose =
+    phase > 12
+      ? 3
+      : phase > 5 && phase < 8
+        ? 1
+        : (phase > 3.1 && phase < 3.3) || (phase > 9.2 && phase < 9.4)
+          ? 2
+          : 0;
+  const dx = pet.x - state.pet.x,
+    dy = pet.y - state.pet.y;
+  const petFacing =
+    petStep > 0.025
+      ? Math.abs(dx) > Math.abs(dy)
+        ? dx < 0
+          ? "left"
+          : "right"
+        : dy < 0
+          ? "back"
+          : "front"
+      : state.petFacing;
   const cameraBlend = 1 - Math.exp(-9 * dt);
   return {
     region: state.region,
+    idleTime,
+    petPose,
+    petFacing,
     position,
     pet,
     camera: {

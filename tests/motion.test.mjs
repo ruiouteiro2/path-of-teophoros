@@ -44,3 +44,23 @@ test("frame stalls cannot teleport through terrain", () => {
   s = advance(s, { x: 1, y: 0 }, 10);
   assert(s.position.x - 700 < 4);
 });
+
+test("companions hold sniff, blink and rest poses without drifting", () => {
+  let s = createMotion("forest", { x: 450, y: 400 });
+  const poses = new Set();
+  const initial = { ...s.pet };
+  for (let i = 0; i < 18 * 60; i++) {
+    s = advance(s, { x: 0, y: 0 }, 1 / 60);
+    poses.add(s.petPose);
+  }
+  assert.deepEqual([...poses].sort(), [0, 1, 2, 3]);
+  assert.deepEqual(s.pet, initial);
+  s = advance(s, { x: 1, y: 0 }, 1 / 60);
+  assert.equal(s.petPose, 0);
+});
+test("companion turns toward vertical travel", () => {
+  const down = run(60, { x: 0, y: 1 }, 1),
+    up = run(60, { x: 0, y: -1 }, 1);
+  assert.equal(down.petFacing, "front");
+  assert.equal(up.petFacing, "back");
+});

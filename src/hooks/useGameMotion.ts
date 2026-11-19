@@ -65,6 +65,7 @@ export function useGameMotion(
           if (
             next.moving ||
             next.petMoving ||
+            next.petPose !== previous.petPose ||
             wasMoving ||
             Math.hypot(
               next.camera.x - previous.camera.x,

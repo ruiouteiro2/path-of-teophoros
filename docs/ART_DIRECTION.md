@@ -42,3 +42,19 @@ Scenery cells, left to right:
 | 4 | Log | Daisies | Basket | Stone |
 
 Frame phase is tied to distance traveled, not key repeat. Pet following uses stored route samples; environmental effects are separate from the terrain PNGs. Baselines and sizes are calibrated in WorldAssets.tsx.
+
+## Living-world revision
+
+- `pets/boxer.png`: reference-based brindle Boxer, revised to darker chestnut brown; preserve white blaze/chest/paws and black ears/muzzle. Source photo retained in `assets/references/boxer.png`.
+- `pets/small-dog.png`: reference-based small tan dog, charcoal floppy ears, pale muzzle and white chest. Photo retained in `assets/references/small-dog.png`. Do not substitute a generic retriever.
+- Separate cat, fox and owl atlases. Each pet sheet: front walk, back walk, right walk, then alert/sniff-or-preen/blink/sit idle poses. Left mirrors right. Boxer is larger than the small dog. Legacy saved `Dog` selects the small dog.
+- `flowers.png`: poppy, cornflower, daisy, thyme rows, four fixed-root wind poses each. Only stems and flowers bend. Still intervals separate gusts. Decorative flowers are 17–23 world units versus the 76-unit hero cell.
+- `olive-tree.png`: recognizable lanceolate silver-green foliage with green and purple-black olives. Temple harvest nodes are persistent trees; harvested nodes receive a basket marker. The generic herb no longer represents olives.
+- `water.png`: seamless turquoise pixel texture. Two downstream layers move at different speeds, masked to river/fountain interiors. Bridge, banks and rock islands remain static. Rock wakes and fountain droplets are separate effects.
+- `wildlife.png`: orange/blue butterfly wing phases, songbird flight and perched poses. Butterflies remain near flowers; sparse birds alternate crossing and resting.
+- `dragonflies.png`: blue and red dragonfly wing phases, eight per color. Corrected transparent background. Short eased darts alternate with hovering near water.
+- `olympus-title.png`: original pixel-art Olympus sky, clouds, mountains and marble temples. Creation uses a centered ochre framed game panel, not a split website landing page.
+
+All new raster assets used built-in imagegen. The Boxer correction changed the brown palette only. Runtime animation crops original sheets without raster modification. `src/sprite-anchors.json` records alpha-bound contact baselines measured with Pillow (analysis only) so the player and grounded companions meet their small contact shadows. Owl flight alone has intentional elevation. Large baked terrain trees remain static; do not rotate an entire tree or terrain image to imply wind.
+
+The native exports are build checks, not physical Android/iOS performance certification. Four-frame directional cycles and four held idle poses are an extensible prototype, not a complete skeletal animation system.

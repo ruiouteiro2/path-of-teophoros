@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
+  Image,
   View,
   Text,
   TextInput,
@@ -27,7 +28,7 @@ import {
   atGate,
 } from "../game";
 import { Direction, useGameMotion } from "../hooks/useGameMotion";
-const serif = Platform.OS === "ios" ? "Georgia" : "serif";
+const serif = Platform.OS === "ios" ? "Courier" : "monospace";
 function Button({
   children,
   onPress,
@@ -64,7 +65,7 @@ export default function Game() {
     compact = width < 850;
   const [name, setName] = useState(""),
     [petName, setPetName] = useState(""),
-    [pet, setPet] = useState<PetKind>("Dog"),
+    [pet, setPet] = useState<PetKind>("Boxer"),
     [region, setRegion] = useState<Region>("forest");
   const color = "#467d81";
   const [save, setSave] = useState<Save | null>(null),
@@ -247,6 +248,9 @@ export default function Game() {
               }
               petPosition={liveMotion?.pet}
               petLeft={liveMotion?.petLeft}
+              petFacing={liveMotion?.petFacing}
+              petMoving={liveMotion?.petMoving}
+              petPose={liveMotion?.petPose}
               gathered={save.gathered}
             />
           </View>
@@ -467,85 +471,70 @@ export default function Game() {
   return (
     <SafeAreaView style={s.root}>
       <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View style={[s.shell, compact && { flexDirection: "column" }]}>
-          <View
-            style={[s.artPanel, compact && { minHeight: 430, flex: undefined }]}
+      <Image
+        source={require("../../assets/world/olympus-title.png")}
+        style={[StyleSheet.absoluteFill, { width: "100%", height: "100%" }]}
+        resizeMode="cover"
+      />
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          alignItems: "center",
+          padding: compact ? 12 : 26,
+        }}
+      >
+        <View style={s.titlePlaque}>
+          <Text style={s.titleSmall}>✦ OLYMPUS AWAITS ✦</Text>
+          <Text
+            style={[s.gameTitle, compact && { fontSize: 27, lineHeight: 33 }]}
           >
-            <View style={StyleSheet.absoluteFill}>
-              <World
-                region={region}
-                hero={{ x: 475, y: 520 }}
-                pet={pet}
-                color={color}
-                lively={false}
+            PATH OF TEOPHOROS
+          </Text>
+          <Text style={s.titleSmall}>A new life beneath the gods</Text>
+        </View>
+        <View
+          style={[
+            s.setup,
+            { width: compact ? "100%" : 640, padding: compact ? 18 : 26 },
+          ]}
+        >
+          <View style={s.setupTop}>
+            <Text style={s.eyebrow}>❖ CREATE YOUR WANDERER</Text>
+            <Text style={s.version}>H E L L A S</Text>
+          </View>
+          {save && (
+            <View style={s.continue}>
+              <Text style={s.small}>Welcome back, {save.name}.</Text>
+              <Button secondary onPress={() => setPlaying(true)}>
+                CONTINUE ADVENTURE ▶
+              </Button>
+            </View>
+          )}
+          <View style={s.identityRow}>
+            <View style={{ flex: 1 }}>
+              <Label>YOUR NAME</Label>
+              <TextInput
+                accessibilityLabel="Your name"
+                value={name}
+                onChangeText={setName}
+                placeholder="What should we call you?"
+                placeholderTextColor="#91958b"
+                maxLength={24}
+                style={s.input}
               />
-            </View>
-            <View style={s.artShade} />
-            <View style={[s.brand, compact && { padding: 25 }]}>
-              <Text style={s.brandKicker}>A LIFE BENEATH THE OLIVE TREES</Text>
-              <Text
-                style={[
-                  s.brandTitle,
-                  compact && { fontSize: 48, lineHeight: 51 },
-                ]}
-              >
-                Path of{"\n"}Teophoros
-              </Text>
-              <View style={s.brandLine} />
-              <Text style={s.brandSubtitle}>
-                Find your place in an ancient world.
+              <Text style={[s.small, { marginTop: 12 }]}>
+                Your name in the tales of Hellas.
               </Text>
             </View>
-            <View style={[s.artBottom, compact && { left: 25, bottom: 25 }]}>
-              <Text style={s.chapter}>I. THE FIRST FOOTSTEPS</Text>
-              <Text style={s.artCaption}>
-                A little wilderness. A faithful companion.{"\n"}A story that
-                begins with you.
-              </Text>
+            <View style={s.portrait}>
+              <Hero size={130} />
+              <Text style={s.portraitLabel}>THE WANDERER</Text>
             </View>
           </View>
-          <View style={[s.setup, compact && { width: "100%", padding: 25 }]}>
-            <View style={s.setupTop}>
-              <Text style={s.eyebrow}>A NEW BEGINNING</Text>
-              <Text style={s.version}>EARLY WORLD · 0.1</Text>
-            </View>
-            <Text style={s.heading}>Every path starts{"\n"}with a name.</Text>
-            <Text style={s.body}>
-              Leave the noise behind. There is a place for you here.
-            </Text>
-            {save && (
-              <View style={s.continue}>
-                <Text style={s.small}>Welcome back, {save.name}.</Text>
-                <Button secondary onPress={() => setPlaying(true)}>
-                  Continue your journey →
-                </Button>
-              </View>
-            )}
-            <View style={s.identityRow}>
-              <View style={{ flex: 1 }}>
-                <Label>YOUR NAME</Label>
-                <TextInput
-                  accessibilityLabel="Your name"
-                  value={name}
-                  onChangeText={setName}
-                  placeholder="What should we call you?"
-                  placeholderTextColor="#91958b"
-                  maxLength={24}
-                  style={s.input}
-                />
-                <Text style={[s.small, { marginTop: 12 }]}>
-                  A wanderer in Hellas. The rest is yours to discover.
-                </Text>
-              </View>
-              <View style={s.portrait}>
-                <Hero size={130} />
-                <Text style={s.portraitLabel}>THE WANDERER</Text>
-              </View>
-            </View>
-            <Label>A COMPANION FOR THE ROAD</Label>
-            <View style={s.petRow}>
-              {(["Dog", "Cat", "Fox", "Owl"] as PetKind[]).map((p) => (
+          <Label>CHOOSE YOUR COMPANION</Label>
+          <View style={s.petRow}>
+            {(["Boxer", "Small dog", "Cat", "Fox", "Owl"] as PetKind[]).map(
+              (p) => (
                 <Pressable
                   key={p}
                   accessibilityRole="button"
@@ -557,78 +546,74 @@ export default function Game() {
                   <PetPortrait kind={p} />
                   <Text style={s.petLabel}>{p}</Text>
                 </Pressable>
-              ))}
-            </View>
-            <TextInput
-              accessibilityLabel="Pet name"
-              value={petName}
-              onChangeText={setPetName}
-              placeholder="Your companion’s name"
-              placeholderTextColor="#91958b"
-              maxLength={24}
-              style={[s.input, { marginTop: 12 }]}
-            />
-            <Label>WHERE WILL YOUR STORY BEGIN?</Label>
-            <View style={s.regionRow}>
-              {(["forest", "temple"] as Region[]).map((r) => (
-                <Pressable
-                  key={r}
-                  accessibilityRole="button"
-                  accessibilityLabel={
-                    "Start in " + (r === "forest" ? "forest" : "temple ruins")
-                  }
-                  accessibilityState={{ selected: region === r }}
-                  onPress={() => setRegion(r)}
-                  style={[s.regionCard, region === r && s.selected]}
-                >
-                  <View style={s.regionArt}>
-                    <World region={r} lively={false} />
-                  </View>
-                  <View style={s.regionText}>
-                    <Text style={s.regionName}>
-                      {r === "forest" ? "Forest" : "Temple ruins"}
-                    </Text>
-                    <Text style={s.small}>
-                      {r === "forest"
-                        ? "Rooted in nature"
-                        : "Touched by history"}
-                    </Text>
-                  </View>
-                  <View
-                    style={[
-                      s.radio,
-                      region === r && {
-                        backgroundColor: "#4a7557",
-                        borderColor: "#4a7557",
-                      },
-                    ]}
-                  >
-                    {region === r && (
-                      <Text style={{ color: "#fff", fontSize: 10 }}>✓</Text>
-                    )}
-                  </View>
-                </Pressable>
-              ))}
-            </View>
-            <Text style={s.regionDescription}>
-              {regions[region].description}
-            </Text>
-            <Button
-              disabled={!name.trim() || !petName.trim() || !loaded}
-              onPress={() => (save ? setReplacing(true) : start())}
-            >
-              Begin your journey →
-            </Button>
-            <Text style={s.footnote}>
-              Take your time. Both paths will be yours to explore.
-            </Text>
-            {!!message && <Text style={s.small}>{message}</Text>}
-            {storageError && (
-              <Text style={s.small}>
-                Device storage is unavailable; progress may not be saved.
-              </Text>
+              ),
             )}
           </View>
+          <TextInput
+            accessibilityLabel="Pet name"
+            value={petName}
+            onChangeText={setPetName}
+            placeholder="Your companion’s name"
+            placeholderTextColor="#91958b"
+            maxLength={24}
+            style={[s.input, { marginTop: 12 }]}
+          />
+          <Label>CHOOSE YOUR FIRST PATH</Label>
+          <View style={s.regionRow}>
+            {(["forest", "temple"] as Region[]).map((r) => (
+              <Pressable
+                key={r}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  "Start in " + (r === "forest" ? "forest" : "temple ruins")
+                }
+                accessibilityState={{ selected: region === r }}
+                onPress={() => setRegion(r)}
+                style={[s.regionCard, region === r && s.selected]}
+              >
+                <View style={s.regionArt}>
+                  <World region={r} lively={false} />
+                </View>
+                <View style={s.regionText}>
+                  <Text style={s.regionName}>
+                    {r === "forest" ? "Forest" : "Temple ruins"}
+                  </Text>
+                  <Text style={s.small}>
+                    {r === "forest" ? "Rooted in nature" : "Touched by history"}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    s.radio,
+                    region === r && {
+                      backgroundColor: "#4a7557",
+                      borderColor: "#4a7557",
+                    },
+                  ]}
+                >
+                  {region === r && (
+                    <Text style={{ color: "#fff", fontSize: 10 }}>✓</Text>
+                  )}
+                </View>
+              </Pressable>
+            ))}
+          </View>
+          <Text style={s.regionDescription}>{regions[region].description}</Text>
+          <Button
+            disabled={!name.trim() || !petName.trim() || !loaded}
+            onPress={() => (save ? setReplacing(true) : start())}
+          >
+            BEGIN ADVENTURE ▶
+          </Button>
+          <Text style={s.footnote}>
+            Explore both lands with your companion.
+          </Text>
+          {!!message && <Text style={s.small}>{message}</Text>}
+          {storageError && (
+            <Text style={s.small}>
+              Device storage is unavailable; progress may not be saved.
+            </Text>
+          )}
         </View>
       </ScrollView>
       {replacing && (
@@ -649,7 +634,37 @@ export default function Game() {
   );
 }
 const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#f5f3e9" },
+  root: { flex: 1, backgroundColor: "#1169a9" },
+  titlePlaque: {
+    backgroundColor: "#e8b765",
+    borderWidth: 5,
+    borderColor: "#76421f",
+    borderTopColor: "#ffe2a0",
+    borderLeftColor: "#ffe2a0",
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    alignItems: "center",
+    marginBottom: 20,
+    boxShadow: "0px 5px 0px #422d26",
+  },
+  gameTitle: {
+    fontFamily: serif,
+    fontWeight: "900",
+    fontSize: 39,
+    lineHeight: 47,
+    color: "#633716",
+    textShadowColor: "#ffedb4",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 0,
+  },
+  titleSmall: {
+    fontFamily: serif,
+    fontWeight: "700",
+    fontSize: 11,
+    color: "#704623",
+    letterSpacing: 1,
+    marginVertical: 3,
+  },
   shell: { flex: 1, flexDirection: "row", minHeight: 810 },
   artPanel: {
     flex: 1,
@@ -705,11 +720,13 @@ const s = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
   },
   setup: {
-    width: 540,
-    paddingHorizontal: 40,
-    paddingVertical: 31,
-    justifyContent: "center",
-    backgroundColor: "#f5f3e9",
+    backgroundColor: "#f4d695",
+    borderWidth: 5,
+    borderColor: "#855025",
+    borderTopColor: "#fff0bf",
+    borderLeftColor: "#fff0bf",
+    boxShadow: "0px 5px 0px #463029",
+    maxWidth: 640,
   },
   setupTop: {
     flexDirection: "row",
@@ -717,10 +734,11 @@ const s = StyleSheet.create({
     alignItems: "center",
   },
   eyebrow: {
-    fontSize: 9,
-    letterSpacing: 2,
+    fontFamily: serif,
+    fontSize: 13,
+    letterSpacing: 0.4,
     fontWeight: "700",
-    color: "#69775b",
+    color: "#633e21",
   },
   version: { fontSize: 8, letterSpacing: 1.3, color: "#959787" },
   heading: {
@@ -734,29 +752,32 @@ const s = StyleSheet.create({
   },
   body: { fontSize: 13, lineHeight: 21, color: "#7c8173" },
   label: {
-    fontSize: 9,
-    letterSpacing: 1.6,
+    fontFamily: serif,
+    fontSize: 12,
+    letterSpacing: 0.4,
     fontWeight: "700",
-    color: "#596950",
+    color: "#633e21",
     marginTop: 22,
     marginBottom: 10,
   },
   input: {
     height: 47,
     borderWidth: 1,
-    borderColor: "#d8d9c9",
-    borderRadius: 7,
+    borderColor: "#9c602e",
+    borderRadius: 0,
     paddingHorizontal: 14,
     fontSize: 14,
     color: "#314d3e",
-    backgroundColor: "#fcfbf5",
+    backgroundColor: "#fff0bf",
   },
   identityRow: { flexDirection: "row", gap: 25, alignItems: "center" },
   portrait: {
     width: 112,
     height: 144,
-    backgroundColor: "#e6e8d9",
-    borderRadius: 60,
+    backgroundColor: "#6da848",
+    borderRadius: 0,
+    borderWidth: 3,
+    borderColor: "#9c602e",
     alignItems: "center",
     justifyContent: "center",
     marginTop: 17,
@@ -771,34 +792,40 @@ const s = StyleSheet.create({
   swatch: {
     width: 27,
     height: 27,
-    borderRadius: 15,
+    borderRadius: 0,
     alignItems: "center",
     justifyContent: "center",
   },
   activeSwatch: { borderWidth: 2, borderColor: "#f5f3e9" },
-  petRow: { flexDirection: "row", gap: 9 },
+  petRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   petCard: {
-    flex: 1,
+    flexGrow: 1,
+    flexBasis: 85,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#dedfcf",
-    borderRadius: 8,
+    borderColor: "#b37539",
+    borderRadius: 0,
     paddingTop: 7,
     paddingBottom: 10,
-    backgroundColor: "#eeeee3",
+    backgroundColor: "#e9bd72",
   },
   selected: {
-    borderColor: "#658764",
-    backgroundColor: "#e6ebdd",
-    borderWidth: 1.5,
+    borderColor: "#72431c",
+    backgroundColor: "#ffe8a0",
+    borderWidth: 3,
   },
-  petLabel: { fontSize: 11, color: "#536a50" },
+  petLabel: {
+    fontFamily: serif,
+    fontWeight: "700",
+    fontSize: 12,
+    color: "#5c381d",
+  },
   regionRow: { flexDirection: "row", gap: 12 },
   regionCard: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#d8d9c9",
-    borderRadius: 9,
+    borderColor: "#9c602e",
+    borderRadius: 0,
     overflow: "hidden",
   },
   regionArt: { height: 88 },
@@ -809,14 +836,14 @@ const s = StyleSheet.create({
     color: "#36513f",
     marginBottom: 4,
   },
-  small: { fontSize: 10, color: "#7c8473", lineHeight: 17 },
+  small: { fontSize: 10, color: "#71502e", lineHeight: 17 },
   radio: {
     position: "absolute",
     top: 10,
     right: 10,
     width: 18,
     height: 18,
-    borderRadius: 9,
+    borderRadius: 0,
     borderWidth: 1,
     borderColor: "#faf8df",
     backgroundColor: "#ffffff99",
@@ -826,15 +853,18 @@ const s = StyleSheet.create({
   regionDescription: {
     fontSize: 11,
     lineHeight: 17,
-    color: "#818675",
+    color: "#71502e",
     marginTop: 11,
     marginBottom: 19,
     minHeight: 34,
   },
   button: {
-    backgroundColor: "#345e48",
+    backgroundColor: "#99602e",
+    borderWidth: 3,
+    borderColor: "#623d21",
+    borderTopColor: "#eabd70",
     minHeight: 48,
-    borderRadius: 7,
+    borderRadius: 0,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 18,
@@ -842,22 +872,23 @@ const s = StyleSheet.create({
   },
   buttonText: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: "700",
+    fontFamily: serif,
     letterSpacing: 0.4,
     color: "#f6f3df",
   },
-  secondary: { backgroundColor: "#e7e9dc", marginTop: 8 },
+  secondary: { backgroundColor: "#e9bd72", marginTop: 8 },
   footnote: {
     fontSize: 10,
-    color: "#969b88",
+    color: "#71502e",
     textAlign: "center",
     marginTop: 13,
   },
   continue: {
     marginTop: 14,
     padding: 10,
-    backgroundColor: "#e9ecdf",
-    borderRadius: 8,
+    backgroundColor: "#e9bd72",
+    borderRadius: 0,
   },
   game: { flex: 1, overflow: "hidden", backgroundColor: "#7caa77" },
   hud: {
@@ -868,7 +899,14 @@ const s = StyleSheet.create({
     alignItems: "flex-start",
     gap: 8,
   },
-  location: { backgroundColor: "#f7f3dfed", padding: 16, borderRadius: 10, flexShrink: 1 },
+  location: {
+    backgroundColor: "#f5d898f5",
+    borderWidth: 3,
+    borderColor: "#9b6631",
+    padding: 16,
+    borderRadius: 0,
+    flexShrink: 1,
+  },
   locationTitle: {
     fontFamily: serif,
     fontSize: 26,
@@ -876,13 +914,15 @@ const s = StyleSheet.create({
     marginTop: 6,
     marginBottom: 5,
   },
-  journalButton: { backgroundColor: "#315c46", padding: 15, borderRadius: 9 },
+  journalButton: { backgroundColor: "#315c46", padding: 15, borderRadius: 0 },
   quest: {
     position: "absolute",
     top: 120,
-    backgroundColor: "#f7f3dfed",
+    backgroundColor: "#f5d898f5",
+    borderWidth: 3,
+    borderColor: "#9b6631",
     padding: 15,
-    borderRadius: 9,
+    borderRadius: 0,
   },
   questText: { fontSize: 11, color: "#57704f", marginTop: 9 },
   bottomHud: {
@@ -898,7 +938,7 @@ const s = StyleSheet.create({
     width: 44,
     margin: 2,
     backgroundColor: "#f6efdce8",
-    borderRadius: 9,
+    borderRadius: 0,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
@@ -921,7 +961,7 @@ const s = StyleSheet.create({
     backgroundColor: "#f8f2dd",
     paddingHorizontal: 20,
     paddingVertical: 13,
-    borderRadius: 8,
+    borderRadius: 0,
   },
   toastText: { fontSize: 12, color: "#36523d", textAlign: "center" },
   scrim: {
@@ -933,7 +973,7 @@ const s = StyleSheet.create({
   },
   modal: {
     backgroundColor: "#f6f2e5",
-    borderRadius: 15,
+    borderRadius: 0,
     padding: 28,
     width: "100%",
     maxWidth: 420,
