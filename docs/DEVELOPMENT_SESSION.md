@@ -142,3 +142,6 @@ Session remains active; the user's five-hour development period has not yet elap
 ### Forest collision correction
 - Inspected original forest/sanctuary terrain. Forest boulder near normalized (250,395) was inside a broad walkable rectangle. Added a ground footprint while keeping the surrounding path connected.
 - Separated original terrain area from solid-footprint corrections so seeded material generation retains its old sequence and IDs. Only drops obstructed by corrected solids are relocated using the existing deterministic relocation pass. Existing tests pass; added a boulder/path regression (44 total tests). Typecheck/lint passed before formatting; targeted navigation suite passed afterward.
+
+### Phone storage layout
+- At 390x844 emulation, found day/energy text clipping and repeated Stored labels crowding chest slots. Narrow stats now use a full-width wrapping row; currency can shrink/wrap. Removed redundant per-slot Stored text while preserving it in accessibility labels and the chest heading. Re-inspected screenshot: full day/energy line fits, icons remain clear. Typecheck/lint pass.

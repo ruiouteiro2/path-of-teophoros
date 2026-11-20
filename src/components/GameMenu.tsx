@@ -96,14 +96,13 @@ export function GameMenu({
         <Pressable
           key={id}
           accessibilityRole="button"
-          accessibilityLabel={`${items[id].name}: ${count(bag, id)}`}
+          accessibilityLabel={`${storage ? "Stored " : ""}${items[id].name}: ${count(bag, id)}`}
           accessibilityState={{ selected: selected === id }}
           onPress={() => setSelected(id)}
           style={[m.slot, selected === id && m.selected]}
         >
           <ItemIcon id={id} size={narrow ? 42 : 52} />
           <Text style={m.quantity}>{count(bag, id) || ""}</Text>
-          {storage && <Text style={{ fontSize: 17 }}>Stored</Text>}
         </Pressable>
       ))}
     </View>
@@ -144,8 +143,8 @@ export function GameMenu({
         >
           <View style={m.money}>
             <ItemIcon id="money" size={34} />
-            <Text>{p.money} drachmae</Text>
-            <Text style={{ marginLeft: "auto" }}>
+            <Text style={{ flexShrink: 1 }}>{p.money} drachmae</Text>
+            <Text style={narrow ? { width: "100%", flexShrink: 1 } : { marginLeft: "auto", flexShrink: 1 }}>
               Day {p.day} · Energy {p.energy}/100
             </Text>
           </View>
