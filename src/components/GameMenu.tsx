@@ -286,6 +286,8 @@ export function GameMenu({
                       · {Math.round(audio.mix[channel] * 100)}%
                     </Text>
                     <GameButton
+                      accessibilityLabel={`Decrease ${channel === "steps" ? "footsteps" : channel} volume`}
+                      disabled={audio.mix[channel] <= 0}
                       onPress={() =>
                         audio.setVolume(channel, audio.mix[channel] - 0.1)
                       }
@@ -293,6 +295,8 @@ export function GameMenu({
                       −
                     </GameButton>
                     <GameButton
+                      accessibilityLabel={`Increase ${channel === "steps" ? "footsteps" : channel} volume`}
+                      disabled={audio.mix[channel] >= 1}
                       onPress={() =>
                         audio.setVolume(channel, audio.mix[channel] + 0.1)
                       }

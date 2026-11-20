@@ -155,3 +155,6 @@ Session remains active; the user's five-hour development period has not yet elap
 ### Living cabin hearth
 - Generated one isolated flame family with the built-in image tool and copied the original alpha atlas to assets/world/hearth-flame.png. Integrated eight phases using the existing environment clock, without animating static architecture. Scene inspection at 844x390 places the small flame on the logs under the pot, clear of the floor. Typecheck/lint passed. Full exports follow in the next build checkpoint.
 - Post-hearth checkpoint: all 44 tests pass; web and Android/iOS exports pass and contain hearth-flame.png. Browser inspected the atlas frame while inventory remained open: left/top stayed unchanged across observations, confirming paused playback. These are bundle/browser checks, not physical-device QA.
+
+### Input isolation and sound control labels
+- Typed WASD E I into Familiar naming and saved it on the isolated QA origin. Menu remained open and position stayed (280,250) in cabin; restored Argos afterward. Sound +/- controls now expose channel-specific accessibility names and disable at their bounds. Browser accessibility snapshot confirms all eight names. Typecheck/lint pass.

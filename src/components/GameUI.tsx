@@ -53,15 +53,18 @@ export function GameButton({
   onPress,
   disabled = false,
   selected = false,
+  accessibilityLabel,
 }: {
   children: React.ReactNode;
   onPress: () => void;
   disabled?: boolean;
   selected?: boolean;
+  accessibilityLabel?: string;
 }) {
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
       accessibilityState={{ disabled, selected }}
       disabled={disabled}
       onPress={onPress}
