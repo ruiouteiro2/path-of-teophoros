@@ -282,7 +282,6 @@ export function World({
         resizeMode="cover"
         fadeDuration={0}
       />
-      {region !== "cabin" && (
         <LivingEnvironment
           region={region}
           scale={scale}
@@ -291,7 +290,6 @@ export function World({
           lively={lively}
           paused={paused}
         />
-      )}
       {region === "temple" && (
         <GardenPlots garden={garden} scale={scale} ox={ox} oy={oy} />
       )}

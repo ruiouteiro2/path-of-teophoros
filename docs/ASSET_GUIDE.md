@@ -132,3 +132,7 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 - Soil correction: render `garden-soil.png` (2 × 1 dry/wet), not cells 6–7 of `garden-items.png`. The older tiles looked like boards at gameplay scale. Soil is a flat ground layer with shallow furrows and irregular edges, never a raised wooden block.
 
 - Foley finish: remove measured DC offsets and inaudible tails, taper both ends to zero, and preserve the useful transient. Bridge, dock and cabin use wood; courtyard uses stone. Choose non-repeating variants without a fixed four-step loop. Cancel pending seek/play callbacks after mute, backgrounding or stopped movement. Gardening uses soil and water cues rather than mining impacts.
+
+## 14. Cabin hearth
+- hearth-flame.png is a transparent 4x2 atlas with eight flame phases, rendered at 50 world units and 7 frames/second. Fixed base at cabin (135,202), 89% cell height. It overlays logs beneath the copper pot; do not move the fireplace, logs or furniture to fake fire. Uses the existing paused/background-aware environment clock.
+- Built-in image generation prompt: eight equal cells, flame only, warm orange/gold/cream, chunky pixel clusters, fixed center/base, subtle curling tips, transparent margins, no smoke, logs, text or glow halo. Reviewed in the cabin at phone landscape scale.

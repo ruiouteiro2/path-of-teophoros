@@ -149,6 +149,22 @@ export const LivingEnvironment = memo(function LivingEnvironment({
     width: size * scale,
     height: size * scale,
   });
+  if (region === "cabin") {
+    const size = 50;
+    const cell = Math.floor(time * 7) % 8;
+    return (
+      <View pointerEvents="none" style={{
+        position: "absolute",
+        left: ox + (135 - size / 2) * scale,
+        top: oy + (202 - size * 0.89) * scale,
+        width: size * scale,
+        height: size * scale,
+      }}>
+        <AtlasFrame source={require("../../assets/world/hearth-flame.png")}
+          cell={cell} columns={4} rows={2} size={size * scale} />
+      </View>
+    );
+  }
   const patches = region === "forest" ? forestFlowers : templeFlowers;
   return (
     <>

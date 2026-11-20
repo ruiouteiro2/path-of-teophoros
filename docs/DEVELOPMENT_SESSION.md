@@ -151,3 +151,6 @@ Session remains active; the user's five-hour development period has not yet elap
 
 ### Opening responsive verification
 - Replayed opening using a backed-up isolated QA save at 844x390 and 390x844. Portrait shows recovering hero/priest above the readable full dialogue; landscape retains the portrait, scrollable text and reachable continue button. Familiar flag remained false through the grant page, then became true at supplies after acceptance. Restored the prior QA save afterward, without awarding duplicate supplies to it.
+
+### Living cabin hearth
+- Generated one isolated flame family with the built-in image tool and copied the original alpha atlas to assets/world/hearth-flame.png. Integrated eight phases using the existing environment clock, without animating static architecture. Scene inspection at 844x390 places the small flame on the logs under the pot, clear of the floor. Typecheck/lint passed. Full exports follow in the next build checkpoint.
