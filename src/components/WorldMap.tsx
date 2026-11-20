@@ -26,6 +26,7 @@ const destinations = {
     ["1", "Bed", cabinLocations.bed],
     ["2", "Storage", cabinLocations.chest],
     ["3", "Wardrobe", cabinLocations.wardrobe],
+    ["4", "Hearth", cabinLocations.hearth],
   ],
   forest: [["1", "Sanctuary path", regions.forest.gate]],
 } satisfies Record<Region, [string, string, { x: number; y: number }][]>;

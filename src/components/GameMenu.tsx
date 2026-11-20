@@ -196,13 +196,13 @@ export function GameMenu({
                   ? "The old altar has been secured. The High Priest has rewarded your first work."
                   : "Bring supplies to the High Priest of Zeus beside the ruined temple. Help him secure the old altar."}
               </Text>
-              {Object.entries(altarCost).map(([id, n]) => (
+              {!p.restoredAltar && Object.entries(altarCost).map(([id, n]) => (
                 <Text key={id}>
                   {count(p.bag, id as ItemId) >= n! ? "✓" : "○"}{" "}
                   {items[id as ItemId].name}: {count(p.bag, id as ItemId)} / {n}
                 </Text>
               ))}
-              <Text>Reward: 120 drachmae</Text>
+              <Text>{p.restoredAltar ? "✓ Reward received: 120 drachmae" : "Reward: 120 drachmae"}</Text>
               <Text style={ui.title}>Beyond the sanctuary</Text>
               <Text>
                 Explore the Olivewild. Gather herbs, craft a fishing rod at the
@@ -213,6 +213,12 @@ export function GameMenu({
                 Lands explored:{" "}
                 {save.visited.filter((r) => r !== "cabin").length} / 2 · Fish
                 caught: {p.caught}
+              </Text>
+              <Text style={ui.title}>Your hearth</Text>
+              <Text>
+                Cook at the fireplace inside your cabin. One harvested barley
+                makes bread; two wild thyme make an infusion. Carry ingredients
+                in your satchel, then eat or drink there to recover energy.
               </Text>
               <Text style={ui.title}>The western garden</Text>
               <Text>

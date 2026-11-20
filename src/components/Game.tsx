@@ -615,7 +615,7 @@ export default function Game() {
               </Text>
               <Text style={s.questText}>
                 {save.region === "cabin"
-                  ? "Rest · Store supplies · Change clothes"
+                  ? "Rest · Cook · Store supplies"
                   : save.progress?.restoredAltar
                     ? "✓ The old altar is restored"
                     : "Wood 3 · Stone 3 · Fiber 2"}
