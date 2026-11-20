@@ -173,10 +173,10 @@ export function useGameAudio(
     unlocked.current = true;
     if (!muted) {
       if (musicOn) { music.volume = mix.music; music.play(); }
-      water.play();
-      lake.play();
+      if (region === "forest") water.play();
+      if (region === "temple") lake.play();
     }
-  }, [muted, musicOn, music, mix.music, water, lake]);
+  }, [muted, musicOn, music, mix.music, water, lake, region]);
   useEffect(() => {
     const tracks = [sanctuaryMusic, forestMusic];
     if (!active || !foreground || muted || !musicOn || !unlocked.current) {
@@ -200,10 +200,10 @@ export function useGameAudio(
   useEffect(() => {
     playbackEpoch.current++;
     const on = active && foreground && !muted && unlocked.current;
-    for (const p of [water, lake]) {
-      if (on) p.play();
-      else p.pause();
-    }
+    if (on && region === "forest") water.play();
+    else water.pause();
+    if (on && region === "temple") lake.play();
+    else lake.pause();
     if (!on)
       for (const p of [
         pickup,
@@ -219,6 +219,7 @@ export function useGameAudio(
         p.pause();
   }, [
     active,
+    region,
     foreground,
     muted,
     water,

@@ -340,3 +340,8 @@ Session remains active; the user's five-hour development period has not yet elap
 - Fade now intercepts pointers only during travel/rest transitions. Inventory and quest buttons disable outside exploration, with synchronous travel-lock guards; inventory keyboard shortcut also checks travel state/lock.
 - Runtime exit from cabin: repeated I events during the fade did not open the menu; arrived temple1574,500,day6,energy100. Reverse automatic entry: all98 sampled elementFromPoint checks over Inventory hit the black fade, and Inventory was aria-disabled in every sample. Arrived cabin450,490 with day/energy unchanged.
 - Removed probes and restored original QA save/backup while menu-paused. TypeScript and lint pass.
+
+### Region-scoped water playback
+- Previously both ambient water players ran silently in every region. Now forest runs only stream ambience, sanctuary runs only lake ambience, and cabin pauses both. Existing proximity volume and music selection remain unchanged.
+- Live player probe: sanctuary music playing0.3, lake playing, forest stream paused. Walking through cabin door paused lake and stream while music continued. Walking out resumed lake from13.057s to15.071s, without restarting; arrival temple1574,500.
+- Removed media prototype probes and restored QA save/backup while menu-paused. TypeScript and lint pass. This confirms playback state, not a new subjective listening assessment.
