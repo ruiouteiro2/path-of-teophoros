@@ -1,4 +1,7 @@
 import type { Point, Region } from "./game.ts";
+export function normalizeVolume(value: number): number {
+  return Number.isFinite(value) ? Math.round(Math.max(0, Math.min(1, value)) * 100) / 100 : 0;
+}
 export function footstepSurface(
   region: Region,
   p: Point,

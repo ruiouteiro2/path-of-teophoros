@@ -1,6 +1,19 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { footstepSurface, nextFootstep, waterProximity } from "../src/audioScene.ts";
+import { footstepSurface, nextFootstep, waterProximity, normalizeVolume } from "../src/audioScene.ts";
+
+test("volume steps reach exact endpoints and preserve percentage preferences", () => {
+  let level = 0;
+  for (let i = 0; i < 10; i++) level = normalizeVolume(level + 0.1);
+  assert.equal(level, 1);
+  for (let i = 0; i < 10; i++) level = normalizeVolume(level - 0.1);
+  assert.equal(level, 0);
+  assert.equal(normalizeVolume(0.16), 0.16);
+  assert.equal(normalizeVolume(0.9999999999), 1);
+  assert.equal(normalizeVolume(-0.1), 0);
+  assert.equal(normalizeVolume(1.2), 1);
+  assert.equal(normalizeVolume(NaN), 0);
+});
 test("footsteps identify wooden bridge, dock, cabin and marble courtyard", () => {
   assert.equal(footstepSurface("forest", { x: 1540, y: 670 }), "wood");
   assert.equal(footstepSurface("forest", { x: 1400, y: 670 }), "earth");

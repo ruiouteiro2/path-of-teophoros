@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { Point, Region } from "../game";
-import { footstepSurface, nextFootstep, waterProximity } from "../audioScene";
+import { footstepSurface, nextFootstep, waterProximity, normalizeVolume } from "../audioScene";
 export function useGameAudio(
   active: boolean,
   region: Region,
@@ -139,7 +139,7 @@ export function useGameAudio(
                   Object.entries(v).map(([k, n]) => [
                     k,
                     Number.isFinite(a.mix[k])
-                      ? Math.max(0, Math.min(1, a.mix[k]))
+                      ? normalizeVolume(a.mix[k])
                       : n,
                   ]),
                 ) as typeof v,
@@ -317,7 +317,7 @@ export function useGameAudio(
   return {
     mix,
     setVolume: (channel: keyof typeof mix, value: number) =>
-      setMix((v) => ({ ...v, [channel]: Math.max(0, Math.min(1, value)) })),
+      setMix((v) => ({ ...v, [channel]: normalizeVolume(value) })),
     unlock,
     effect,
     muted,

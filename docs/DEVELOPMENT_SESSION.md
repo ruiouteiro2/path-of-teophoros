@@ -259,3 +259,7 @@ Session remains active; the user's five-hour development period has not yet elap
 - Replaced overlapping numbered pins with one selected numbered landmark plus small dots for the others. A horizontal landmark strip above the map keeps selection close to the terrain preview.
 - Added explicit Olivewild exit and cabin south-doorway markers. Viewing another region now reports the player's actual region instead of claiming a missing red marker is present.
 - Verified selecting Workbench at 390x844 moves the numbered marker and preserves map visibility. No fast travel added. TypeScript and lint pass.
+
+### Exact sound-setting endpoints
+- Normalize changed and loaded volume levels to whole percentages. Repeated 10-point adjustments now reach exact zero/one instead of leaving floating-point residue and an incorrectly enabled endpoint button. Existing 16% footstep preference is preserved.
+- Added endpoint, clamping and malformed-value tests. All four audio tests, TypeScript and lint pass.
