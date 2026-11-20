@@ -215,6 +215,7 @@ export default function Game() {
           v?.progress ? { ...v, progress: refillJug(v.progress) } : v,
         );
         setMessage("Watering jug refilled · 6/6");
+        playEffect("water");
         return;
       }
       if (home === "priest" || home === "altar") {
@@ -776,8 +777,9 @@ export default function Game() {
                     : v,
                 );
                 if (action === "harvest") playEffect("pickup");
-                else if (action === "till") playEffect("stone");
-                else if (action !== "water") playEffect("fiber");
+                else if (action === "till") playEffect("soil");
+                else if (action === "water") playEffect("water");
+                else playEffect("fiber");
               }}
             />
           )}

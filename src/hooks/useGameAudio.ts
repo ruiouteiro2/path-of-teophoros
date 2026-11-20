@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { Point, Region } from "../game";
+import { footstepSurface, nextFootstep } from "../audioScene";
 export function useGameAudio(
   active: boolean,
   region: Region,
@@ -30,6 +31,12 @@ export function useGameAudio(
   );
   const travel = useAudioPlayer(require("../../assets/audio/foley/door.wav"));
   const coins = useAudioPlayer(require("../../assets/audio/foley/coins.wav"));
+  const soil = useAudioPlayer(
+    require("../../assets/audio/foley/soil-work.wav"),
+  );
+  const waterAction = useAudioPlayer(
+    require("../../assets/audio/foley/water-action.wav"),
+  );
   const grass0 = useAudioPlayer(
     require("../../assets/audio/foley/grass-0.wav"),
   );
@@ -108,6 +115,8 @@ export function useGameAudio(
   const ready = useRef(false),
     unlocked = useRef(false),
     lastStep = useRef(0);
+  const playbackEpoch = useRef(0),
+    lastVariant = useRef(0);
   useEffect(() => {
     setAudioModeAsync({
       allowsRecording: false,
@@ -167,6 +176,7 @@ export function useGameAudio(
     }
   }, [muted, musicOn, music, water, lake]);
   useEffect(() => {
+    playbackEpoch.current++;
     const on = active && foreground && !muted && unlocked.current;
     for (const p of [water, lake]) {
       if (on) p.play();
@@ -175,7 +185,17 @@ export function useGameAudio(
     if (on && musicOn) music.play();
     else music.pause();
     if (!on)
-      for (const p of [pickup, wood, stone, fiber, travel, coins, ...steps])
+      for (const p of [
+        pickup,
+        wood,
+        stone,
+        fiber,
+        travel,
+        coins,
+        soil,
+        waterAction,
+        ...steps,
+      ])
         p.pause();
   }, [
     active,
@@ -192,6 +212,8 @@ export function useGameAudio(
     fiber,
     travel,
     steps,
+    soil,
+    waterAction,
   ]);
   useEffect(() => {
     const d =
@@ -205,18 +227,54 @@ export function useGameAudio(
     lake.volume = region === "temple" ? proximity * mix.ambience * 0.65 : 0;
   }, [position.x, position.y, region, water, lake, mix.ambience]);
   const effect = useCallback(
-    (kind: "pickup" | "wood" | "stone" | "fiber" | "travel" | "coins") => {
-      if (muted || !foreground) return;
-      const p = { pickup, wood, stone, fiber, travel, coins }[kind];
+    (
+      kind:
+        | "pickup"
+        | "wood"
+        | "stone"
+        | "fiber"
+        | "travel"
+        | "coins"
+        | "soil"
+        | "water",
+    ) => {
+      if (muted || !foreground || !active) return;
+      const p = {
+        pickup,
+        wood,
+        stone,
+        fiber,
+        travel,
+        coins,
+        soil,
+        water: waterAction,
+      }[kind];
       p.volume = mix.effects;
+      const epoch = playbackEpoch.current;
       void p
         .seekTo(0)
-        .then(() => p.play())
+        .then(() => {
+          if (epoch === playbackEpoch.current) p.play();
+        })
         .catch(() => {});
     },
-    [muted, foreground, pickup, wood, stone, fiber, travel, coins, mix.effects],
+    [
+      muted,
+      foreground,
+      active,
+      pickup,
+      wood,
+      stone,
+      fiber,
+      travel,
+      coins,
+      soil,
+      waterAction,
+      mix.effects,
+    ],
   );
   const stride = Math.floor(distance / 32);
+  const surface = footstepSurface(region, position);
   useEffect(() => {
     if (
       moving &&
@@ -225,31 +283,25 @@ export function useGameAudio(
       foreground &&
       stride !== lastStep.current
     ) {
-      const stoneGround =
-        region === "temple" &&
-        Math.hypot(position.x - 1000, position.y - 670) < 210;
+      const variant = nextFootstep(lastVariant.current, stride);
+      lastVariant.current = variant;
       const step =
-        steps[
-          (region === "cabin" ? 8 : stoneGround ? 4 : 0) +
-            [0, 2, 1, 3][stride % 4]
-        ];
+        steps[(surface === "wood" ? 8 : surface === "stone" ? 4 : 0) + variant];
+      const epoch = playbackEpoch.current;
+      let cancelled = false;
       void step
         .seekTo(0)
-        .then(() => step.play())
+        .then(() => {
+          if (!cancelled && epoch === playbackEpoch.current) step.play();
+        })
         .catch(() => {});
+      lastStep.current = stride;
+      return () => {
+        cancelled = true;
+      };
     }
     lastStep.current = stride;
-  }, [
-    stride,
-    moving,
-    active,
-    muted,
-    foreground,
-    steps,
-    region,
-    position.x,
-    position.y,
-  ]);
+  }, [stride, moving, active, muted, foreground, steps, region, surface]);
   return {
     mix,
     setVolume: (channel: keyof typeof mix, value: number) =>

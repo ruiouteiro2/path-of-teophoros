@@ -113,3 +113,12 @@ Session remains active; the user's five-hour development period has not yet elap
 - 38 behavior tests pass, including garden reachability, water/energy/tool guards, save validation, crop growth, harvest capacity and trade. More scene inspection and final exports remain before checkpoint.
 - Soil review rejected the initial thick-furrow tiles: at gameplay scale they read as stacked boards. `garden-soil.png` (2 × 1, dry/wet) replaces cells 6–7 with flatter irregular earth. Crop stages inspected together beside the hero and Familiar. Well interaction confirmed jug 3 → 6.
 - Garden checkpoint: 38 tests, lint, typecheck, final web export and final Android/iOS exports passed. Five-hour goal remains active; next pass is sound overlap/foley and remaining presentation checks.
+
+### Footstep and interaction sound cleanup
+
+- Measured original grass/floor/stone clips: long quiet tails and small DC offsets. Updated reproducible preparation to remove tail offset, trim inaudible decay, add short onset/release ramps and constrain peaks. Steps now last 0.085–0.175 seconds with zero-valued endpoints. This is a signal/boundary check, not a claim of listening on a physical device.
+- Corrected ground classification: wooden bridge, lake dock and cabin use wood footsteps; marble courtyard uses stone, other outdoor ground uses earth/grass. Variation no longer cycles the same four samples in a fixed order, and consecutive samples cannot repeat.
+- Added soil scuff and water-action cues for tilling, watering and well refills; removed the incorrect mining-impact sound for tilling.
+- Pending seek/play callbacks are cancelled after movement stops or audio state changes, preventing a delayed footstep/effect from starting after mute/backgrounding.
+- Browser verified successful playback promises for music, stream, lakeshore and water-action files at the intended channel volumes. 40 behavior tests pass, including surface classification and sample variation; typecheck/lint pass.
+- Mute QA: well interaction while muted left playback count unchanged (8 to 8), with all probed media paused. Restored sound afterward. Web and Android/iOS bundle exports passed for this checkpoint.

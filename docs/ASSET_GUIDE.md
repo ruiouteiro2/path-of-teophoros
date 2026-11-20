@@ -130,3 +130,5 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 - Garden menus use the same game panels and inventory icons. Tools, seeds and crops share inventory/storage/trade. Garden save fields are optional for older saves; never replay the introduction or overwrite existing progress to add gardening.
 - Growth happens on sleep only when watered, once per night. Water uses a six-charge jug refilled at the well. Missing a watering delays growth. Harvesting a full stack must leave the mature plant intact.
 - Soil correction: render `garden-soil.png` (2 × 1 dry/wet), not cells 6–7 of `garden-items.png`. The older tiles looked like boards at gameplay scale. Soil is a flat ground layer with shallow furrows and irregular edges, never a raised wooden block.
+
+- Foley finish: remove measured DC offsets and inaudible tails, taper both ends to zero, and preserve the useful transient. Bridge, dock and cabin use wood; courtyard uses stone. Choose non-repeating variants without a fixed four-step loop. Cancel pending seek/play callbacks after mute, backgrounding or stopped movement. Gardening uses soil and water cues rather than mining impacts.
