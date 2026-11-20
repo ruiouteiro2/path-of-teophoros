@@ -436,8 +436,9 @@ export function GameMenu({
                           )
                           .join(" · ")}
                       </Text>
+                      {tab === "cook" && <Text>{items[r.result].description}</Text>}
                       <GameButton
-                        disabled={!enough}
+                        disabled={!enough || count(p.bag, r.result) >= 999}
                         onPress={() =>
                           transaction(
                             (q) => craft(q, id),
