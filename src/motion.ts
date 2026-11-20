@@ -17,6 +17,10 @@ export type MotionState = {
   moving: boolean;
   petMoving: boolean;
 };
+export function pauseMotion(state: MotionState): MotionState {
+  if (!state.moving && !state.petMoving && !state.velocity.x && !state.velocity.y) return state;
+  return { ...state, moving: false, petMoving: false, velocity: { x: 0, y: 0 } };
+}
 export function createMotion(region: Region, p: Point): MotionState {
   const pet = [
     { x: p.x - 24, y: p.y },

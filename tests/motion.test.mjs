@@ -1,11 +1,27 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createMotion, advance } from "../src/motion.ts";
+import { createMotion, advance, pauseMotion } from "../src/motion.ts";
 const run = (hz, input, seconds = 1) => {
   let s = createMotion("forest", { x: 900, y: 800 });
   for (let i = 0; i < hz * seconds; i++) s = advance(s, input, 1 / hz);
   return s;
 };
+test("pausing settles both actors without discarding their route or moving them", () => {
+  const walking = run(60, { x: 1, y: 0 }, 1.5);
+  assert(walking.moving && walking.petMoving);
+  const paused = pauseMotion(walking);
+  assert.equal(paused.moving, false);
+  assert.equal(paused.petMoving, false);
+  assert.deepEqual(paused.velocity, { x: 0, y: 0 });
+  assert.strictEqual(paused.position, walking.position);
+  assert.strictEqual(paused.pet, walking.pet);
+  assert.strictEqual(paused.trail, walking.trail);
+  assert.equal(paused.distance, walking.distance);
+  assert.equal(paused.petDistance, walking.petDistance);
+  assert.strictEqual(pauseMotion(paused), paused);
+  const resumed = advance(paused, { x: 1, y: 0 }, 1 / 60);
+  assert(Math.hypot(resumed.pet.x-paused.pet.x, resumed.pet.y-paused.pet.y) < 3);
+});
 test("motion is independent of refresh rate", () => {
   const a = run(30, { x: 1, y: 0 }),
     b = run(60, { x: 1, y: 0 });

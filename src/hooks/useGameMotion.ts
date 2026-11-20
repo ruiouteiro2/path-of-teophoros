@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState, Platform } from "react-native";
 import { Facing, Point, Save } from "../game";
-import { advance, createMotion, MotionState } from "../motion";
+import { advance, createMotion, pauseMotion, MotionState } from "../motion";
 export type Direction = "up" | "down" | "left" | "right";
 export function useGameMotion(
   save: Save | null,
@@ -65,6 +65,7 @@ export function useGameMotion(
           if (
             next.moving ||
             next.petMoving ||
+            previous.petMoving ||
             next.petPose !== previous.petPose ||
             wasMoving ||
             Math.hypot(
@@ -81,13 +82,9 @@ export function useGameMotion(
             checkpoint = time;
           }
           wasMoving = next.moving;
-        } else if (wasMoving) {
-          cfg.onCheckpoint(previous.position, previous.facing, previous.region);
-          engine.current = {
-            ...previous,
-            moving: false,
-            velocity: { x: 0, y: 0 },
-          };
+        } else if (wasMoving || previous.petMoving) {
+          if (wasMoving) cfg.onCheckpoint(previous.position, previous.facing, previous.region);
+          engine.current = pauseMotion(previous);
           setView(engine.current);
           wasMoving = false;
         }
