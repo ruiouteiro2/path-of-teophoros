@@ -161,3 +161,24 @@ test("hearth recipes consume harvests atomically and preserve ingredients at cap
   const empty = newProgression();
   assert.strictEqual(craft(empty, "bread"), empty);
 });
+
+test("either lake fish cooks with a garden onion into a persistent restorative meal", () => {
+  for (const [fish, recipe] of [["carp", "grilledCarp"], ["perch", "grilledPerch"]]) {
+    const fishOnly = addItem(newProgression(), fish, 1);
+    assert.strictEqual(craft(fishOnly, recipe), fishOnly);
+    const ingredients = addItem(fishOnly, "onion", 1);
+    const full = { ...ingredients, bag: { ...ingredients.bag, grilledFish: 999 } };
+    assert.strictEqual(craft(full, recipe), full);
+    const meal = craft(ingredients, recipe);
+    assert.equal(meal.bag[fish], undefined);
+    assert.equal(meal.bag.onion, undefined);
+    assert.equal(meal.bag.grilledFish, 1);
+    const restored = JSON.parse(JSON.stringify(meal));
+    assert(validProgression(restored));
+    const eaten = consume({ ...restored, energy: 20 }, "grilledFish");
+    assert.equal(eaten.energy, 75);
+    assert.equal(eaten.bag.grilledFish, undefined);
+    assert.equal(consume({ ...restored, energy: 80 }, "grilledFish").energy, 100);
+    assert.equal(ingredients.bag[fish], 1);
+  }
+});

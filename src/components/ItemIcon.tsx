@@ -16,6 +16,8 @@ export function ItemIcon({
     onion: 3,
     wateringJug: 5,
   } as const;
+  if (id === "grilledFish")
+    return <Image source={require("../../assets/world/grilled-fish.png")} style={{ width: size, height: size }} resizeMode="contain" />;
   if (id === "hoe")
     return (
       <Image
@@ -40,7 +42,7 @@ export function ItemIcon({
     wood: 0, stone: 1, fiber: 2, thyme: 3, olives: 4,
     bread: 5, tea: 6, carp: 7, perch: 8, reed: 9, torch: 10, rod: 11,
     money: 12, chest: 13, axe: 14, pickaxe: 15,
-  } satisfies Record<Exclude<ItemId, keyof typeof garden | "hoe"> |
+  } satisfies Record<Exclude<ItemId, keyof typeof garden | "hoe" | "grilledFish"> |
     "money" | "chest" | "axe" | "pickaxe", number>;
   const cell = cells[id as keyof typeof cells];
   return (

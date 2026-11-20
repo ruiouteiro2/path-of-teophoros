@@ -222,7 +222,8 @@ export function GameMenu({
               <Text style={ui.title}>Your hearth</Text>
               <Text>
                 Cook at the fireplace inside your cabin. One harvested barley
-                makes bread; two wild thyme make an infusion. Carry ingredients
+                makes bread; two wild thyme make an infusion. A carp or perch
+                with one onion makes grilled fish, restoring 55 energy. Carry ingredients
                 in your satchel, then eat or drink there to recover energy.
               </Text>
               <Text style={ui.title}>The western garden</Text>

@@ -26,6 +26,7 @@ export const itemIds = [
   "onion",
   "hoe",
   "wateringJug",
+  "grilledFish",
 ] as const;
 export type ItemId = (typeof itemIds)[number];
 export type Bag = Partial<Record<ItemId, number>>;
@@ -61,6 +62,12 @@ export const items: Record<
     energy?: number;
   }
 > = {
+  grilledFish: {
+    name: "Grilled lake fish",
+    description: "Lake fish with roasted onion, cooked at your hearth. Restores 55 energy.",
+    sell: 58,
+    energy: 55,
+  },
   barleySeed: {
     name: "Barley seed",
     description: "Plant in tilled soil. Grows after 3 watered nights.",
@@ -290,6 +297,18 @@ export function consume(p: Progression, id: ItemId): Progression {
   };
 }
 export const recipes = {
+  grilledCarp: {
+    name: "Grilled carp with onion",
+    station: "cook",
+    cost: { carp: 1, onion: 1 },
+    result: "grilledFish",
+  },
+  grilledPerch: {
+    name: "Grilled perch with onion",
+    station: "cook",
+    cost: { perch: 1, onion: 1 },
+    result: "grilledFish",
+  },
   torch: {
     name: "Olivewood torch",
     station: "craft",

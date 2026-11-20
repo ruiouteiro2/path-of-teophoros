@@ -298,3 +298,10 @@ Session remains active; the user's five-hour development period has not yet elap
 - Rod recipe now consumes two reeds, one wood and two fiber. Existing rods remain valid, and the shop still offers a rod. Pickup text uses the actual inventory display name.
 - Tests cover collection once, serialization, invalid reed IDs, correct material counts, missing-reed crafting rejection, atomic recipe consumption and flood-fill reachability from the sanctuary spawn. All 57 tests, TypeScript and lint pass.
 - Inspected in the live desktop map. Picking up temple-reed-0 added exactly one reed and persisted across reload; original QA save/backup restored. No new raster art or native API introduced.
+
+### Lake-to-hearth meal
+- Added grilled lake fish, restoring 55 energy, with carp/onion and perch/onion recipe variants. This connects fishing and garden harvests to recovery at home. Existing inventory saves remain valid; the new item is optional until crafted.
+- Added original `assets/world/grilled-fish.png` via built-in image generation, referenced against `items.png`. Source retained at `C:\Users\Rui\.codex\generated_images\01a1f5f4-26a2-7a00-ae45-8dbb5e9f3179\exec-9a720587-d210-4dc6-92b6-365a9744f689.png`.
+- Prompt: one transparent original ancient Greek pixel-art inventory icon, golden grilled whole freshwater fish on shallow terracotta plate with two grilled red-onion wedges; three-quarter overhead view matching bread/tea icons, upper-left light, dark stepped outline, broad pixel clusters and limited ramps, roughly 48x48 effective detail, no text/grid/utensils, readable at 42 logical pixels.
+- Live hearth test consumed one carp and one onion into one meal; eating through Satchel removed it and increased energy20 to75. Inspected 1100x760 and390x844 cooking panels. Original QA save/backup restored.
+- Added tests for both fish variants, missing onion, full result stack, save serialization, ingredient preservation and energy cap. All58 tests, TypeScript and lint pass.

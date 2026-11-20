@@ -24,7 +24,7 @@ Node 24 is recommended for the built-in TypeScript test runner. Mobile developme
 - Walk into the cabin doorway to enter. Use its chest for storage, wardrobe for appearance, and bed to advance the day and restore energy.
 - Gather fallen reed bundles along the lake's north bank. Craft a rod at the outdoor workbench with two reeds, one wood and two fiber, or buy one at the camp. At the lake dock, cast, hook a bite, then hold/release to keep the fish inside the green catch bar.
 - Tend the six garden plots in the western grove: till, plant barley or onions, water, then sleep. Refill the six-use jug at the well. Harvest and sell crops at the camp.
-- Cook harvested barley into bread or two thyme into infusion at the cabin hearth. Ingredients must be in your satchel.
+- Cook harvested barley into bread, two thyme into infusion, or a carp/perch with one onion into grilled lake fish at the cabin hearth. The fish meal restores 55 energy. Ingredients must be in your satchel.
 - Trade gathered supplies for drachmae at the camp. Bring three wood, three stone and two fiber to the High Priest to secure the altar and earn 120 drachmae.
 - Open **Inventory** (**I** / **Escape**) for the satchel, quest journal, Familiar naming, appearance and separate music/ambience/effect/footstep controls.
 - Progress saves on this device. A new journey asks before replacing the local save.
