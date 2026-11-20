@@ -218,3 +218,9 @@ Session remains active; the user's five-hour development period has not yet elap
 - Outdoor altar tracker shows current carried wood/stone/fiber against the required amounts. The tracker opens the journal directly, including the cabin's home panel.
 - Priest's completed-altar conversation explicitly acknowledges the 120-drachma reward inside the dialogue, with garden/hearth/lake follow-up guidance. It does not grant another reward.
 - Verified the quest-panel button opens the journal at phone size with the completed quest and home instructions. TypeScript and lint pass.
+
+### Fishing control and landscape pass
+- Fishing meter scales down with viewport height so the fish, reel control and cancel button fit together at 844x390. Inspected active reeling screenshot after resizing; portrait retains the larger meter.
+- Keyboard repeat cannot hook a bite automatically from a Space key held while waiting. Window blur releases the hold state.
+- Verified missed-bite return state and active reeling layout. A temporary DOM observer activated the displayed Hook button for the layout check because browser inspection overhead exceeds the bite window; it was disconnected and deleted. QA save and backup restored.
+- Two fishing behavior tests, TypeScript and lint pass. This check does not claim a manual full catch through the UI.

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   AppState,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import { GamePanel, GameText as Text, GameButton, ui } from "./GameUI";
 import { ItemIcon } from "./ItemIcon";
@@ -20,6 +21,8 @@ export function Fishing({
   onCatch: (fish: ItemId) => void;
   onClose: () => void;
 }) {
+  const { height } = useWindowDimensions();
+  const trackHeight = Math.max(90, Math.min(260, height - 300));
   const [stage, setStage] = useState<
     "waiting" | "bite" | "reeling" | "caught" | "escaped"
   >("waiting");
@@ -99,18 +102,23 @@ export function Fishing({
       }
       if (e.code === "Space") {
         e.preventDefault();
-        if (stage === "bite") setStage("reeling");
-        holding.current = true;
+        if (stage === "bite" && !e.repeat) {
+          setStage("reeling");
+          holding.current = true;
+        } else if (stage === "reeling") holding.current = true;
       }
     };
     const up = (e: KeyboardEvent) => {
       if (e.code === "Space") holding.current = false;
     };
+    const release = () => { holding.current = false; };
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
+    window.addEventListener("blur", release);
     return () => {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
+      window.removeEventListener("blur", release);
     };
   }, [stage, onClose]);
   return (
@@ -154,26 +162,26 @@ export function Fishing({
                   justifyContent: "center",
                 }}
               >
-                <View style={f.track}>
+                <View style={[f.track, { height: trackHeight + 6 }]}>
                   <View
                     testID="fishing-catch-bar"
                     style={[
                       f.catchBar,
-                      { top: (reel.bar - 0.145) * 260, height: 0.29 * 260 },
+                      { top: (reel.bar - 0.145) * trackHeight, height: 0.29 * trackHeight },
                     ]}
                   />
                   <View
                     testID="fishing-fish"
                     style={{
                       position: "absolute",
-                      top: reel.fish * 260 - 18,
+                      top: reel.fish * trackHeight - 18,
                       left: 5,
                     }}
                   >
                     <ItemIcon id={species} size={40} />
                   </View>
                 </View>
-                <View style={f.progressTrack}>
+                <View style={[f.progressTrack, { height: trackHeight + 6 }]}>
                   <View
                     style={{
                       position: "absolute",
