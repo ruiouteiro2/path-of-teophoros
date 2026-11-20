@@ -582,20 +582,21 @@ export default function Game() {
           </View>
           <View
             style={[
-              s.hud,
+              s.topHud,
               inStory && { display: "none" },
               { left: compact ? 12 : 32, right: compact ? 12 : 32 },
             ]}
           >
-            <View style={s.location}>
-              <Text style={s.eyebrow}>PATH OF TEOPHOROS</Text>
+          <View style={s.hud}>
+            <View style={[s.location, width < 380 && { padding: 10 }]}>
+              {width >= 380 && <Text style={s.eyebrow}>PATH OF TEOPHOROS</Text>}
               <Text style={[s.locationTitle, compact && { fontSize: 19 }]}>
                 {regions[save.region].name}
               </Text>
               <Text style={s.small}>
                 {shortScreen
                   ? `Day ${save.progress?.day ?? 1} · Energy ${save.progress?.energy ?? 100}`
-                  : `Spring · Day ${save.progress?.day ?? 1} ☀`}
+                  : width < 380 ? `Day ${save.progress?.day ?? 1} ☀` : `Spring · Day ${save.progress?.day ?? 1} ☀`}
               </Text>
             </View>
             <Pressable
@@ -620,7 +621,7 @@ export default function Game() {
             <Pressable accessibilityRole="button" accessibilityLabel="Open quest journal"
               disabled={!exploring} accessibilityState={{ disabled: !exploring }}
               onPress={() => { if (travelLock.current || !exploring) return; stop(); setMenuTab("journal"); setJournal(true); }}
-              style={[s.quest, { left: compact ? 12 : 32 }]}>
+              style={s.quest}>
               <Text style={s.eyebrow}>
                 {save.region === "cabin"
                   ? "HEARTH & HOME"
@@ -628,18 +629,19 @@ export default function Game() {
                     ? "A SANCTUARY REBORN"
                     : "RESTORE THE OLD ALTAR"}
               </Text>
-              <Text style={s.questText}>
+              {width >= 380 && <Text style={s.questText}>
                 {save.region === "cabin"
                   ? "Rest · Cook · Store supplies"
                   : save.progress?.restoredAltar
                     ? "✓ The old altar is restored"
                     : `Wood ${Math.min(3, count(save.progress?.bag ?? {}, "wood"))}/3 · Stone ${Math.min(3, count(save.progress?.bag ?? {}, "stone"))}/3 · Fiber ${Math.min(2, count(save.progress?.bag ?? {}, "fiber"))}/2`}
-              </Text>
+              </Text>}
               <Text style={s.questText}>
                 Energy {save.progress?.energy ?? 100}/100
               </Text>
             </Pressable>
           )}
+          </View>
           <View
             style={[
               s.bottomHud,
@@ -1304,9 +1306,12 @@ const s = StyleSheet.create({
     borderRadius: 0,
   },
   game: { flex: 1, overflow: "hidden", backgroundColor: "#7caa77" },
-  hud: {
+  topHud: {
     position: "absolute",
     top: 12,
+    gap: 8,
+  },
+  hud: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
@@ -1329,8 +1334,8 @@ const s = StyleSheet.create({
   },
   journalButton: { backgroundColor: "#315c46", padding: 15, borderRadius: 0 },
   quest: {
-    position: "absolute",
-    top: 120,
+    alignSelf: "flex-start",
+    maxWidth: "100%",
     backgroundColor: "#f5d898f5",
     borderWidth: 3,
     borderColor: "#9b6631",

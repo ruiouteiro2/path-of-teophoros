@@ -19,6 +19,7 @@ export function useGameMotion(
     if (!active) keys.current.clear();
   }, [save, active, session, onCheckpoint]);
   const press = useCallback((direction: Direction) => {
+    if (!config.current.active) return;
     keys.current.add(direction);
   }, []);
   const release = useCallback((direction: Direction) => {
@@ -111,6 +112,8 @@ export function useGameMotion(
       d: "right",
     };
     const down = (e: KeyboardEvent) => {
+      // Browser/system shortcuts must never become movement input.
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
       const d = map[e.key] || map[e.key.toLowerCase()];
       if (d) {
         e.preventDefault();

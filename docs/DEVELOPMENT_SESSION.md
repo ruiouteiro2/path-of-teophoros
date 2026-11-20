@@ -351,3 +351,9 @@ Session remains active; the user's five-hour development period has not yet elap
 - Day6: till/plant/water consumed one barley seed,6 energy and1 jug charge. First sleep produced age1 on day7 and restored100 energy. A dry sleep produced day8 with age still1. Two subsequent watered sleeps produced age2 on day9 and mature age3 on day10; jug charges fell6 to3 in total.
 - Harvest added exactly one barley, reset the plot to tilled/empty/age0 and removed the harvest action. Reload preserved barley1 and the empty plot, preventing another harvest award from the same crop.
 - Restored the original QA primary and backup while on title and removed the garden fixture backup key. No production state or garden logic was changed by this verification pass.
+
+### Narrow-screen HUD overlap and input guard
+- Live390x844 inspection exposed the fixed-top quest panel overlapping the region/day panel when its title wrapped. Replaced the fixed quest offset with a flowing top HUD stack and8-unit spacing.
+- At320x568, the full stack obscured the centered actor. The smallest layout now omits the repeated game brand and detailed quest progress, while retaining region, day, quest title and energy. Detailed progress remains in the journal. Screenshots confirm a visible character and separate controls at320x568,390x844 and844x390.
+- Movement now rejects presses while inactive and ignores Ctrl/Meta/Alt keyboard chords. Runtime cancelable-event checks confirmed modified W was not prevented, while ordinary W remained handled. Keyup still releases held movement.
+- Consulted Expo58 View documentation redirect to React Native0.88 View. TypeScript and lint pass. No saved-data changes.
