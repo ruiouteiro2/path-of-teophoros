@@ -188,3 +188,6 @@ Session remains active; the user's five-hour development period has not yet elap
 ### Previous-save recovery
 - Added serialized previous-valid-save rotation using the existing storage adapter. Loading prefers valid primary data, then recovers the backup if primary is absent/corrupt. Corrupt primary data never replaces a valid backup; invalid new state is rejected. Existing outer write queue still serializes writes.
 - Three storage tests cover rotation/recovery, failed primary writes, invalid new state and empty versus corrupt storage. Typecheck/lint pass. Device-local backup only; runtime corruption/recovery UI check remains next.
+
+### Recovery runtime verification
+- Corrupted only the isolated QA primary save with a valid backup retained. Reload recovered Alexios, day 6, 236 drachmae and cabin location; repaired primary data exactly matched the pre-test save. Found transient recovery toast expired on title; replaced it with a persistent load notice beside Continue, cleared when starting/continuing. Second corruption test confirmed the notice is present after loading. Typecheck/lint pass.

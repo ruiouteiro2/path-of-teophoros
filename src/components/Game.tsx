@@ -107,6 +107,7 @@ export default function Game() {
     [message, setMessage] = useState(""),
     [storageError, setStorageError] = useState(false),
     [replacing, setReplacing] = useState(false);
+  const [loadNotice, setLoadNotice] = useState("");
   const queue = useRef(Promise.resolve());
   const inStory = !!save?.progress && save.progress.story !== "complete";
   const [session, setSession] = useState(0),
@@ -154,8 +155,8 @@ export default function Game() {
     readSavedJourney(AsyncStorage)
       .then(({ save: stored, recovered, corrupt }) => {
         if (stored) setSave(stored);
-        if (recovered) setMessage("Your previous save was recovered. Continue your journey.");
-        else if (corrupt) setMessage("The saved journey could not be read. You can begin a new journey.");
+        if (recovered) setLoadNotice("Your previous save was recovered. Continue your journey.");
+        else if (corrupt) setLoadNotice("The saved journey could not be read. You can begin a new journey.");
       })
       .catch(() => setStorageError(true))
       .finally(() => setLoaded(true));
@@ -381,6 +382,7 @@ export default function Game() {
   ]);
   function start() {
     if (!name.trim() || !petName.trim()) return;
+    setLoadNotice("");
     setSession((v) => v + 1);
     setSave({
       name: name.trim(),
@@ -908,12 +910,14 @@ export default function Game() {
             <Text style={s.eyebrow}>❖ CREATE YOUR WANDERER</Text>
             <Text style={s.version}>H E L L A S</Text>
           </View>
+          {!!loadNotice && <Text style={s.small}>{loadNotice}</Text>}
           {save && (
             <View style={s.continue}>
               <Text style={s.small}>Welcome back, {save.name}.</Text>
               <Button
                 secondary
                 onPress={() => {
+                  setLoadNotice("");
                   audio.unlock();
                   setPlaying(true);
                 }}
