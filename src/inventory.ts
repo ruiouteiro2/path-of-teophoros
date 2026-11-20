@@ -1,7 +1,7 @@
 import type { Point, Region, Save } from "./game.ts";
 import { walkable, regions, resources } from "./game.ts";
 import { addItem } from "./progression.ts";
-import { terrainArea } from "./worldLayout.ts";
+import { terrainArea, homeLocations } from "./worldLayout.ts";
 import { gardenPlots } from "./garden.ts";
 export type Material = "wood" | "stone" | "fiber";
 export type Drop = Point & { id: string; kind: Material };
@@ -37,12 +37,13 @@ export function dropsFor(seed: number, region: Region): Drop[] {
     });
   }
   // Keep the original generation and IDs stable for old saves. Only relocate
-  // materials hidden beneath new garden plots or corrected solid footprints.
+  // materials hidden beneath garden plots, home interactions or solid footprints.
   for (const drop of result) {
     const overlaps = (p: Point) =>
       !walkable(p, region) ||
       (region === "temple" &&
-        gardenPlots.some((g) => Math.hypot(p.x - g.x, p.y - g.y) < 50));
+        (gardenPlots.some((g) => Math.hypot(p.x - g.x, p.y - g.y) < 50) ||
+          Object.values(homeLocations).some((h) => Math.hypot(p.x - h.x, p.y - h.y) < 70)));
     if (!overlaps(drop)) continue;
     let placed = false;
     for (let radius = 60; radius <= 360 && !placed; radius += 30)

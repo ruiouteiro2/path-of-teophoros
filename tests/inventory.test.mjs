@@ -10,6 +10,7 @@ import { validSave, walkable } from "../src/game.ts";
 import { defaultAppearance } from "../src/appearance.ts";
 import { newProgression } from "../src/progression.ts";
 import { gardenPlots } from "../src/garden.ts";
+import { nearestHome } from "../src/worldLayout.ts";
 const fixture = () => ({
   name: "Test",
   petName: "Argos",
@@ -36,7 +37,7 @@ test("full stacks leave ground drops available", () => {
 });
 test("material layout is deterministic, varied, spaced and traversable", () => {
   for (const region of ["forest", "temple"])
-    for (const seed of [0, 1234, 4294967295]) {
+    for (const seed of [0, 1234, 3055056343, 4294967295]) {
       const drops = dropsFor(seed, region);
       assert.equal(drops.length, 60);
       assert.deepEqual(drops, dropsFor(seed, region));
@@ -45,6 +46,7 @@ test("material layout is deterministic, varied, spaced and traversable", () => {
         assert.equal(drops.filter((d) => d.kind === kind).length, 20);
       for (const d of drops) {
         assert(walkable(d, region));
+        assert.equal(nearestHome(d, region), undefined, `${d.id} overlaps a home interaction`);
         if (region === "temple")
           assert(
             gardenPlots.every((p) => Math.hypot(p.x - d.x, p.y - d.y) >= 50),
