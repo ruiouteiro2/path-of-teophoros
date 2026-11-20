@@ -1,12 +1,14 @@
 import React, { memo } from 'react';
 import { View } from 'react-native';
 import Svg, { Defs, ClipPath, Path, Image as SvgImage } from 'react-native-svg';
-import { forestTrees, forestImagePoint, forestImageScale } from '../terrainDepth';
+import { forestTrees, templeTrees, forestImagePoint, forestImageScale } from '../terrainDepth';
 
-export const TerrainForeground = memo(function TerrainForeground({ scale, ox, oy }: {
-  scale: number; ox: number; oy: number;
+export const TerrainForeground = memo(function TerrainForeground({ region, scale, ox, oy }: {
+  region: 'forest' | 'temple'; scale: number; ox: number; oy: number;
 }) {
-  return <>{forestTrees.map(tree => {
+  const trees = region === 'forest' ? forestTrees : templeTrees;
+  const source = region === 'forest' ? require('../../assets/world/olivewild-v2.png') : require('../../assets/world/sanctuary-v5.png');
+  return <>{trees.map(tree => {
     const point = forestImagePoint(tree.x, tree.y);
     const foot = forestImagePoint(tree.footX, tree.footY);
     return <View key={tree.id} pointerEvents="none" style={{ position: 'absolute',
@@ -16,7 +18,7 @@ export const TerrainForeground = memo(function TerrainForeground({ scale, ox, oy
     }}>
       <Svg width="100%" height="100%" viewBox={`${tree.x} ${tree.y} ${tree.width} ${tree.height}`}>
         <Defs><ClipPath id={`terrain-${tree.id}`}><Path d={tree.path} /></ClipPath></Defs>
-        <SvgImage href={require('../../assets/world/olivewild-v2.png')} x={0} y={0} width={1536} height={1024} clipPath={`url(#terrain-${tree.id})`} />
+            <SvgImage href={source} x={0} y={0} width={1536} height={1024} clipPath={`url(#terrain-${tree.id})`} />
       </Svg>
     </View>;
   })}</>;

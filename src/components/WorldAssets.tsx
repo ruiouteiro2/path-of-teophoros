@@ -355,7 +355,7 @@ export function World({
       )}
       <WorldPickups region={region} seed={seed} pickedDrops={pickedDrops}
         gathered={gathered} scale={scale} ox={ox} oy={oy} />
-      {region === "forest" && <TerrainForeground scale={scale} ox={ox} oy={oy} />}
+      {region !== "cabin" && <TerrainForeground region={region} scale={scale} ox={ox} oy={oy} />}
       {region !== "cabin" && (
         <View style={anchor(gate, 43, 0.84)}>
           <Sprite name="sign" size={43 * scale} flip={region === "temple"} />

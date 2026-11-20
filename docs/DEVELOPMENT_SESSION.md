@@ -357,3 +357,9 @@ Session remains active; the user's five-hour development period has not yet elap
 - At320x568, the full stack obscured the centered actor. The smallest layout now omits the repeated game brand and detailed quest progress, while retaining region, day, quest title and energy. Detailed progress remains in the journal. Screenshots confirm a visible character and separate controls at320x568,390x844 and844x390.
 - Movement now rejects presses while inactive and ignores Ctrl/Meta/Alt keyboard chords. Runtime cancelable-event checks confirmed modified W was not prevented, while ordinary W remained handled. Keyup still releases held movement.
 - Consulted Expo58 View documentation redirect to React Native0.88 View. TypeScript and lint pass. No saved-data changes.
+
+### Sanctuary harvest-tree depth
+- Inspected v5 terrain and found three of the four harvest-tree trunks inside traversable ground. Added four original-pixel foreground masks with solid trunk footprints; the fourth trunk was already outside the navigation area. Harvest IDs and node positions remain unchanged, preserving seeded material placement and collected resources.
+- Live garden-olive checks: at558,866 the canopy occludes the character; at544,900 the character and Familiar draw in front of the trunk. Initial behind-tree test point544,854 was outside the navigation polygon and correctly migrated to spawn; the corrected test used a verified walkable point.
+- Added sanctuary trunk/approach assertions. All62 tests pass, including flood-fill reachability for every home activity, harvest and exit; TypeScript and lint pass. QA save/backup restored while paused and fixture key removed.
+- Before this tree pass, current web and Android/iOS exports passed for27c16eb with93 native assets. Tree changes require the next export verification; exports are not physical-device QA.

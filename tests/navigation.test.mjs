@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { walkable, regions, resources } from "../src/game.ts";
 import { homeLocations, cabinLocations } from "../src/worldLayout.ts";
 import { gardenPlots } from "../src/garden.ts";
-import { forestTrees, forestImagePoint } from "../src/terrainDepth.ts";
+import { forestTrees, templeTrees, forestImagePoint } from "../src/terrainDepth.ts";
 import { exitTriggered, lakeReeds } from "../src/inventory.ts";
 
 // Flood the actual navigation geometry, rather than only testing target points.
@@ -91,4 +91,13 @@ test("path-side forest trunks are solid while the nearby route stays open", () =
   const pine = forestImagePoint(418, 829);
   assert.equal(walkable({ x: pine.x + 24, y: pine.y }, "forest"), true);
   assert.equal(walkable({ x: pine.x - 24, y: pine.y + 24 }, "forest"), true);
+});
+
+test("sanctuary harvest trunks stay solid with room to approach and gather", () => {
+  for (const tree of templeTrees)
+    assert.equal(walkable(forestImagePoint(tree.footX, tree.footY), "temple"), false, tree.id);
+  // The garden-side trunk formerly sat inside the traversable ground polygon.
+  // Both sides and the southern approach remain usable after adding its footprint.
+  for (const p of [{ x: 526, y: 866 }, { x: 558, y: 866 }, { x: 544, y: 900 }])
+    assert(walkable(p, "temple"));
 });

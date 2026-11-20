@@ -1,5 +1,5 @@
 /** Authored navigation in normalized 1000×667 terrain coordinates. Gameplay is twice this size. */
-import { forestTrees, forestImagePoint } from './terrainDepth.ts';
+import { forestTrees, templeTrees, forestImagePoint } from './terrainDepth.ts';
 export type XY = { x: number; y: number };
 export const WORLD_SCALE = 2;
 export const toWorld = (x: number, y: number): XY => ({
@@ -275,6 +275,10 @@ export function terrainArea(p: XY, region: "forest" | "temple" | "cabin") {
 // Keep terrainArea stable for seeded drop generation in existing saves.
 export function terrainWalkable(p: XY, region: "forest" | "temple" | "cabin") {
   if (!terrainArea(p, region)) return false;
+  if (region === "temple" && templeTrees.some(tree => {
+    const foot = forestImagePoint(tree.footX, tree.footY);
+    return ((p.x - foot.x) / 14) ** 2 + ((p.y - foot.y + 6) / 10) ** 2 < 1;
+  })) return false;
   if (region === "forest") {
     if (forestTrees.some(tree => {
       const foot = forestImagePoint(tree.footX, tree.footY);
