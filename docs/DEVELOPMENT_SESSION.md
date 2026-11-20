@@ -429,3 +429,10 @@ Session remains active; the user's five-hour development period has not yet elap
 - Verified the calling, Familiar and long supplies pages in the corrected exported build at568×320; portrait, title, scrollable text and action remain inside the viewport. The test resumed story stages in a saved fixture, so it verifies dialogue layout and advancement rather than normal opening actor placement or initial reward amounts (separately tested earlier).
 - Restored primary and backup from paused dialogue and removed `teophoros.qa.landscapeStory`. Typecheck, lint and web export passed. The active work timer has reached five hours; outstanding artwork feedback still prevents declaring the overall goal complete.
 - Final Android/iOS export after the dialogue correction completed with exit0, 95 assets and two2.9MB Hermes bundles.
+
+## Original architecture texture recovery
+
+- Compared the original temple image and sanctuary revisions. The old full temple map has incompatible layout, while sanctuary-v2 retains the current façade/steps at the same source coordinates. Added a bounded v2 façade silhouette over the v5 base through the shared Terrain renderer, alongside the earlier floor repair. No raster files or navigation coordinates changed.
+- Inspected at1100×760 with a temporary courtyard position: the restored stone texture is sharper; entrance, steps, priest and altar remain aligned. The patch excludes the changed cabin and lower grove/lake. Wider terrain texture remains subject to review; this is not a declaration that the entire map matches the target style.
+- Typecheck, lint and web export passed (82 assets). Restored both original QA save slots and removed `teophoros.qa.architecture` while menu-paused. Additional original-image decoding is a cost of these layers; native performance still needs device measurement.
+- Android/iOS export after architecture recovery completed with exit0: 96 assets, two2.9MB Hermes bundles.

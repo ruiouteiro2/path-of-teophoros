@@ -30,7 +30,7 @@ figcaption{margin:10px 0;color:#d2c5a7}figure{margin:0;min-width:0}.notice{borde
 </style>
 <main><h1>Sanctuary map — preserved versions</h1>
 <p>Compare the same area and scale. Look at the tree edges, path texture and size of the temple motif in the floor mosaic.</p>
-<p class="notice">Preserved source images only. The live game now uses version 5 with the earlier version 4 floor disc layered over it. This page shows the unmodified originals and does not change terrain or saved journeys.</p>
+<p class="notice">Preserved source images only. The live game uses version 5 with the version 4 floor disc and original version 2 temple façade layered over it. This page shows the unmodified originals and does not change terrain or saved journeys.</p>
 <div class="controls"><button id="whole" aria-pressed="true">Whole map</button><button id="detail" aria-pressed="false">Courtyard detail</button></div>
 <div class="pair" id="pair">
 <figure><label>Earlier version <select id="earlier" aria-label="Earlier map version"><option value="2">v2 — earlier texture</option><option value="3">v3 — cabin, grove and lake</option><option value="4" selected>v4 — lake without painted fish</option></select></label><div class="frame"><img id="before" src="map-review/sanctuary-v4.png" alt="Earlier sanctuary map"></div><figcaption id="caption">Version 4, before the final floor-mosaic edit.</figcaption></figure>

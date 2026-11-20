@@ -9,3 +9,6 @@ export const terrainAssets = {
 
 // Only the ruined floor disc is sampled from this preserved earlier revision.
 export const sanctuaryFloorSource = require('../assets/world/sanctuary-v4.png');
+
+// Original sharp architecture; only unchanged sanctuary structures are sampled.
+export const sanctuaryArchitectureSource = require('../assets/world/sanctuary-v2.png');

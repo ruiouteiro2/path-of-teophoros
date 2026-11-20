@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Image, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { Defs, ClipPath, Path, Image as SvgImage } from 'react-native-svg';
-import { terrainAssets, sanctuaryFloorSource } from '../terrainAssets';
+import { terrainAssets, sanctuaryFloorSource, sanctuaryArchitectureSource } from '../terrainAssets';
 import type { Region } from '../game';
 
 /** The earlier floor is reused at its exact source scale; no terrain is regenerated. */
@@ -13,9 +13,13 @@ export const Terrain = memo(function Terrain({ region, style, resizeMode = 'cove
       style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} />
     {region === 'temple' && <Svg width="100%" height="100%" style={StyleSheet.absoluteFill}
       viewBox="0 0 1536 1024" preserveAspectRatio={resizeMode === 'stretch' ? 'none' : 'xMidYMid slice'}>
-      <Defs><ClipPath id="sanctuary-floor-repair"><Path
+      <Defs><ClipPath id="sanctuary-architecture-repair"><Path
+        d="M588 70 L699 48 L781 52 L845 77 L927 106 L954 175 L982 241 L986 355 L955 369 L525 369 L493 340 L501 257 L526 183 L548 114 Z" />
+      </ClipPath><ClipPath id="sanctuary-floor-repair"><Path
         d="M744 387 C821 387 884 443 884 512 C884 581 821 637 744 637 C667 637 604 581 604 512 C604 443 667 387 744 387 Z" />
       </ClipPath></Defs>
+      <SvgImage href={sanctuaryArchitectureSource} x={0} y={0} width={1536} height={1024}
+        clipPath="url(#sanctuary-architecture-repair)" />
       <SvgImage href={sanctuaryFloorSource} x={0} y={0} width={1536} height={1024}
         clipPath="url(#sanctuary-floor-repair)" />
     </Svg>}

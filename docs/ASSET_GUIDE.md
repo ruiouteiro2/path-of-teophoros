@@ -14,6 +14,8 @@ Whole-map regeneration has now caused an observed regression: successive sanctua
 
 `Terrain.tsx` now reuses the preserved v4 floor disc within source bounds604..884,387..637 over the v5 base, at unchanged source scale. This restores the earlier smaller motif without regenerating scenery. World, creation preview and map menu share this renderer. The v4 disc already has missing slabs and interrupted borders and stays ruined after altar restoration. The base map's broader softness remains under review.
 
+The unchanged ruined-temple façade also reuses its original v2 pixels through a bounded silhouette in `Terrain.tsx`. The clip stops above the courtyard and excludes the cabin and surrounding grove. Keep source scale and step/entrance alignment unchanged. These are runtime crops of preserved artwork, not newly generated replacement scenes.
+
 ### Reference hierarchy
 
 1. Terrain and trees: `assets/world/olivewild-v2.png` and `sanctuary-v5.png`. Match their chunky leaf groups, stepped silhouettes, warm earth, and broad shadow masses. The old `olivewild.png`, `temple.png`, and `sanctuary-v2.png` are superseded terrain drafts.
