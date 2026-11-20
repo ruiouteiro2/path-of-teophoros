@@ -191,3 +191,8 @@ Session remains active; the user's five-hour development period has not yet elap
 
 ### Recovery runtime verification
 - Corrupted only the isolated QA primary save with a valid backup retained. Reload recovered Alexios, day 6, 236 drachmae and cabin location; repaired primary data exactly matched the pre-test save. Found transient recovery toast expired on title; replaced it with a persistent load notice beside Continue, cleared when starting/continuing. Second corruption test confirmed the notice is present after loading. Typecheck/lint pass.
+
+### Startup graphics and regression checkpoint
+- Cache the title, three terrain scenes, human variants/recovery, priest portrait/NPCs and Familiar atlases before opening the title. Expo 58 Asset.loadAsync; failed requests show a retry button. Audio stays lazy-loaded.
+- Browser reload reached Continue through the loading gate. This verifies startup completion, not physical-device image decoding or a simulated network-failure retry.
+- All 51 behavior tests pass; TypeScript and Expo lint pass. Fresh web, Android and iOS exports succeed after the save-recovery, shoreline audio and Familiar corner-following changes. Native exports are not signed builds or physical-device tests.
