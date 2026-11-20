@@ -443,3 +443,11 @@ Session remains active; the user's five-hour development period has not yet elap
 - Inspected the full navigation overview at1100×1000 and the camp/path at1100×760. The first hard boundary showed a straight texture seam across the path. Added a30-source-pixel ground blend from y477 to507; reinspection showed continuous ground while preserving sharp camp and foliage detail. No PNG, collision, pickup placement or saved journey was changed.
 - Restored the original QA primary/backup from the paused menu and removed `teophoros.qa.upperGrove`. Typecheck and lint passed. This selectively recovers the old pixel detail without reverting the expanded home map.
 - Combined web/Android/iOS export completed with exit0 into dist: 178 platform assets, six web bundles and one2.9MB Hermes bundle per native platform.
+
+## User clarification: artwork and cropped view
+
+- The delayed answer confirmed **both** artwork/object scale and zoom/cropping were concerns. Earlier artwork repairs did not address the camera. Found outdoor scale `max(0.85,width/1150,height/760)`, which enlarged the world as desktop width increased and still displayed only about1150 of2000 world units.
+- Added pure `frameWorld` geometry: fit large viewports, cap enlargement at1×, keep a0.65× readability floor on small screens, center axes that fit and clamp axes that overflow. Gameplay measures its own safe-area layout instead of using full-window dimensions for the camera. Cabin uses the same rules. Spare space has a dark forest frame.
+- Verified the actual1852×969 desktop scene in BrowserOS: the complete outdoor map is visible and centered. BrowserOS transport then disconnected (port9010 no longer listening) before a phone screenshot could be obtained. Phone/cabin/story framing have new numerical tests, but the new phone camera has not been visually verified. No QA save fixture was introduced.
+- Full suite66/66 passed, TypeScript and ESLint passed. The earlier art repairs remain unchanged. This is a follow-up to the completed timed pass, not a claim that the earlier camera was already correct.
+- Combined web/Android/iOS export after the camera correction completed with exit0 (178 platform assets;2.9MB Hermes bundles).

@@ -30,6 +30,7 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 ## 2. Camera, scale, and silhouettes
 
 - Outdoor world coordinates: 2000 × 1334. Terrain authoring/navigation uses normalized 1000 × 667 coordinates at scale 2. Cabin coordinates: 900 × 600. Ground is viewed from above at a consistent three-quarter RPG angle. The title backdrop may show a horizon; gameplay may not.
+- `camera.ts` fits the world to the measured game viewport on large screens, capped at1×. Small screens retain at least0.65× scale and follow the character. A fitted axis is centered; an overflowing axis clamps to map bounds. Do not make wider screens zoom further in or use the full window dimensions in place of the safe-area game viewport. Spare space uses a dark frame, not stretched terrain. The user confirmed both artwork regression and excessive cropping were problems.
 - Human render cell: 76 world units; visible human roughly 65–73 units high. Aim at approximately four heads tall. Do not make the pet realistic and the human a two-head chibi.
 - Boxer cell: 43. Small dog/cat/fox: 32. Owl: 33. Keep species differences, not one arbitrary size for everything.
 - Flowers: 17–23; thyme resource: 22. Flowers stay well below the character's waist, usually below the knee.

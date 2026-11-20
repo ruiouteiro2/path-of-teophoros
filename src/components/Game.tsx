@@ -53,6 +53,7 @@ import { Fishing } from "./Fishing";
 import { GardenPanel } from "./Garden";
 import { nearestPlot } from "../garden";
 import { Terrain } from "./Terrain";
+import { frameWorld } from "../camera";
 
 const serif = gameFont;
 function Button({
@@ -90,6 +91,7 @@ export default function Game() {
   const { width, height } = useWindowDimensions(),
     compact = width < 850,
     shortScreen = height < 500;
+  const [gameViewport, setGameViewport] = useState({ width, height });
   const [name, setName] = useState(""),
     [petName, setPetName] = useState(""),
     [pet, setPet] = useState<PetKind>("Boxer"),
@@ -507,36 +509,22 @@ export default function Game() {
     const drop = nearestDrop(liveSave);
     const home = nearestHome(liveSave.position, liveSave.region);
     const plot = nearestPlot(liveSave.position, liveSave.region);
-    // Follow the player on narrow displays; keep the complete world on landscape screens.
     const WORLD = dimensions(save.region);
-    const viewScale =
-      save.region === "cabin"
-        ? Math.max(width / WORLD.width, height / WORLD.height)
-        : Math.max(0.85, width / 1150, height / 760);
-    const worldW = WORLD.width * viewScale,
-      worldH = WORLD.height * viewScale;
-    const left = Math.min(
-      0,
-      Math.max(width - worldW, width / 2 - (camera.x * worldW) / WORLD.width),
-    );
+    const frame = frameWorld(gameViewport, WORLD, camera, inStory && compact ? 0.29 : 0.5);
     return (
       <SafeAreaView style={s.root}>
         <StatusBar style="light" />
-        <View style={s.game}>
+        <View style={s.game} onLayout={({ nativeEvent: { layout } }) => {
+          setGameViewport(previous => previous.width === layout.width && previous.height === layout.height
+            ? previous : { width: layout.width, height: layout.height });
+        }}>
           <View
             style={{
               position: "absolute",
-              width: worldW,
-              height: worldH,
-              left,
-              top: Math.min(
-                0,
-                Math.max(
-                  height - worldH,
-                  height * (inStory && compact ? 0.29 : 0.5) -
-                    (camera.y * worldH) / WORLD.height,
-                ),
-              ),
+              width: frame.width,
+              height: frame.height,
+              left: frame.left,
+              top: frame.top,
             }}
           >
             <World
@@ -1309,7 +1297,7 @@ const s = StyleSheet.create({
     backgroundColor: "#e9bd72",
     borderRadius: 0,
   },
-  game: { flex: 1, overflow: "hidden", backgroundColor: "#7caa77" },
+  game: { flex: 1, overflow: "hidden", backgroundColor: "#172c24" },
   topHud: {
     position: "absolute",
     top: 12,

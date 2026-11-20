@@ -2,6 +2,8 @@
 
 Final audit of the requested development pass, reviewed against fc7e683 after more than five hours of work. The reported map regression was addressed with bounded reuse of preserved artwork and corrected browser sampling, followed by production-scene inspection. This is a playable prototype audit, not a claim of a finished commercial game or physical-device certification.
 
+Follow-up clarification: the user confirmed the cropped/zoomed view was also a concern. The subsequent camera fix fits large screens and follows on small screens, using measured gameplay bounds. Desktop1852×969 was visually verified; BrowserOS disconnected before the phone view could be inspected. Three new camera tests pass (66 total). This outstanding phone visual check is separate from the previously completed timed pass.
+
 | Requested result | Current owning evidence | Assessment / remaining check |
 | --- | --- | --- |
 | React Native with Android/iOS path | Expo 58 package.json, native bundle exports | Implemented; signed binaries and physical-device rendering/audio not tested. |

@@ -18,6 +18,7 @@ Node 24 is recommended for the built-in TypeScript test runner. Mobile developme
 - Enter your name and Familiar’s name; choose a Boxer, small dog, cat, fox, or owl. Choose hairstyle, hair color, garment and clothing color.
 - Begin at the ruined sanctuary, where the High Priest of Zeus rescues you and grants your Familiar. Enter / Space continues dialogue.
 - Hold WASD / arrow keys or the on-screen directional controls to walk. Diagonal keyboard movement is supported.
+- Large screens fit the map; smaller screens follow the character at a readable scale. Wider windows no longer automatically zoom farther in.
 - Approach sparkling thyme or an olive tree and press **E** or **Gather**.
 - Gather loose wood, stone and fiber with **E** or **Gather**. Each drop can be collected once, including after reloads.
 - In the forest, cross the bridge and follow the path to the right edge. In the temple, follow the path to the left edge. Walking into an exit automatically travels through a black fade.
