@@ -24,7 +24,7 @@ import {
   nearest,
   dimensions,
 } from "../game";
-import { readSavedJourney, writeSavedJourney } from "../saveStorage";
+import { readSavedJourney, createJourneyWriter } from "../saveStorage";
 import { Appearance, defaultAppearance } from "../appearance";
 import { AppearancePicker } from "./AppearancePicker";
 import { nearestDrop, collectDrop, exitTriggered } from "../inventory";
@@ -109,7 +109,7 @@ export default function Game() {
     [storageError, setStorageError] = useState(false),
     [replacing, setReplacing] = useState(false);
   const [loadNotice, setLoadNotice] = useState("");
-  const queue = useRef(Promise.resolve());
+  const [writeJourney] = useState(() => createJourneyWriter(AsyncStorage));
   const inStory = !!save?.progress && save.progress.story !== "complete";
   const [session, setSession] = useState(0),
     [traveling, setTraveling] = useState(false),
@@ -164,11 +164,10 @@ export default function Game() {
   }, []);
   useEffect(() => {
     if (!save || !loaded) return;
-    queue.current = queue.current
-      .then(() => writeSavedJourney(AsyncStorage, save))
+    writeJourney(save)
       .then(() => setStorageError(false))
       .catch(() => setStorageError(true));
-  }, [save, loaded]);
+  }, [save, loaded, writeJourney]);
   useEffect(() => {
     if (!message) return;
     const id = setTimeout(() => setMessage(""), 5000);
@@ -750,6 +749,7 @@ export default function Game() {
                 Saving is unavailable. Keep this session open to retain
                 progress.
               </Text>
+              <GameButton onPress={() => setSave((v) => v ? { ...v } : v)}>Retry saving</GameButton>
             </View>
           )}
           {journal && save.progress && (
@@ -1012,9 +1012,12 @@ export default function Game() {
           <Text style={s.footnote}>Explore both lands with your Familiar.</Text>
           {!!message && <Text style={s.small}>{message}</Text>}
           {storageError && (
-            <Text style={s.small}>
-              Device storage is unavailable; progress may not be saved.
-            </Text>
+            <View style={{ gap: 8 }}>
+              <Text style={s.small}>
+                Device storage is unavailable; progress may not be saved.
+              </Text>
+              {save && <GameButton onPress={() => setSave((v) => v ? { ...v } : v)}>Retry saving</GameButton>}
+            </View>
           )}
         </View>
       </ScrollView>

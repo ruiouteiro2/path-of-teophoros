@@ -305,3 +305,9 @@ Session remains active; the user's five-hour development period has not yet elap
 - Prompt: one transparent original ancient Greek pixel-art inventory icon, golden grilled whole freshwater fish on shallow terracotta plate with two grilled red-onion wedges; three-quarter overhead view matching bread/tea icons, upper-left light, dark stepped outline, broad pixel clusters and limited ramps, roughly 48x48 effective detail, no text/grid/utensils, readable at 42 logical pixels.
 - Live hearth test consumed one carp and one onion into one meal; eating through Satchel removed it and increased energy20 to75. Inspected 1100x760 and390x844 cooking panels. Original QA save/backup restored.
 - Added tests for both fish variants, missing onion, full result stack, save serialization, ingredient preservation and energy cap. All58 tests, TypeScript and lint pass.
+
+### Save queue reliability and manual retry
+- Moved the existing serialized-write behavior into createJourneyWriter, keeping one writer per running game. Failed writes reject to the UI without poisoning the internal queue for subsequent saves.
+- Added controlled delayed-write and failure-then-success tests. They verify latest primary state, previous valid backup and recovery of the queue. Six persistence tests pass; TypeScript and lint pass.
+- Added Retry saving to the existing game/title storage warning when a journey is available.
+- Runtime fault injection: temporarily rejected primary localStorage writes, renamed Familiar to Argos QA, observed the game-styled warning on a390x844 viewport. Restored storage setter, pressed Retry saving, verified saved name and warning disappearance. Removed injection and restored original QA save/backup with the simulation paused in its menu.

@@ -22,3 +22,13 @@ export async function writeSavedJourney(storage: Storage, save: Save) {
   if (decode(previous)) await storage.setItem(BACKUP_KEY, previous!);
   await storage.setItem(SAVE_KEY, JSON.stringify(save));
 }
+
+/** One writer per running game. A rejected write must not poison later saves. */
+export function createJourneyWriter(storage: Storage) {
+  let pending: Promise<void> = Promise.resolve();
+  return (save: Save): Promise<void> => {
+    const write = pending.then(() => writeSavedJourney(storage, save));
+    pending = write.catch(() => {});
+    return write;
+  };
+}
