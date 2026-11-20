@@ -14,7 +14,7 @@ Whole-map regeneration has now caused an observed regression: successive sanctua
 
 `Terrain.tsx` now reuses the preserved v4 floor disc within source bounds604..884,387..637 over the v5 base, at unchanged source scale. This restores the earlier smaller motif without regenerating scenery. World, creation preview and map menu share this renderer. The v4 disc already has missing slabs and interrupted borders and stays ruined after altar restoration. The base map's broader softness remains under review.
 
-The unchanged ruined-temple façade also reuses its original v2 pixels through a bounded silhouette in `Terrain.tsx`. The clip stops above the courtyard and excludes the cabin and surrounding grove. Keep source scale and step/entrance alignment unchanged. These are runtime crops of preserved artwork, not newly generated replacement scenes.
+The unchanged upper grove, camp and ruined-temple façade reuse original v2 pixels through a bounded silhouette in `Terrain.tsx`. The clip excludes the changed cabin and lower grove/lake. A30-source-pixel ground blend at the horizontal path removes a hard texture seam. Keep source scale and step/entrance alignment unchanged. These are runtime crops of preserved artwork, not newly generated replacement scenes. Do not extend the restoration into the lower map: v2 has different walls, trees and a smaller pond there.
 
 ### Reference hierarchy
 

@@ -436,3 +436,10 @@ Session remains active; the user's five-hour development period has not yet elap
 - Inspected at1100×760 with a temporary courtyard position: the restored stone texture is sharper; entrance, steps, priest and altar remain aligned. The patch excludes the changed cabin and lower grove/lake. Wider terrain texture remains subject to review; this is not a declaration that the entire map matches the target style.
 - Typecheck, lint and web export passed (82 assets). Restored both original QA save slots and removed `teophoros.qa.architecture` while menu-paused. Additional original-image decoding is a cost of these layers; native performance still needs device measurement.
 - Android/iOS export after architecture recovery completed with exit0: 96 assets, two2.9MB Hermes bundles.
+
+## Upper grove and camp texture recovery
+
+- Extended the preserved v2 sampling into the unchanged upper grove and camp. The boundary explicitly excludes the changed cabin and lower grove/lake. This uses the already-cached v2 source, adding no image asset or decoded source beyond the architecture repair.
+- Inspected the full navigation overview at1100×1000 and the camp/path at1100×760. The first hard boundary showed a straight texture seam across the path. Added a30-source-pixel ground blend from y477 to507; reinspection showed continuous ground while preserving sharp camp and foliage detail. No PNG, collision, pickup placement or saved journey was changed.
+- Restored the original QA primary/backup from the paused menu and removed `teophoros.qa.upperGrove`. Typecheck and lint passed. This selectively recovers the old pixel detail without reverting the expanded home map.
+- Combined web/Android/iOS export completed with exit0 into dist: 178 platform assets, six web bundles and one2.9MB Hermes bundle per native platform.
