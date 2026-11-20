@@ -213,3 +213,8 @@ Session remains active; the user's five-hour development period has not yet elap
 - Moved material drops and harvest markers into a memoized fragment. They retain world-level depth sorting and update when collected IDs, region, seed or layout changes, rather than rebuilding for every hero/Familiar movement frame. Stable empty defaults preserve the cache for older saves.
 - Inspected the outdoor scene, then used a declared fixture at temple-drop-0. Actual pickup reduced rendered item-atlas images from 60 to 59, saved that exact collected ID, and increased wood from 3 to 4. Original QA save/backup restored.
 - TypeScript and lint pass. This is reduced React work by construction, not a measured physical-device FPS improvement.
+
+### Quest guidance feedback
+- Outdoor altar tracker shows current carried wood/stone/fiber against the required amounts. The tracker opens the journal directly, including the cabin's home panel.
+- Priest's completed-altar conversation explicitly acknowledges the 120-drachma reward inside the dialogue, with garden/hearth/lake follow-up guidance. It does not grant another reward.
+- Verified the quest-panel button opens the journal at phone size with the completed quest and home instructions. TypeScript and lint pass.

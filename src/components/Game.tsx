@@ -600,7 +600,9 @@ export default function Game() {
             </Pressable>
           </View>
           {!inStory && !shortScreen && (
-            <View style={[s.quest, { left: compact ? 12 : 32 }]}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Open quest journal"
+              onPress={() => { stop(); setMenuTab("journal"); setJournal(true); }}
+              style={[s.quest, { left: compact ? 12 : 32 }]}>
               <Text style={s.eyebrow}>
                 {save.region === "cabin"
                   ? "HEARTH & HOME"
@@ -613,12 +615,12 @@ export default function Game() {
                   ? "Rest · Cook · Store supplies"
                   : save.progress?.restoredAltar
                     ? "✓ The old altar is restored"
-                    : "Wood 3 · Stone 3 · Fiber 2"}
+                    : `Wood ${Math.min(3, count(save.progress?.bag ?? {}, "wood"))}/3 · Stone ${Math.min(3, count(save.progress?.bag ?? {}, "stone"))}/3 · Fiber ${Math.min(2, count(save.progress?.bag ?? {}, "fiber"))}/2`}
               </Text>
               <Text style={s.questText}>
                 Energy {save.progress?.energy ?? 100}/100
               </Text>
-            </View>
+            </Pressable>
           )}
           <View
             style={[
@@ -826,7 +828,7 @@ export default function Game() {
             <Conversation
               text={
                 save.progress.restoredAltar
-                  ? "The altar is secure again. A small beginning, but one that matters. Keep the sanctuary supplied, and let your Familiar guide you along the old paths."
+                  ? "The altar is secure again. You have earned 120 drachmae for your work. Keep the sanctuary supplied: tend the western garden, cook at your cabin hearth, and fish at the lake. The old paths will still be here when you are ready."
                   : "Bring me three pieces of wood, three stones and two bundles of fiber. Together we can secure the old altar. You may use the workbench, store supplies in the chest, or trade at the camp."
               }
               onClose={() => setConversation(false)}
