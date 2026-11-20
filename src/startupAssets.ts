@@ -1,7 +1,7 @@
 // Core scene art is cached before the title opens. Audio remains lazy-loaded.
 export const startupAssets = [
   require('../assets/world/olympus-title.png'),
-  require('../assets/world/sanctuary-v4.png'),
+  require('../assets/world/sanctuary-v5.png'),
   require('../assets/world/olivewild-v2.png'),
   require('../assets/world/cabin-interior.png'),
   require('../assets/world/hero/short-chiton.png'),

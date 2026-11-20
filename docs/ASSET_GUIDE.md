@@ -10,7 +10,7 @@ Judge assets at their actual in-game size, beside existing assets. A beautiful i
 
 ### Reference hierarchy
 
-1. Terrain and trees: `assets/world/olivewild-v2.png` and `sanctuary-v4.png`. Match their chunky leaf groups, stepped silhouettes, warm earth, and broad shadow masses. The old `olivewild.png`, `temple.png`, and `sanctuary-v2.png` are superseded terrain drafts.
+1. Terrain and trees: `assets/world/olivewild-v2.png` and `sanctuary-v5.png`. Match their chunky leaf groups, stepped silhouettes, warm earth, and broad shadow masses. The old `olivewild.png`, `temple.png`, and `sanctuary-v2.png` are superseded terrain drafts.
 2. Animals: `assets/world/pets/boxer.png` and `small-dog.png`. Their anatomy, outlined shading, and gait are the approved animal direction. Preserve the actual reference dogs in `assets/references/`.
 3. Humans: `assets/world/hero/` is the current character family. Less oversized heads than the obsolete `hero-walk.png`, natural limb proportions, and shading density compatible with the pets at world scale.
 4. UI: the current Olympus sky, ochre panels, dark brown borders, pale inset fields, compact bold labels, and illustrated choices.
@@ -140,3 +140,5 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 - Hearth interaction at cabin (135,265) opens cooking. Barley bread uses one harvested barley; thyme infusion uses two thyme. Cooking uses existing item art and panels, consumes bag ingredients only, and preserves ingredients if output is full. Workbench lists torches/rods; food recipes belong at the hearth.
 
 - ItemIcon must map stable item IDs to explicit atlas cells. Never derive sprite cells from inventory display order. The TypeScript mapping must cover every item ID so a new item cannot silently reuse another item's graphic.
+
+- `sanctuary-v5.png` supersedes v4: the central floor mosaic has substantial missing tesserae, broken borders and broad cracks. The floor stays damaged even after the small altar is secured; altar restoration is not a whole-temple rebuild. Preserve the damaged emblem in future terrain edits.

@@ -7,7 +7,7 @@ import { homeLocations, cabinLocations } from "../worldLayout";
 import { gardenPlots } from "../garden";
 
 const maps = {
-  temple: require("../../assets/world/sanctuary-v4.png"),
+  temple: require("../../assets/world/sanctuary-v5.png"),
   forest: require("../../assets/world/olivewild-v2.png"),
   cabin: require("../../assets/world/cabin-interior.png"),
 };
