@@ -151,6 +151,18 @@ export function GardenPanel({
           <Text>
             Energy {progress.energy}/100 · Jug {progress.water ?? 0}/6
           </Text>
+          {!plot.tilled && !count(progress.bag, "hoe") && (
+            <Text>Bring your bronze hoe from storage, or buy one at Thaleia’s camp.</Text>
+          )}
+          {!plot.tilled && progress.energy < 4 && (
+            <Text>You need 4 energy to till. Eat from your satchel or rest at home.</Text>
+          )}
+          {plot.tilled && !mature && !plot.watered && !count(progress.bag, "wateringJug") && (
+            <Text>Bring your watering jug from storage, or buy one at Thaleia’s camp.</Text>
+          )}
+          {plot.tilled && !mature && !plot.watered && progress.energy < 2 && (
+            <Text>You need 2 energy to water. Eat from your satchel or rest at home.</Text>
+          )}
           {!plot.tilled ? (
             <>
               <Text>
@@ -192,7 +204,9 @@ export function GardenPanel({
               <ItemIcon id={plot.crop} size={60} />
               <Text>
                 {mature
-                  ? "Ready to harvest. Make room in your satchel first."
+                  ? count(progress.bag, plot.crop) >= 999
+                    ? "This crop’s stack is full. Store or sell some before harvesting; the crop will wait here."
+                    : `Ready to harvest. Pick one ${items[plot.crop].name.toLowerCase()} for your satchel.`
                   : `${plot.age}/${cropDays[plot.crop]} watered nights. ${plot.watered ? "Watered today; it will grow when you sleep." : "Needs water before the next night."}`}
               </Text>
               {mature && action("harvest", "Harvest crop")}
@@ -204,7 +218,7 @@ export function GardenPanel({
               "water",
               plot.watered ? "Watered today" : "Water soil · 2 energy",
             )}
-          {(progress.water ?? 0) === 0 && (
+          {plot.tilled && !mature && !plot.watered && !!count(progress.bag, "wateringJug") && (progress.water ?? 0) === 0 && (
             <Text>Refill your watering jug at the well east of the altar.</Text>
           )}
           <GameButton onPress={onClose}>Back to the garden</GameButton>

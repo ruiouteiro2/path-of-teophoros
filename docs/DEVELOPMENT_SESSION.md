@@ -224,3 +224,8 @@ Session remains active; the user's five-hour development period has not yet elap
 - Keyboard repeat cannot hook a bite automatically from a Space key held while waiting. Window blur releases the hold state.
 - Verified missed-bite return state and active reeling layout. A temporary DOM observer activated the displayed Hook button for the layout check because browser inspection overhead exceeds the bite window; it was disconnected and deleted. QA save and backup restored.
 - Two fishing behavior tests, TypeScript and lint pass. This check does not claim a manual full catch through the UI.
+
+### Garden action guidance
+- Disabled till/water actions now explain missing tools or insufficient energy. Empty-jug guidance appears only for dry, non-mature soil when a jug is carried.
+- Mature crops show a harvest instruction when space exists, and a specific storage/selling explanation only at the 999-item limit; no misleading blanket full-satchel warning.
+- Inspected a mature barley panel at 844x390 with actual saved growth-stage fixture; scrollable controls remain available. Restored QA save/backup. TypeScript and lint pass; progression rules unchanged.
