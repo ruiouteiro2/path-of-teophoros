@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   View,
+  Image,
   ScrollView,
   Pressable,
   TextInput,
@@ -12,7 +13,6 @@ import { ItemIcon } from "./ItemIcon";
 import { Hero, PetPortrait } from "./WorldAssets";
 import { AppearancePicker } from "./AppearancePicker";
 import { WorldMap } from "./WorldMap";
-import { Npc } from "./Npc";
 import { defaultAppearance } from "../appearance";
 import { cropDays } from "../garden";
 import type { Save } from "../game";
@@ -396,7 +396,9 @@ export function GameMenu({
               <View
                 style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
               >
-                <Npc kind="keeper" size={90} />
+                <View style={{ width: 90, height: 90, borderWidth: 3, borderColor: palette.edge, backgroundColor: palette.inset, overflow: "hidden" }}>
+                  <Image source={require("../../assets/world/npcs/keeper-portrait.png")} resizeMode="contain" style={{ width: "100%", height: "100%" }} accessibilityLabel="Thaleia, sanctuary provision keeper" />
+                </View>
                 <View style={{ flex: 1 }}>
                   <Text style={ui.title}>Thaleia</Text>
                   <Text>Sanctuary provision keeper</Text>

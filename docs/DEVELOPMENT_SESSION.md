@@ -282,3 +282,13 @@ Session remains active; the user's five-hour development period has not yet elap
 - Escape now cancels the sleep and new-journey confirmations, ignoring held-key repeats. Existing conversation/garden/fishing handlers remain separate.
 - Opened replacement confirmation with a draft name, pressed Escape, and verified the confirmation closed while saved Alexios/day6/236 drachmae remained unchanged. Cleared draft fields afterwards. Sleep uses the same cancel handler; not separately runtime-tested in this pass.
 - TypeScript and lint pass.
+
+### Thaleia provision portrait
+- Added `assets/world/npcs/keeper-portrait.png` using the built-in image generation tool. References: Priest portrait for pixel/shading treatment, keeper walking atlas for character identity. Original generated file retained at `C:\Users\Rui\.codex\generated_images\01a1f5f4-26a2-7a00-ae45-8dbb5e9f3179\exec-f04a301c-035d-4d44-9c90-8b1ec2bdbe6f.png`.
+- Prompt: one original transparent square RPG bust of Thaleia, adult Greek provision keeper; brown hair swept into low bun, warm tan skin, brown eyes, olive shawl, cream chiton, terracotta apron and leather strap; warm confident small smile, slight three-quarter left view; visible pixel clusters, stepped dark outlines, warm upper-left lighting, broad limited shading; no crown, text, scenery, modern objects or multiple frames.
+- Shop uses the portrait in a 90-unit framed inset; core startup cache includes it. Inspected at 844x390 and 390x844, with readable name/role and scrollable inventory. Original QA save/backup restored afterwards.
+- Consulted Expo 58 Image documentation redirect to React Native 0.88 Image before integration. TypeScript, lint and all 56 behavioral tests pass. Web production export passes with current v5 terrain and portrait.
+
+### Current platform export verification
+- After the v5 terrain, motion/save/UI fixes and Thaleia portrait: all 56 tests, TypeScript and lint pass. Web export and Android/iOS Hermes bundle exports pass (92 native assets). These are packaging checks, not signed binaries or physical-device QA.
+

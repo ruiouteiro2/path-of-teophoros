@@ -15,6 +15,8 @@ Judge assets at their actual in-game size, beside existing assets. A beautiful i
 3. Humans: `assets/world/hero/` is the current character family. Less oversized heads than the obsolete `hero-walk.png`, natural limb proportions, and shading density compatible with the pets at world scale.
 4. UI: the current Olympus sky, ochre panels, dark brown borders, pale inset fields, compact bold labels, and illustrated choices.
 
+Dialogue portraits use `npcs/priest-portrait.png` and `npcs/keeper-portrait.png`: broad stepped shading, warm upper-left light, transparent bust silhouettes, and the same clothing/hair identity as each walking atlas. Portrait detail is separate from world-sprite density; never place portrait cutouts into the map.
+
 Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or the old large-headed `hero-walk.png` as a new asset reference. `olive-tree-v2.png` supersedes the fine-leaf tree. Old files retained in history are not automatically approved references.
 
 ## 2. Camera, scale, and silhouettes

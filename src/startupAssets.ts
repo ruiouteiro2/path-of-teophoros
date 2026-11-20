@@ -12,6 +12,7 @@ export const startupAssets = [
   require('../assets/world/npcs/priest-portrait.png'),
   require('../assets/world/npcs/priest-walk-v2.png'),
   require('../assets/world/npcs/keeper-walk.png'),
+  require('../assets/world/npcs/keeper-portrait.png'),
   require('../assets/world/pets/boxer.png'),
   require('../assets/world/pets/small-dog.png'),
   require('../assets/world/pets/cat.png'),
