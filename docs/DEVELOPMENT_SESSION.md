@@ -272,3 +272,8 @@ Session remains active; the user's five-hour development period has not yet elap
 - Found four drops in the active QA seed overlapping home interaction radii, including wood just 12 units from the cabin entrance. Building/door actions could intercept gathering.
 - Existing post-generation relocation now also clears a 70-unit radius around home interaction points. Original random generation and collected IDs stay unchanged, so collected materials remain collected.
 - Added home-interaction clearance assertions including the problematic seed. Ten inventory/navigation tests pass; separately checked 60,000 temple drops across 1,000 deterministic seeds for walkability and interaction clearance. TypeScript and lint pass.
+
+### Complete rescue-to-exploration runtime walkthrough
+- Replayed all five opening pages through real displayed buttons at 844x390 on v5 terrain. Portrait/text scroll area and answer buttons remained usable; lying-to-standing recovery displayed in scene.
+- At Familiar page: familiarGranted=false and money=0. Advancing to supplies: familiarGranted=true, money still0. Completing supplies: story=complete, money100, energy80, bread2, barleySeed6, hoe1, wateringJug1, water6; normal movement/inventory controls returned.
+- Reloaded and continued: no opening replay, money100/bread2/seeds6 unchanged. Original QA save/backup restored after verification.
