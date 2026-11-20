@@ -32,3 +32,20 @@ export function nextFootstep(previous: number, stride: number) {
   const hash = (Math.imul(stride + 1, 0x45d9f3b) ^ (stride >>> 3)) >>> 0;
   return (previous + 1 + (hash % 3)) % 4;
 }
+
+/** Quiet positional water, measured from the water body rather than its center. */
+export function waterProximity(region: Region, p: Point): number {
+  if (region === "cabin") return 0;
+  let distance: number;
+  if (region === "forest") {
+    distance = Math.max(0, Math.abs(p.x - 1548) - 45);
+  } else {
+    // Conservative ellipse around the authored lake, including the fishing dock.
+    const dx = p.x - 1590, dy = p.y - 1015;
+    const normalized = Math.hypot(dx / 320, dy / 180);
+    const radial = Math.hypot(dx, dy);
+    distance = normalized <= 1 ? 0 : radial * (1 - 1 / normalized);
+  }
+  const t = Math.max(0, 1 - distance / 260);
+  return t * t * (3 - 2 * t);
+}

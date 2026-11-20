@@ -170,3 +170,7 @@ Session remains active; the user's five-hour development period has not yet elap
 ### River loop continuity
 - Measured the previous 5.67-second stream: final 100 ms RMS 0.00464 versus middle 0.02408, producing a recurring level dip. Replaced endpoint fades with a 600 ms equal-power wrap crossfade in the reproducible preparation script.
 - New 5.07-second loop: start/end 100 ms RMS 0.02368/0.02720, middle 0.02423; peak 0.22168. Seam sample jump 0.00748 is below the 99th percentile ordinary adjacent jump 0.05695. This is measured signal continuity, not a claim of physical-device listening.
+
+### Shore-based audio falloff
+- Replaced lake-center distance with distance to an authored lake ellipse, so the fishing dock gets near-water ambience. River distance includes its width. A smooth cubic falloff reaches silence 260 world units from the water; cabin always returns zero. Existing channel gain remains unchanged.
+- Added tests for dock/bridge, distant sanctuary/forest, cabin silence and monotonic approach. This is an approximate acoustic region, not a replacement for collision shoreline geometry. Typecheck/lint and audio tests pass.

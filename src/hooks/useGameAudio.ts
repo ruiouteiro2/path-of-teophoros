@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { Point, Region } from "../game";
-import { footstepSurface, nextFootstep } from "../audioScene";
+import { footstepSurface, nextFootstep, waterProximity } from "../audioScene";
 export function useGameAudio(
   active: boolean,
   region: Region,
@@ -216,13 +216,7 @@ export function useGameAudio(
     waterAction,
   ]);
   useEffect(() => {
-    const d =
-      region === "cabin"
-        ? Infinity
-        : region === "forest"
-          ? Math.abs(position.x - 1548)
-          : Math.hypot(position.x - 1608, position.y - 1008);
-    const proximity = Math.max(0, 1 - d / 320);
+    const proximity = waterProximity(region, position);
     water.volume = region === "forest" ? proximity * mix.ambience * 0.5 : 0;
     lake.volume = region === "temple" ? proximity * mix.ambience * 0.65 : 0;
   }, [position.x, position.y, region, water, lake, mix.ambience]);
