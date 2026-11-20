@@ -121,7 +121,7 @@ export function GameMenu({
         style={{ width: "100%", maxWidth: 960, maxHeight: height - 24 }}
       >
         <View style={m.header}>
-          <Text style={ui.title}>
+          <Text numberOfLines={2} style={[ui.title, { flex: 1, minWidth: 0 }]}>
             {tab === "chest"
               ? "Cabin storage"
               : tab === "trade"

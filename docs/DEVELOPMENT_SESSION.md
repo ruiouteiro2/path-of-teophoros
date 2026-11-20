@@ -263,3 +263,7 @@ Session remains active; the user's five-hour development period has not yet elap
 ### Exact sound-setting endpoints
 - Normalize changed and loaded volume levels to whole percentages. Repeated 10-point adjustments now reach exact zero/one instead of leaving floating-point residue and an incorrectly enabled endpoint button. Existing 16% footstep preference is preserved.
 - Added endpoint, clamping and malformed-value tests. All four audio tests, TypeScript and lint pass.
+
+### Long-name menu layout
+- Menu heading now yields horizontal space to the close button and truncates after two lines. The saved name remains unchanged.
+- Verified a 24-character unbroken name at 390x844: heading remains within panel, close button stays visible and works. Original QA name/save/backup restored. TypeScript and lint pass.
