@@ -122,3 +122,6 @@ Session remains active; the user's five-hour development period has not yet elap
 - Pending seek/play callbacks are cancelled after movement stops or audio state changes, preventing a delayed footstep/effect from starting after mute/backgrounding.
 - Browser verified successful playback promises for music, stream, lakeshore and water-action files at the intended channel volumes. 40 behavior tests pass, including surface classification and sample variation; typecheck/lint pass.
 - Mute QA: well interaction while muted left playback count unchanged (8 to 8), with all probed media paused. Restored sound afterward. Web and Android/iOS bundle exports passed for this checkpoint.
+
+### Home interaction follow-up
+- Sleep confirmation now takes the immediate shared transition lock, preventing rapid duplicate confirmations from advancing multiple days. The prompt explains watered crop growth and retained storage. Code-path review, 40 behavior tests, typecheck and lint passed; rapid-tap runtime verification remains in the next home QA pass.

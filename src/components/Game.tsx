@@ -788,11 +788,13 @@ export default function Game() {
               <GamePanel style={{ maxWidth: 500, width: "100%" }}>
                 <Text style={{ fontSize: 28 }}>Rest until morning?</Text>
                 <Text>
-                  Your energy will be restored. Gathered materials remain
-                  collected.
+                  Wake with full energy. Watered crops will grow overnight.
+                  Stored supplies and gathered materials stay saved.
                 </Text>
                 <GameButton
                   onPress={() => {
+                    if (travelLock.current) return;
+                    travelLock.current = true;
                     setSleepPrompt(false);
                     setTraveling(true);
                     Animated.timing(transition, {
@@ -807,7 +809,10 @@ export default function Game() {
                         toValue: 0,
                         duration: 650,
                         useNativeDriver: true,
-                      }).start(() => setTraveling(false));
+                      }).start(() => {
+                        travelLock.current = false;
+                        setTraveling(false);
+                      });
                     });
                   }}
                 >
