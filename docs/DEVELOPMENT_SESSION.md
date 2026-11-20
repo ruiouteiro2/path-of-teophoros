@@ -148,3 +148,6 @@ Session remains active; the user's five-hour development period has not yet elap
 
 ### Short landscape HUD
 - Checked storage at 844x390: scrolling reaches both transfer actions. Gameplay inspection found the quest panel obscuring the hero beside the cabin chest. On screens shorter than 500 logical pixels, hide the large quest panel and redundant bottom hints, and show energy beside day in the compact location panel. Re-inspected: hero/Familiar visible, movement, inventory, interaction and destination help remain available. Typecheck/lint pass.
+
+### Opening responsive verification
+- Replayed opening using a backed-up isolated QA save at 844x390 and 390x844. Portrait shows recovering hero/priest above the readable full dialogue; landscape retains the portrait, scrollable text and reachable continue button. Familiar flag remained false through the grant page, then became true at supplies after acceptance. Restored the prior QA save afterward, without awarding duplicate supplies to it.
