@@ -136,3 +136,5 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 ## 14. Cabin hearth
 - hearth-flame.png is a transparent 4x2 atlas with eight flame phases, rendered at 50 world units and 7 frames/second. Fixed base at cabin (135,202), 89% cell height. It overlays logs beneath the copper pot; do not move the fireplace, logs or furniture to fake fire. Uses the existing paused/background-aware environment clock.
 - Built-in image generation prompt: eight equal cells, flame only, warm orange/gold/cream, chunky pixel clusters, fixed center/base, subtle curling tips, transparent margins, no smoke, logs, text or glow halo. Reviewed in the cabin at phone landscape scale.
+
+- Hearth interaction at cabin (135,265) opens cooking. Barley bread uses one harvested barley; thyme infusion uses two thyme. Cooking uses existing item art and panels, consumes bag ingredients only, and preserves ingredients if output is full. Workbench lists torches/rods; food recipes belong at the hearth.

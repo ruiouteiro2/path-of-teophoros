@@ -158,3 +158,7 @@ Session remains active; the user's five-hour development period has not yet elap
 
 ### Input isolation and sound control labels
 - Typed WASD E I into Familiar naming and saved it on the isolated QA origin. Menu remained open and position stayed (280,250) in cabin; restored Argos afterward. Sound +/- controls now expose channel-specific accessibility names and disable at their bounds. Browser accessibility snapshot confirms all eight names. Typecheck/lint pass.
+
+### Hearth cooking
+- Consulted https://stardewvalleywiki.com/Cooking for station-based recipe menus and missing-ingredient behavior. Added original barley-bread recipe at the cabin hearth and moved thyme infusion there from the outdoor workbench. Uses bag ingredients, not automatic chest access. Existing atomic crafting transaction checks output capacity before costs.
+- Added cooking transaction regression; 45 tests pass, including new hearth reachability through the navigation suite. Typecheck/lint passed before final formatting/title edit. Browser cooking interaction and full exports remain to verify next.

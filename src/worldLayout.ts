@@ -16,8 +16,9 @@ export const homeLocations = {
   well: toWorld(815, 350),
 };
 export type HomePlace = keyof typeof homeLocations;
-export type InteractionPlace = HomePlace | "bed" | "wardrobe";
+export type InteractionPlace = HomePlace | "bed" | "wardrobe" | "hearth";
 export const cabinLocations = {
+  hearth: { x: 135, y: 265 },
   bed: { x: 730, y: 330 },
   chest: { x: 280, y: 250 },
   wardrobe: { x: 820, y: 300 },

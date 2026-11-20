@@ -136,3 +136,16 @@ test("corrupt progress is rejected", () => {
   ])
     assert.equal(validProgression({ ...p, ...patch }), false);
 });
+
+
+test("hearth recipes consume harvests atomically and preserve ingredients at capacity", () => {
+  const p = addItem(newProgression(), "barley", 2);
+  const cooked = craft(p, "bread");
+  assert.equal(cooked.bag.barley, 1);
+  assert.equal(cooked.bag.bread, 1);
+  assert.equal(p.bag.barley, 2);
+  const full = { ...p, bag: { ...p.bag, bread: 999 } };
+  assert.strictEqual(craft(full, "bread"), full);
+  const empty = newProgression();
+  assert.strictEqual(craft(empty, "bread"), empty);
+});

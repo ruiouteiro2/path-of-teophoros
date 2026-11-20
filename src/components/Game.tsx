@@ -261,13 +261,20 @@ export default function Game() {
         setFishingSeed((save.seed ?? 12345) + (save.progress.caught + 1) * 17);
         return;
       }
-      if (home === "chest" || home === "workbench" || home === "provisions") {
+      if (
+        home === "hearth" ||
+        home === "chest" ||
+        home === "workbench" ||
+        home === "provisions"
+      ) {
         setMenuTab(
-          home === "workbench"
-            ? "craft"
-            : home === "provisions"
-              ? "trade"
-              : "chest",
+          home === "hearth"
+            ? "cook"
+            : home === "workbench"
+              ? "craft"
+              : home === "provisions"
+                ? "trade"
+                : "chest",
         );
         setJournal(true);
         return;
@@ -577,7 +584,9 @@ export default function Game() {
                 {regions[save.region].name}
               </Text>
               <Text style={s.small}>
-                {shortScreen ? `Day ${save.progress?.day ?? 1} · Energy ${save.progress?.energy ?? 100}` : `Spring · Day ${save.progress?.day ?? 1} ☀`}
+                {shortScreen
+                  ? `Day ${save.progress?.day ?? 1} · Energy ${save.progress?.energy ?? 100}`
+                  : `Spring · Day ${save.progress?.day ?? 1} ☀`}
               </Text>
             </View>
             <Pressable
@@ -670,28 +679,30 @@ export default function Game() {
               <Button onPress={gather}>
                 {plot
                   ? "Tend garden"
-                  : home === "well"
-                    ? "Refill watering jug"
-                    : home === "lake"
-                      ? "Cast a fishing line"
-                      : home === "bed"
-                        ? "Rest for the night"
-                        : home === "wardrobe"
-                          ? "Change clothes"
-                          : home === "priest" || home === "altar"
-                            ? "Speak to the High Priest"
-                            : home === "chest"
-                              ? "Open storage"
-                              : home === "workbench"
-                                ? "Use workbench"
-                                : home === "provisions"
-                                  ? "Trade provisions"
-                                  : drop
-                                    ? "Pick up " + drop.kind
-                                    : nearest(liveSave) >= 0
-                                      ? "Gather " +
-                                        regions[save.region].resource
-                                      : "Gather / pick up"}{" "}
+                  : home === "hearth"
+                    ? "Cook at the hearth"
+                    : home === "well"
+                      ? "Refill watering jug"
+                      : home === "lake"
+                        ? "Cast a fishing line"
+                        : home === "bed"
+                          ? "Rest for the night"
+                          : home === "wardrobe"
+                            ? "Change clothes"
+                            : home === "priest" || home === "altar"
+                              ? "Speak to the High Priest"
+                              : home === "chest"
+                                ? "Open storage"
+                                : home === "workbench"
+                                  ? "Use workbench"
+                                  : home === "provisions"
+                                    ? "Trade provisions"
+                                    : drop
+                                      ? "Pick up " + drop.kind
+                                      : nearest(liveSave) >= 0
+                                        ? "Gather " +
+                                          regions[save.region].resource
+                                        : "Gather / pick up"}{" "}
                 · E
               </Button>
               <Text style={[s.gameHint, shortScreen && { display: "none" }]}>
@@ -712,7 +723,9 @@ export default function Game() {
                 }
               >
                 <Text style={s.hintLink}>
-                  {save.region === "cabin" ? "Way to the sanctuary" : "Path to " + regions[save.region].destination}
+                  {save.region === "cabin"
+                    ? "Way to the sanctuary"
+                    : "Path to " + regions[save.region].destination}
                 </Text>
               </Pressable>
             </View>

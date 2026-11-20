@@ -40,7 +40,8 @@ export type MenuTab =
   | "settings"
   | "chest"
   | "trade"
-  | "craft";
+  | "craft"
+  | "cook";
 type Props = {
   save: Save;
   initialTab?: MenuTab;
@@ -77,7 +78,9 @@ export function GameMenu({
       const next = fn(s.progress);
       return next === s.progress ? s : { ...s, progress: next };
     });
-    audio.effect(tab === "trade" ? "coins" : "wood");
+    audio.effect(
+      tab === "trade" ? "coins" : tab === "cook" ? "pickup" : "wood",
+    );
     onMessage(success);
   }
   const tabs: MenuTab[] = [
@@ -88,7 +91,7 @@ export function GameMenu({
     "appearance",
     "settings",
   ];
-  if (["chest", "trade", "craft"].includes(initialTab))
+  if (["chest", "trade", "craft", "cook"].includes(initialTab))
     tabs.unshift(initialTab);
   const stackGrid = (bag: Progression["bag"], storage = false) => (
     <View style={m.grid}>
@@ -120,7 +123,9 @@ export function GameMenu({
                 ? "Sanctuary provisions"
                 : tab === "craft"
                   ? "Workbench"
-                  : save.name + "’s journey"}
+                  : tab === "cook"
+                    ? "Cabin hearth"
+                    : save.name + "’s journey"}
           </Text>
           <GameButton onPress={onClose}>×</GameButton>
         </View>
@@ -144,7 +149,13 @@ export function GameMenu({
           <View style={m.money}>
             <ItemIcon id="money" size={34} />
             <Text style={{ flexShrink: 1 }}>{p.money} drachmae</Text>
-            <Text style={narrow ? { width: "100%", flexShrink: 1 } : { marginLeft: "auto", flexShrink: 1 }}>
+            <Text
+              style={
+                narrow
+                  ? { width: "100%", flexShrink: 1 }
+                  : { marginLeft: "auto", flexShrink: 1 }
+              }
+            >
               Day {p.day} · Energy {p.energy}/100
             </Text>
           </View>
@@ -404,39 +415,43 @@ export function GameMenu({
               </Text>
             </>
           )}
-          {tab === "craft" && (
+          {(tab === "craft" || tab === "cook") && (
             <>
-              {(Object.keys(recipes) as RecipeId[]).map((id) => {
-                const r = recipes[id];
-                const enough = Object.entries(r.cost).every(
-                  ([key, n]) => count(p.bag, key as ItemId) >= n,
-                );
-                return (
-                  <View key={id} style={m.recipe}>
-                    <ItemIcon id={r.result} />
-                    <Text style={ui.title}>{r.name}</Text>
-                    <Text>
-                      {Object.entries(r.cost)
-                        .map(
-                          ([key, n]) =>
-                            `${items[key as ItemId].name} ${count(p.bag, key as ItemId)}/${n}`,
-                        )
-                        .join(" · ")}
-                    </Text>
-                    <GameButton
-                      disabled={!enough}
-                      onPress={() =>
-                        transaction(
-                          (q) => craft(q, id),
-                          "Crafted " + r.name + ".",
-                        )
-                      }
-                    >
-                      Craft
-                    </GameButton>
-                  </View>
-                );
-              })}
+              {(Object.keys(recipes) as RecipeId[])
+                .filter((id) => recipes[id].station === tab)
+                .map((id) => {
+                  const r = recipes[id];
+                  const enough = Object.entries(r.cost).every(
+                    ([key, n]) => count(p.bag, key as ItemId) >= n,
+                  );
+                  return (
+                    <View key={id} style={m.recipe}>
+                      <ItemIcon id={r.result} />
+                      <Text style={ui.title}>{r.name}</Text>
+                      <Text>
+                        {Object.entries(r.cost)
+                          .map(
+                            ([key, n]) =>
+                              `${items[key as ItemId].name} ${count(p.bag, key as ItemId)}/${n}`,
+                          )
+                          .join(" · ")}
+                      </Text>
+                      <GameButton
+                        disabled={!enough}
+                        onPress={() =>
+                          transaction(
+                            (q) => craft(q, id),
+                            (tab === "cook" ? "Cooked " : "Crafted ") +
+                              r.name +
+                              ".",
+                          )
+                        }
+                      >
+                        {tab === "cook" ? "Cook" : "Craft"}
+                      </GameButton>
+                    </View>
+                  );
+                })}
             </>
           )}
         </ScrollView>

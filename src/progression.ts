@@ -292,11 +292,28 @@ export function consume(p: Progression, id: ItemId): Progression {
 export const recipes = {
   torch: {
     name: "Olivewood torch",
+    station: "craft",
     cost: { wood: 2, fiber: 1 },
     result: "torch",
   },
-  tea: { name: "Thyme infusion", cost: { thyme: 2 }, result: "tea" },
-  rod: { name: "Reed fishing rod", cost: { wood: 3, fiber: 2 }, result: "rod" },
+  tea: {
+    name: "Thyme infusion",
+    station: "cook",
+    cost: { thyme: 2 },
+    result: "tea",
+  },
+  bread: {
+    name: "Barley bread",
+    station: "cook",
+    cost: { barley: 1 },
+    result: "bread",
+  },
+  rod: {
+    name: "Reed fishing rod",
+    station: "craft",
+    cost: { wood: 3, fiber: 2 },
+    result: "rod",
+  },
 } as const;
 export type RecipeId = keyof typeof recipes;
 export function craft(p: Progression, recipe: RecipeId): Progression {
