@@ -390,3 +390,9 @@ Session remains active; the user's five-hour development period has not yet elap
 ### Map-version review artifact
 - Added `scripts/create_map_review.py`, which copies preserved PNGs unchanged into the ignored web-export folder and writes a standalone comparison page. It does not edit raster pixels, game code or saves.
 - Opened `http://127.0.0.1:8082/map-review.html` in the agent browser. Verified whole-map and synchronized courtyard-detail views, equal image sizes and aligned comparison frames. Earlier versions2/3/4 can be selected against current5. This is review evidence, not a map repair or approval.
+
+### Natural loose-material sprites
+- Addressed the visibly packaged ground drops independently of the pending terrain review. Added original `assets/world/loose-materials.png`, shared by world pickups and inventory: snapped olive branches, pale limestone, loose green/dry fibers and fallen hollow reeds. Stable IDs, positions, quantities and transaction code remain unchanged.
+- Built-in image-generation prompt referenced items-v2:2x2 equal square cells, transparent12% margins, three-quarter overhead natural loose materials without rope packaging, about32x32 effective pixel detail,4–6 material tones, warm upper-left highlights, no scenery/text or cast shadows. Generated original retained at `C:\Users\Rui\.codex\generated_images\01a1f5f4-26a2-7a00-ae45-8dbb5e9f3179\exec-36cde9f3-6396-47d0-8728-864b582f3f40.png`.
+- Measured four alpha contact baselines into material-anchors.json; ground drops use these baselines and a small2-unit contact shadow. The same ItemIcon mapping serves satchel and world, avoiding another asset-family mismatch.
+- Inspected shoreline drops at390x844 and all four icons in the1100x760 satchel.25-sheet/400-frame audit, TypeScript and lint pass. No QA fixture mutation was needed for this visual check. Terrain remainsv5 pending user clarification.

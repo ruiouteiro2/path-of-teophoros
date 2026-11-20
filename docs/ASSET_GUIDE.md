@@ -27,7 +27,7 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 - Human render cell: 76 world units; visible human roughly 65–73 units high. Aim at approximately four heads tall. Do not make the pet realistic and the human a two-head chibi.
 - Boxer cell: 43. Small dog/cat/fox: 32. Owl: 33. Keep species differences, not one arbitrary size for everything.
 - Flowers: 17–23; thyme resource: 22. Flowers stay well below the character's waist, usually below the knee.
-- Loose materials: 26-unit cell with clear recognizable silhouette, using `items.png` in both world and inventory. A stick is not a whole tree trunk; a stone pickup is not a boulder.
+- Loose materials: 26-unit cell with clear recognizable silhouette, using `loose-materials.png` in both world and inventory. Branches, fibers and reeds lie loose rather than appearing as tied shop bundles. Ground placement uses `material-anchors.json` and a small contact shadow. A stick is not a whole tree trunk; a stone pickup is not a boulder.
 - Harvest olive tree: 100-unit cell. Larger background trees may be larger, but the underlying pixel clusters and shading language must agree.
 - Butterflies: 12; dragonflies: 16; birds: 23. Wildlife should read as wildlife rather than floating UI markers.
 - Provide transparent margins and complete silhouettes. Never repair clipped heads/feet by hiding them behind UI.

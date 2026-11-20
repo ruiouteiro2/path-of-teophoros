@@ -2,6 +2,11 @@ import React from "react";
 import { Image } from "react-native";
 import { AtlasFrame } from "./AtlasFrame";
 import { ItemId } from "../progression";
+import materialAnchors from "../material-anchors.json";
+const materials = { wood: 0, stone: 1, fiber: 2, reed: 3 } as const;
+export function materialBaseline(id: keyof typeof materials) {
+  return materialAnchors[materials[id]];
+}
 export function ItemIcon({
   id,
   size = 48,
@@ -16,6 +21,9 @@ export function ItemIcon({
     onion: 3,
     wateringJug: 5,
   } as const;
+  if (id in materials)
+    return <AtlasFrame source={require("../../assets/world/loose-materials.png")}
+      cell={materials[id as keyof typeof materials]} columns={2} rows={2} size={size} />;
   if (id === "grilledFish")
     return <Image source={require("../../assets/world/grilled-fish.png")} style={{ width: size, height: size }} resizeMode="contain" />;
   if (id === "hoe")
@@ -39,10 +47,10 @@ export function ItemIcon({
   // Explicit atlas cells: inventory order can change without changing artwork.
   // Adding an ItemId requires an intentional art mapping at compile time.
   const cells = {
-    wood: 0, stone: 1, fiber: 2, thyme: 3, olives: 4,
-    bread: 5, tea: 6, carp: 7, perch: 8, reed: 9, torch: 10, rod: 11,
+    thyme: 3, olives: 4,
+    bread: 5, tea: 6, carp: 7, perch: 8, torch: 10, rod: 11,
     money: 12, chest: 13, axe: 14, pickaxe: 15,
-  } satisfies Record<Exclude<ItemId, keyof typeof garden | "hoe" | "grilledFish"> |
+  } satisfies Record<Exclude<ItemId, keyof typeof garden | keyof typeof materials | "hoe" | "grilledFish"> |
     "money" | "chest" | "axe" | "pickaxe", number>;
   const cell = cells[id as keyof typeof cells];
   return (

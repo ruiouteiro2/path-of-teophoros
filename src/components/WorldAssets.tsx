@@ -4,7 +4,7 @@ import { AtlasFrame } from "./AtlasFrame";
 import { Npc, npcFacing, npcBaseline, NpcKind } from "./Npc";
 import { Hero, heroBaseline, recoveryBaseline, RecoveryPose } from "./Hero";
 import { Appearance, defaultAppearance } from "../appearance";
-import { ItemIcon } from "./ItemIcon";
+import { ItemIcon, materialBaseline } from "./ItemIcon";
 import { GardenPlots } from "./Garden";
 import type { Garden } from "../garden";
 import { homeLocations } from "../worldLayout";
@@ -175,8 +175,12 @@ const WorldPickups = memo(function WorldPickups({
         .map((d) => (
           <View
             key={d.id}
-            style={[anchor(d, 26, 0.85), { zIndex: Math.round(d.y) }]}
+            style={[anchor(d, 26, materialBaseline(d.kind)), { zIndex: Math.round(d.y) }]}
           >
+            <View style={{ position: 'absolute', left: 6 * scale,
+              top: (26 * materialBaseline(d.kind) - 1.5) * scale,
+              width: 14 * scale, height: 2 * scale, borderRadius: 8,
+              backgroundColor: '#27362235' }} />
             <ItemIcon id={d.kind} size={26 * scale} />
           </View>
         ))}

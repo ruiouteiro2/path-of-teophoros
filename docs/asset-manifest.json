@@ -25,6 +25,7 @@
     { "file": "sprites-v2.png", "columns": 4, "rows": 4 },
     { "file": "altar-states.png", "columns": 2, "rows": 1 },
     { "file": "hoe.png", "columns": 1, "rows": 1 },
-    { "file": "grilled-fish.png", "columns": 1, "rows": 1 }
+    { "file": "grilled-fish.png", "columns": 1, "rows": 1 },
+    { "file": "loose-materials.png", "columns": 2, "rows": 2, "anchors": "material-anchors.json" }
   ]
 }
