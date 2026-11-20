@@ -132,3 +132,6 @@ Session remains active; the user's five-hour development period has not yet elap
 
 ### Contextual home presentation
 - Cabin HUD now shows Hearth & Home and its available activities rather than the outdoor altar objective. Completed altar text reports the actual completed repair, not a checked but outstanding instruction to talk. Keyboard guidance says interact; navigation help names the destination instead of calling it another map. Typecheck and lint passed.
+
+### Exploration and travel guard
+- Movement, outdoor exits and cabin entrance now share the same exploration gate. All are suspended during dialogue, sleep confirmation, fishing, gardening, menus and an existing fade. Previously exit effects omitted several activity guards. Typecheck, lint and all 40 behavior tests passed; this is code-path verification rather than a claim of a forced overlap runtime test.

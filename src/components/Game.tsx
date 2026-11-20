@@ -132,19 +132,16 @@ export default function Game() {
       ),
     [],
   );
-  const motion = useGameMotion(
-    save,
+  const exploring =
     playing &&
-      !journal &&
-      !traveling &&
-      !inStory &&
-      !conversation &&
-      !sleepPrompt &&
-      fishingSeed === null &&
-      gardenPlot === null,
-    session,
-    checkpoint,
-  );
+    !journal &&
+    !traveling &&
+    !inStory &&
+    !conversation &&
+    !sleepPrompt &&
+    fishingSeed === null &&
+    gardenPlot === null;
+  const motion = useGameMotion(save, exploring, session, checkpoint);
   const stop = motion.stop;
   const audio = useGameAudio(
     playing,
@@ -458,23 +455,17 @@ export default function Game() {
   useEffect(() => {
     const m = motion.state;
     if (
-      playing &&
-      !journal &&
-      !inStory &&
-      !traveling &&
+      exploring &&
       save &&
       m?.region === save.region &&
       exitTriggered(save.region, m.position)
     )
       travel();
-  }, [playing, journal, traveling, inStory, save, motion.state, travel]);
+  }, [exploring, save, motion.state, travel]);
   useEffect(() => {
     const p = motion.state?.position;
     if (
-      playing &&
-      !journal &&
-      !traveling &&
-      !inStory &&
+      exploring &&
       save?.region === "temple" &&
       p &&
       p.x > 1545 &&
@@ -483,15 +474,7 @@ export default function Game() {
       p.y > 445
     )
       travel("cabin");
-  }, [
-    playing,
-    journal,
-    traveling,
-    inStory,
-    save?.region,
-    motion.state,
-    travel,
-  ]);
+  }, [exploring, save?.region, motion.state, travel]);
   if (playing && save) {
     const liveMotion =
       motion.state?.region === save.region ? motion.state : null;
