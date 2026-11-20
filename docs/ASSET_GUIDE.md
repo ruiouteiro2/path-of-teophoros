@@ -110,3 +110,9 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 7. Run typecheck, lint and relevant behavior tests; export web and native bundles after dependency/render changes. Do not describe native export success as physical-device testing.
 8. Record the asset purpose, reference, grid, anchors, animation states and limitations in project documentation. Mark superseded assets explicitly.
 9. If it differs in style when placed in-scene, revise it before shipping. Do not excuse the mismatch as “higher quality.”
+
+## 11. Sanctuary inhabitants and recovery poses
+
+- Priest world art: `npcs/priest-walk-v2.png`, 8 × 4, supersedes `priest-walk.png`. Provision keeper Thaleia: `npcs/keeper-walk.png`, 8 × 4. Both use the human family's proportions and direction order. Their contact baselines are in `priest-anchors.json` and `keeper-anchors.json`; regenerate with `scripts/measure_sprite_anchors.py` after art changes.
+- Recovery sheet: `hero/recovery.png`, 4 × 2. Columns: short chiton, tied chiton, short cloak, tied cloak. Rows: lying exhausted / sitting recovering. Preserve the same hair and cloth keys and appearance data as walking. `recovery-anchors.json` measures bedroll contact. Never fake recovery by rotating a standing sprite.
+- During opening dialogue, hide movement/inventory HUD and frame both participants above the panel on narrow displays. Short landscape screens must retain the action button and allow text scrolling.

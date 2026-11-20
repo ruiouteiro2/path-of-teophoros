@@ -81,3 +81,14 @@ Session remains active; the user's five-hour development period has not yet elap
 - Add merchant presence and more purposeful environmental detail, then test quest hand-in/repaired altar in scene.
 - Assess foreground animation on a non-instrumented actual device/browser before promising a frame-rate target. BrowserOS recording is not a valid performance benchmark.
 - Finish audio listening review, final native exports, documentation and commit/push checkpoints; continue useful development until the requested five-hour period is satisfied.
+
+### Recovery staging and camp inhabitants
+
+- Replaced the old oversized-head priest world sheet with `priest-walk-v2.png` (8 × 4), matching the hero's four-head proportions. Added Thaleia's `keeper-walk.png` (8 × 4) at the provision camp and in the trade panel. NPCs face the nearby protagonist.
+- Added `hero/recovery.png` (4 × 2): columns short chiton, tied chiton, short cloak, tied cloak; rows lying and sitting. It uses the same magenta hair/cyan cloth runtime palette as walking. Awakening uses lying, the next two story beats sitting, then standing.
+- Alpha contact measurements are reproducible with `scripts/measure_sprite_anchors.py`; source images remain intact. Recovery poses use bedroll contact, not a detached standing shadow.
+- Checked recovery/NPCs in the live map, desktop and 390 × 844 portrait / 844 × 390 landscape. Story camera shifts upward on phones to keep actors above dialogue. Short screens scroll dialogue text; action stays visible. Story HUD is hidden. Dialogue guards duplicate activation.
+- Added an atomic fish-award transaction and full-stack preflight so a catch record cannot advance without adding the fish.
+- Remaining: quest restoration in-scene, merchant interaction inspection, further visual/audio polish and native verification. Five-hour goal remains active.
+- Altar quest verified in browser: 3 wood / 3 stone / 2 fiber consumed, balance 100 → 220, repaired altar art visible, hand-in button removed. Saved data confirms empty bag and restored flag; reopening after reload retains the result.
+- Recovery/NPC checkpoint: 32 tests, lint and typecheck pass; web, Android and iOS bundles exported successfully. Native device rendering/audio remains untested.

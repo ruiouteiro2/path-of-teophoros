@@ -4,6 +4,7 @@ import {
   newProgression,
   advanceStory,
   addItem,
+  landFish,
   trade,
   transfer,
   consume,
@@ -13,6 +14,18 @@ import {
   validProgression,
 } from "../src/progression.ts";
 import { migrateProgress, validSave, regions } from "../src/game.ts";
+
+test("a landed fish and the catch record are awarded atomically", () => {
+  const p = newProgression();
+  const caught = landFish(p, "carp");
+  assert.equal(caught.bag.carp, 1);
+  assert.equal(caught.caught, 1);
+  const full = { ...p, bag: {carp: 999} };
+  assert.strictEqual(landFish(full, "carp"), full);
+  assert.strictEqual(landFish(p, "wood"), p);
+  const maximum = { ...p, caught: 9999999 };
+  assert.strictEqual(landFish(maximum, "perch"), maximum);
+});
 
 test('terrain edits relocate a blocked saved position without discarding progression',()=>{
  const save={name:'Tester',petName:'Argos',pet:'Boxer',color:'#fff',region:'temple',worldVersion:2,position:{x:10,y:10},gathered:[],inventory:0,visited:['temple'],progress:{...newProgression(),money:55}};

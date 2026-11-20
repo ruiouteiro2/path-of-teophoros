@@ -39,6 +39,7 @@ import {
   newProgression,
   advanceStory,
   addItem,
+  landFish,
   restoreAltar,
   altarCost,
   count,
@@ -113,10 +114,7 @@ export default function Game() {
         v?.progress
           ? {
               ...v,
-              progress: {
-                ...addItem(v.progress, fish),
-                caught: v.progress.caught + 1,
-              },
+              progress: landFish(v.progress, fish),
             }
           : v,
       ),
@@ -219,6 +217,10 @@ export default function Game() {
           setMessage(
             "You need 5 energy to fish. Eat some bread or rest in your cabin.",
           );
+          return;
+        }
+        if (count(save.progress.bag, "carp") >= 999 || count(save.progress.bag, "perch") >= 999 || save.progress.caught >= 9999999) {
+          setMessage("Store or sell your fish before casting again.");
           return;
         }
         setSave((v) =>
@@ -488,12 +490,13 @@ export default function Game() {
                 0,
                 Math.max(
                   height - worldH,
-                  height / 2 - (camera.y * worldH) / WORLD.height,
+                  height * (inStory && compact ? 0.29 : 0.5) - (camera.y * worldH) / WORLD.height,
                 ),
               ),
             }}
           >
             <World
+              recovery={save.progress?.story === "awakening" ? "lying" : save.progress?.story === "world" || save.progress?.story === "calling" ? "sitting" : undefined}
               region={save.region}
               hero={liveSave.position}
               pet={save.pet}
@@ -523,6 +526,7 @@ export default function Game() {
           <View
             style={[
               s.hud,
+              inStory && { display: "none" },
               { left: compact ? 12 : 32, right: compact ? 12 : 32 },
             ]}
           >
@@ -570,6 +574,7 @@ export default function Game() {
           <View
             style={[
               s.bottomHud,
+              inStory && { display: "none" },
               { left: compact ? 12 : 32, right: compact ? 12 : 32 },
             ]}
           >
@@ -762,6 +767,7 @@ export default function Game() {
           )}
           {save.progress && save.progress.story !== "complete" && (
             <Dialogue
+              key={save.progress.story}
               stage={save.progress.story}
               familiar={save.petName}
               onNext={() =>

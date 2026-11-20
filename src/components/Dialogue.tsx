@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
   Image,
   View,
@@ -19,29 +19,36 @@ export function Dialogue({
   familiar: string;
   onNext: () => void;
 }) {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const small = width < 650;
+  const short = height < 500;
   const line = opening[stage];
   // Each page is deliberately readable immediately. No forced typing wait or repetitive chirping.
   const [ready, setReady] = useState(false);
+  const advanced = useRef(false);
+  const advance = useCallback(() => {
+    if (!ready || advanced.current) return;
+    advanced.current = true;
+    onNext();
+  }, [ready, onNext]);
   useEffect(() => {
     const t = setTimeout(() => setReady(true), 180);
     return () => clearTimeout(t);
-  }, [stage]);
+  }, []);
   useEffect(() => {
     if (Platform.OS !== "web") return;
     const key = (e: KeyboardEvent) => {
       if (ready && !e.repeat && (e.key === "Enter" || e.key === " ")) {
         e.preventDefault();
-        onNext();
+        advance();
       }
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, [ready, onNext]);
+  }, [ready, advance]);
   return (
     <View style={d.overlay}>
-      <View style={d.chapter}>
+      <View style={[d.chapter, short && { top: 12 }]}>
         <GameText
           style={{
             color: "#fff0c4",
@@ -57,7 +64,7 @@ export function Dialogue({
           <View
             style={[
               d.portrait,
-              { width: small ? 110 : 180, height: small ? 110 : 180 },
+              { width: short ? 80 : small ? 110 : 180, height: short ? 90 : small ? 110 : 180 },
             ]}
           >
             <Image
@@ -68,7 +75,7 @@ export function Dialogue({
           </View>
           <View style={{ flex: 1, gap: 12 }}>
             <GameText style={ui.title}>{priestName}</GameText>
-            <ScrollView style={{ maxHeight: small ? 200 : 220 }}>
+            <ScrollView style={{ maxHeight: short ? Math.max(70, height * 0.24) : small ? 200 : 220 }}>
               <GameText
                 style={{
                   fontSize: small ? 21 : 25,
@@ -78,7 +85,7 @@ export function Dialogue({
                 {line.text}
               </GameText>
             </ScrollView>
-            <GameButton disabled={!ready} onPress={onNext}>
+            <GameButton disabled={!ready} onPress={advance}>
               {line.answer.replace("{familiar}", familiar)} ▸
             </GameButton>
           </View>

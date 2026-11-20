@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Platform,
   useWindowDimensions,
+  ScrollView,
 } from "react-native";
 import { GamePanel, GameText as Text, GameButton, ui } from "./GameUI";
 export function Conversation({
@@ -16,7 +17,7 @@ export function Conversation({
   onClose: () => void;
   action?: { label: string; onPress: () => void };
 }) {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const narrow = width < 650;
   useEffect(() => {
     if (Platform.OS !== "web") return;
@@ -32,19 +33,19 @@ export function Conversation({
   return (
     <View style={s.overlay}>
       <GamePanel style={{ width: "96%", maxWidth: 1000 }}>
-        <View style={{ flexDirection: "row", gap: 16 }}>
+        <View style={{ flexDirection: narrow ? "column" : "row", gap: 16 }}>
           <Image
             source={require("../../assets/world/npcs/priest-portrait.png")}
             resizeMode="contain"
             style={{
               width: narrow ? 80 : 150,
-              height: narrow ? 110 : 170,
-              alignSelf: "flex-end",
+              height: narrow || height < 500 ? 80 : 170,
+              alignSelf: "center",
             }}
           />
           <View style={{ flex: 1, gap: 12 }}>
             <Text style={ui.title}>High Priest of Zeus</Text>
-            <Text style={{ fontSize: narrow ? 20 : 24 }}>{text}</Text>
+            <ScrollView style={{maxHeight: Math.max(80, height * 0.28)}}><Text style={{ fontSize: narrow ? 20 : 24 }}>{text}</Text></ScrollView>
             {action && (
               <GameButton onPress={action.onPress}>{action.label}</GameButton>
             )}

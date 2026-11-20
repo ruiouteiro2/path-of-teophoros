@@ -16,6 +16,15 @@ import {
   clothColors,
 } from "../appearance";
 import anchors from "../hero-anchors.json";
+import recoveryAnchors from "../recovery-anchors.json";
+export type RecoveryPose = "lying" | "sitting";
+const recoveryKeys = ["short-chiton", "tied-chiton", "short-cloak", "tied-cloak"];
+function recoveryCell(a: Appearance, pose: RecoveryPose) {
+  return recoveryKeys.indexOf(`${a.hairStyle}-${a.outfit}`) + (pose === "sitting" ? 4 : 0);
+}
+export function recoveryBaseline(a: Appearance, pose: RecoveryPose) {
+  return recoveryAnchors[recoveryCell(a, pose)];
+}
 const sheets = {
   "short-chiton": require("../../assets/world/hero/short-chiton.png"),
   "tied-chiton": require("../../assets/world/hero/tied-chiton.png"),
@@ -44,20 +53,24 @@ export function Hero({
   size = 80,
   frame = 0,
   appearance = defaultAppearance,
+  recovery,
 }: {
   facing?: Facing;
   size?: number;
   frame?: number;
   appearance?: Appearance;
+  recovery?: RecoveryPose;
 }) {
   const id = useId().replace(/:/g, "");
-  const source = sheets[`${appearance.hairStyle}-${appearance.outfit}`];
+  const source = recovery ? require("../../assets/world/hero/recovery.png") : sheets[`${appearance.hairStyle}-${appearance.outfit}`];
+  const cell = recovery ? recoveryCell(appearance, recovery) : rows[facing] * 8 + frame % 8;
+  const columns = recovery ? 4 : 8;
   const props = {
     href: source,
-    x: -(frame % 8) * 100,
-    y: -rows[facing] * 100,
-    width: 800,
-    height: 400,
+    x: -(cell % columns) * 100,
+    y: -Math.floor(cell / columns) * 100,
+    width: columns * 100,
+    height: recovery ? 200 : 400,
     preserveAspectRatio: "none" as const,
   };
   return (

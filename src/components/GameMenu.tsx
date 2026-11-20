@@ -12,6 +12,7 @@ import { ItemIcon } from "./ItemIcon";
 import { Hero, PetPortrait } from "./WorldAssets";
 import { AppearancePicker } from "./AppearancePicker";
 import { WorldMap } from "./WorldMap";
+import {Npc} from './Npc';
 import { defaultAppearance } from "../appearance";
 import type { Save } from "../game";
 import type { useGameAudio } from "../hooks/useGameAudio";
@@ -332,8 +333,9 @@ export function GameMenu({
           )}
           {tab === "trade" && (
             <>
+              <View style={{flexDirection:'row',alignItems:'center',gap:12}}><Npc kind="keeper" size={90}/><View style={{flex:1}}><Text style={ui.title}>Thaleia</Text><Text>Sanctuary provision keeper</Text></View></View>
               <Text>
-                The sanctuary keeper trades provisions for gathered supplies.
+                “A little bread for the road? I also buy what you gather. Nothing useful should go to waste.”
               </Text>
               {stackGrid(p.bag)}
               <Text style={ui.title}>{items[selected].name}</Text>

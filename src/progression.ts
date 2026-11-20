@@ -172,6 +172,11 @@ export function addItem(p: Progression, id: ItemId, amount = 1): Progression {
     return p;
   return { ...p, bag: { ...p.bag, [id]: count(p.bag, id) + amount } };
 }
+export function landFish(p: Progression, id: ItemId): Progression {
+  if ((id !== "carp" && id !== "perch") || p.caught >= 9999999) return p;
+  const next = addItem(p, id);
+  return next === p ? p : { ...next, caught: p.caught + 1 };
+}
 function take(bag: Bag, id: ItemId, amount: number): Bag {
   const next = { ...bag, [id]: count(bag, id) - amount };
   if (next[id] === 0) delete next[id];
