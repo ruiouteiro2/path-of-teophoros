@@ -216,7 +216,7 @@ export function useGameAudio(
     waterAction,
   ]);
   useEffect(() => {
-    const proximity = waterProximity(region, position);
+    const proximity = waterProximity(region, { x: position.x, y: position.y });
     water.volume = region === "forest" ? proximity * mix.ambience * 0.5 : 0;
     lake.volume = region === "temple" ? proximity * mix.ambience * 0.65 : 0;
   }, [position.x, position.y, region, water, lake, mix.ambience]);
