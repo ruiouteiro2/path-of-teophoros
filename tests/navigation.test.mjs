@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { walkable, regions, resources } from "../src/game.ts";
 import { homeLocations, cabinLocations } from "../src/worldLayout.ts";
 import { gardenPlots } from "../src/garden.ts";
-import { exitTriggered } from "../src/inventory.ts";
+import { exitTriggered, lakeReeds } from "../src/inventory.ts";
 
 // Flood the actual navigation geometry, rather than only testing target points.
 // A walkable interaction can still be trapped on a disconnected island.
@@ -58,6 +58,8 @@ for (const region of ["temple", "forest", "cabin"]) {
         "harvest node disconnected",
       );
     if (region === "temple") {
+      for (const reed of lakeReeds)
+        assert(points.some((q) => Math.hypot(q.x - reed.x, q.y - reed.y) < 25), `${reed.id} disconnected`);
       assert(
         points.some((p) => p.x > 1545 && p.x < 1600 && p.y > 445 && p.y < 477),
         "cabin entrance disconnected",

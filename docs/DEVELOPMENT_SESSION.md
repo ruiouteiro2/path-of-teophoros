@@ -292,3 +292,9 @@ Session remains active; the user's five-hour development period has not yet elap
 ### Current platform export verification
 - After the v5 terrain, motion/save/UI fixes and Thaleia portrait: all 56 tests, TypeScript and lint pass. Web export and Android/iOS Hermes bundle exports pass (92 native assets). These are packaging checks, not signed binaries or physical-device QA.
 
+
+### Lake reed gathering and recipe consistency
+- Found an unused lake-reed inventory item and a reed fishing rod recipe containing no reeds. Added three once-only fallen reed bundles on the accessible north-bank path, using the existing item atlas at material pickup scale. They use separate stable IDs; the original 60 seeded material IDs remain unchanged. Material relocation clears reed locations.
+- Rod recipe now consumes two reeds, one wood and two fiber. Existing rods remain valid, and the shop still offers a rod. Pickup text uses the actual inventory display name.
+- Tests cover collection once, serialization, invalid reed IDs, correct material counts, missing-reed crafting rejection, atomic recipe consumption and flood-fill reachability from the sanctuary spawn. All 57 tests, TypeScript and lint pass.
+- Inspected in the live desktop map. Picking up temple-reed-0 added exactly one reed and persisted across reload; original QA save/backup restored. No new raster art or native API introduced.

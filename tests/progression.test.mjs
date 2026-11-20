@@ -84,13 +84,16 @@ test("bulk storage respects destination capacity without losing the remaining st
   assert.deepEqual(transfer(filled, "wood", false, 9), p);
 });
 test("crafting is atomic and consumes ingredients once", () => {
-  let p = addItem(addItem(newProgression(), "wood", 3), "fiber", 2);
+  let p = addItem(addItem(newProgression(), "wood", 1), "fiber", 2);
+  assert.strictEqual(craft(p, "rod"), p, "reeds are required before crafting");
+  p = addItem(p, "reed", 2);
   const rod = craft(p, "rod");
   assert.equal(rod.bag.rod, 1);
   assert.equal(rod.bag.wood, undefined);
   assert.equal(rod.bag.fiber, undefined);
+  assert.equal(rod.bag.reed, undefined);
   assert.strictEqual(craft(rod, "rod"), rod);
-  assert.equal(p.bag.wood, 3);
+  assert.equal(p.bag.wood, 1);
 });
 test("altar hand-in rewards only once and requires the story and materials", () => {
   let p = newProgression();

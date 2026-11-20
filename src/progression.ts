@@ -147,7 +147,7 @@ export const items: Record<
   },
   reed: {
     name: "Lake reed",
-    description: "Flexible reed from the water’s edge.",
+    description: "A fallen reed from the lake’s north bank. Used to make a fishing rod.",
     sell: 4,
   },
   torch: {
@@ -311,7 +311,7 @@ export const recipes = {
   rod: {
     name: "Reed fishing rod",
     station: "craft",
-    cost: { wood: 3, fiber: 2 },
+    cost: { wood: 1, reed: 2, fiber: 2 },
     result: "rod",
   },
 } as const;

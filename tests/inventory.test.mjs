@@ -5,6 +5,8 @@ import {
   collectDrop,
   materialCounts,
   exitTriggered,
+  lakeReeds,
+  pickupsFor,
 } from "../src/inventory.ts";
 import { validSave, walkable } from "../src/game.ts";
 import { defaultAppearance } from "../src/appearance.ts";
@@ -24,6 +26,24 @@ const fixture = () => ({
   seed: 1234,
   pickedDrops: [],
   appearance: defaultAppearance,
+});
+test("lake reeds are reachable once-only pickups and persist without changing material IDs", () => {
+  assert.equal(pickupsFor(1234, "temple").length, 63);
+  assert.equal(pickupsFor(1234, "forest").length, 60);
+  let s = { ...fixture(), worldVersion: 2, region: "temple", progress: newProgression() };
+  for (const reed of lakeReeds) {
+    assert(walkable(reed, "temple"));
+    assert.equal(nearestHome(reed, "temple"), undefined);
+    s = { ...s, position: reed };
+    const next = collectDrop(s, reed.id);
+    assert.notEqual(next, s);
+    assert.equal(collectDrop(next, reed.id), next);
+    s = JSON.parse(JSON.stringify(next));
+    assert(validSave(s));
+  }
+  assert.equal(s.progress.bag.reed, 3);
+  assert.deepEqual(materialCounts(s), { wood: 0, stone: 0, fiber: 0 });
+  assert(!validSave({ ...s, pickedDrops: ["temple-reed-3"] }));
 });
 test("full stacks leave ground drops available", () => {
   const drop = dropsFor(1234, "forest")[0];

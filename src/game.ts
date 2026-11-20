@@ -112,7 +112,7 @@ export function validSave(value: unknown): value is Save {
       (Array.isArray(s.pickedDrops) &&
         new Set(s.pickedDrops).size === s.pickedDrops.length &&
         s.pickedDrops.every((id) =>
-          /^(forest|temple)-drop-([0-9]|[1-5][0-9])$/.test(id),
+          /^(?:(forest|temple)-drop-([0-9]|[1-5][0-9])|temple-reed-[0-2])$/.test(id),
         ))) &&
     typeof s.name === "string" &&
     typeof s.petName === "string" &&
@@ -154,7 +154,7 @@ export function migrateProgress(save: Save): Save {
     const index = Number(id.split("-").at(-1));
     progress = addItem(
       progress,
-      (["wood", "stone", "fiber"] as ItemId[])[index % 3],
+      id.startsWith("temple-reed-") ? "reed" : (["wood", "stone", "fiber"] as ItemId[])[index % 3],
     );
   }
   for (const id of save.gathered)

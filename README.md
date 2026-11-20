@@ -22,7 +22,7 @@ Node 24 is recommended for the built-in TypeScript test runner. Mobile developme
 - Gather loose wood, stone and fiber with **E** or **Gather**. Each drop can be collected once, including after reloads.
 - In the forest, cross the bridge and follow the path to the right edge. In the temple, follow the path to the left edge. Walking into an exit automatically travels through a black fade.
 - Walk into the cabin doorway to enter. Use its chest for storage, wardrobe for appearance, and bed to advance the day and restore energy.
-- Craft a rod at the outdoor workbench or buy one at the camp. At the lake dock, cast, hook a bite, then hold/release to keep the fish inside the green catch bar.
+- Gather fallen reed bundles along the lake's north bank. Craft a rod at the outdoor workbench with two reeds, one wood and two fiber, or buy one at the camp. At the lake dock, cast, hook a bite, then hold/release to keep the fish inside the green catch bar.
 - Tend the six garden plots in the western grove: till, plant barley or onions, water, then sleep. Refill the six-use jug at the well. Harvest and sell crops at the camp.
 - Cook harvested barley into bread or two thyme into infusion at the cabin hearth. Ingredients must be in your satchel.
 - Trade gathered supplies for drachmae at the camp. Bring three wood, three stone and two fiber to the High Priest to secure the altar and earn 120 drachmae.

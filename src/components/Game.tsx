@@ -35,6 +35,7 @@ import { Dialogue } from "./Dialogue";
 import { GameMenu, MenuTab } from "./GameMenu";
 import {
   newProgression,
+  items,
   advanceStory,
   addItem,
   landFish,
@@ -285,8 +286,8 @@ export default function Game() {
           ? collectDrop({ ...v, position: live.position }, drop.id)
           : v,
       );
-      playEffect(drop.kind);
-      setMessage(`+1 ${drop.kind} · added to inventory`);
+      playEffect(drop.kind === "reed" ? "fiber" : drop.kind);
+      setMessage(`+1 ${items[drop.kind].name} · added to inventory`);
       return;
     }
     const i = nearest(live);
@@ -706,7 +707,7 @@ export default function Game() {
                                   : home === "provisions"
                                     ? "Trade provisions"
                                     : drop
-                                      ? "Pick up " + drop.kind
+                                      ? "Pick up " + items[drop.kind].name
                                       : nearest(liveSave) >= 0
                                         ? "Gather " +
                                           regions[save.region].resource

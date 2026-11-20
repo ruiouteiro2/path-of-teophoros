@@ -8,7 +8,7 @@ import { ItemIcon } from "./ItemIcon";
 import { GardenPlots } from "./Garden";
 import type { Garden } from "../garden";
 import { homeLocations } from "../worldLayout";
-import { dropsFor } from "../inventory";
+import { pickupsFor } from "../inventory";
 import anchors from "../sprite-anchors.json";
 import { LivingEnvironment, Flowers } from "./LivingEnvironment";
 import {
@@ -169,7 +169,7 @@ const WorldPickups = memo(function WorldPickups({
     width: size * scale, height: size * scale,
   });
   return <>
-      {dropsFor(seed, region)
+      {pickupsFor(seed, region)
         .filter((d) => !pickedDrops.includes(d.id))
         .map((d) => (
           <View

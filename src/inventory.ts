@@ -4,7 +4,16 @@ import { addItem } from "./progression.ts";
 import { terrainArea, homeLocations } from "./worldLayout.ts";
 import { gardenPlots } from "./garden.ts";
 export type Material = "wood" | "stone" | "fiber";
-export type Drop = Point & { id: string; kind: Material };
+export type Drop = Point & { id: string; kind: Material | "reed" };
+export const lakeReeds: Drop[] = [
+  { id: "temple-reed-0", kind: "reed", x: 1430, y: 840 },
+  { id: "temple-reed-1", kind: "reed", x: 1470, y: 800 },
+  { id: "temple-reed-2", kind: "reed", x: 1580, y: 778 },
+];
+export function pickupsFor(seed: number, region: Region): Drop[] {
+  const materials = dropsFor(seed, region);
+  return region === "temple" ? [...materials, ...lakeReeds] : materials;
+}
 const layoutCache = new Map<string, Drop[]>();
 export function dropsFor(seed: number, region: Region): Drop[] {
   if (region === "cabin") return [];
@@ -42,7 +51,8 @@ export function dropsFor(seed: number, region: Region): Drop[] {
     const overlaps = (p: Point) =>
       !walkable(p, region) ||
       (region === "temple" &&
-        (gardenPlots.some((g) => Math.hypot(p.x - g.x, p.y - g.y) < 50) ||
+        (lakeReeds.some((r) => Math.hypot(p.x - r.x, p.y - r.y) < 32) ||
+          gardenPlots.some((g) => Math.hypot(p.x - g.x, p.y - g.y) < 50) ||
           Object.values(homeLocations).some((h) => Math.hypot(p.x - h.x, p.y - h.y) < 70)));
     if (!overlaps(drop)) continue;
     let placed = false;
@@ -77,7 +87,7 @@ export function dropsFor(seed: number, region: Region): Drop[] {
   return result;
 }
 export function nearestDrop(save: Save, position: Point = save.position) {
-  return dropsFor(save.seed ?? 12345, save.region)
+  return pickupsFor(save.seed ?? 12345, save.region)
     .filter(
       (d) =>
         !(save.pickedDrops ?? []).includes(d.id) &&
@@ -99,7 +109,7 @@ export function materialCounts(save: Save): Record<Material, number> {
   const counts = { wood: 0, stone: 0, fiber: 0 };
   for (const region of ["forest", "temple"] as const)
     for (const d of dropsFor(save.seed ?? 12345, region))
-      if (save.pickedDrops?.includes(d.id)) counts[d.kind]++;
+      if (d.kind !== "reed" && save.pickedDrops?.includes(d.id)) counts[d.kind]++;
   return counts;
 }
 export function collectDrop(save: Save, id: string): Save {
