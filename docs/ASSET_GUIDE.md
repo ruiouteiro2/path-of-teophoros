@@ -10,7 +10,7 @@ Judge assets at their actual in-game size, beside existing assets. A beautiful i
 
 ### Reference hierarchy
 
-1. Terrain and trees: `assets/world/olivewild-v2.png` and `sanctuary-v3.png`. Match their chunky leaf groups, stepped silhouettes, warm earth, and broad shadow masses. The old `olivewild.png`, `temple.png`, and `sanctuary-v2.png` are superseded terrain drafts.
+1. Terrain and trees: `assets/world/olivewild-v2.png` and `sanctuary-v4.png`. Match their chunky leaf groups, stepped silhouettes, warm earth, and broad shadow masses. The old `olivewild.png`, `temple.png`, and `sanctuary-v2.png` are superseded terrain drafts.
 2. Animals: `assets/world/pets/boxer.png` and `small-dog.png`. Their anatomy, outlined shading, and gait are the approved animal direction. Preserve the actual reference dogs in `assets/references/`.
 3. Humans: `assets/world/hero/` is the current character family. Less oversized heads than the obsolete `hero-walk.png`, natural limb proportions, and shading density compatible with the pets at world scale.
 4. UI: the current Olympus sky, ochre panels, dark brown borders, pale inset fields, compact bold labels, and illustrated choices.
@@ -116,3 +116,9 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 - Priest world art: `npcs/priest-walk-v2.png`, 8 × 4, supersedes `priest-walk.png`. Provision keeper Thaleia: `npcs/keeper-walk.png`, 8 × 4. Both use the human family's proportions and direction order. Their contact baselines are in `priest-anchors.json` and `keeper-anchors.json`; regenerate with `scripts/measure_sprite_anchors.py` after art changes.
 - Recovery sheet: `hero/recovery.png`, 4 × 2. Columns: short chiton, tied chiton, short cloak, tied cloak. Rows: lying exhausted / sitting recovering. Preserve the same hair and cloth keys and appearance data as walking. `recovery-anchors.json` measures bedroll contact. Never fake recovery by rotating a standing sprite.
 - During opening dialogue, hide movement/inventory HUD and frame both participants above the panel on narrow displays. Short landscape screens must retain the action button and allow text scrolling.
+
+## 12. Lake wildlife layers
+
+- `sanctuary-v4.png` supersedes v3 by removing baked fish; living animals must not be painted permanently into terrain. It retains the collision-mapped shoreline, dock and building positions.
+- `lake-fish.png`: 4 columns × 2 rows, overhead right-facing carp then perch, four tail phases. Render at 32 world units beneath the water shimmer, with reduced opacity. Keep routes and the entire sprite footprint inside the lake and away from the dock. Match the inventory species, without using side-view inventory icons as swimming sprites.
+- Ambient animation time survives menu pauses. Birds must return to their perches continuously, never disappear and restart across the map. Lake surface rings are occasional local disturbances with still intervals, not a perpetual fountain.

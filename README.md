@@ -29,7 +29,7 @@ Node 24 is recommended for the built-in TypeScript test runner. Mobile developme
 
 ## Implemented
 
-Two connected outdoor maps plus a cabin interior, five Familiars, portrait dialogue, eight harvest nodes, 60 seeded material drops per outdoor map, customization, altar restoration quest, currency, stack inventory, storage, trading, crafting, food/energy, sleep, fishing, and local saving. Movement uses acceleration, eight-phase directional human walks with measured foot anchors, directional Familiar gait, held idle poses and breadcrumb following. Environmental layers include flowing river water, gentle lake shimmer, fixed-root flowers, butterflies, perching birds and blue/red dragonflies. Travel uses automatic black fades.
+Two connected outdoor maps plus a cabin interior, five Familiars, portrait dialogue, eight harvest nodes, 60 seeded material drops per outdoor map, customization, altar restoration quest, currency, stack inventory, storage, trading, crafting, food/energy, sleep, fishing, and local saving. Movement uses acceleration, eight-phase directional human walks with measured foot anchors, directional Familiar gait, held idle poses and breadcrumb following. Environmental layers include flowing river water, gentle lake shimmer, independently swimming carp and perch, fixed-root flowers, butterflies, perching birds and blue/red dragonflies. Travel uses automatic black fades.
 
 The original music arrangement is approximately 4 minutes 46 seconds. Recorded water ambience and CC0 foley replace the first synthetic sound pass; no repeating bird-call audio is active. Sound levels persist and playback pauses in the background. Source credits are in `assets/audio/foley/README.md`.
 

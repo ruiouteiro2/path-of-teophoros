@@ -6,7 +6,7 @@ import { dimensions, regions } from "../game";
 import { homeLocations, cabinLocations } from "../worldLayout";
 
 const maps = {
-  temple: require("../../assets/world/sanctuary-v3.png"),
+  temple: require("../../assets/world/sanctuary-v4.png"),
   forest: require("../../assets/world/olivewild-v2.png"),
   cabin: require("../../assets/world/cabin-interior.png"),
 };

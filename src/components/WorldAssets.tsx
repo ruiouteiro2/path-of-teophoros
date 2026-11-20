@@ -22,7 +22,7 @@ import {
 export const art = {
   cabin: require("../../assets/world/cabin-interior.png"),
   forest: require("../../assets/world/olivewild-v2.png"),
-  temple: require("../../assets/world/sanctuary-v3.png"),
+  temple: require("../../assets/world/sanctuary-v4.png"),
   atlas: require("../../assets/world/sprites.png"),
   olive: require("../../assets/world/olive-tree-v2.png"),
 };

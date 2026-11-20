@@ -1,7 +1,8 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useState, useRef } from "react";
 import { AppState, StyleSheet, View } from "react-native";
 import Svg, {
   Defs,
+  ClipPath,
   Mask,
   Rect,
   Path,
@@ -12,10 +13,12 @@ import Svg, {
 import type { Region } from "../game";
 import { AtlasFrame } from "./AtlasFrame";
 import anchors from "../sprite-anchors.json";
+import { birdMotion, lakeRipple, lakeFishMotion } from "../environmentMotion";
 const flowers = require("../../assets/world/flowers.png");
 const wildlife = require("../../assets/world/wildlife.png");
 const dragonflies = require("../../assets/world/dragonflies.png");
 const water = require("../../assets/world/water.png");
+const lakeFish = require("../../assets/world/lake-fish.png");
 
 export function Flowers({
   species,
@@ -117,11 +120,11 @@ export const LivingEnvironment = memo(function LivingEnvironment({
   paused?: boolean;
 }) {
   const [time, setTime] = useState(0);
+  const elapsed = useRef(0);
   useEffect(() => {
     if (!lively || paused) return;
     let active = true,
-      last = Date.now(),
-      elapsed = 0;
+      last = Date.now();
     const sub = AppState.addEventListener("change", (s) => {
       active = s === "active";
       last = Date.now();
@@ -129,8 +132,8 @@ export const LivingEnvironment = memo(function LivingEnvironment({
     const timer = setInterval(() => {
       const now = Date.now();
       if (active) {
-        elapsed += Math.min(0.1, (now - last) / 1000);
-        setTime(elapsed);
+        elapsed.current += Math.min(0.1, (now - last) / 1000);
+        setTime(elapsed.current);
       }
       last = now;
     }, 50);
@@ -190,6 +193,15 @@ export const LivingEnvironment = memo(function LivingEnvironment({
             </Mask>
           </Defs>
           <G mask={"url(#current-" + region + ")"}>
+            {region === "temple" && [0, 1, 2].map(i => {
+              const fish = lakeFishMotion(time, i);
+              return <G key={"fish" + i} opacity={fish.opacity} transform={`rotate(${fish.heading} ${fish.x} ${fish.y})`}>
+                <Svg x={fish.x - 8} y={fish.y - 8} width={16} height={16} viewBox={`${fish.frame * 100} ${fish.species * 100} 100 100`}>
+                  <Defs><ClipPath id={`fish-cell-${i}`}><Rect x={fish.frame * 100} y={fish.species * 100} width={100} height={100}/></ClipPath></Defs>
+                  <SvgImage href={lakeFish} x={0} y={0} width={400} height={200} preserveAspectRatio="none" clipPath={`url(#fish-cell-${i})`} />
+                </Svg>
+              </G>;
+            })}
             {Array.from({ length: 9 }, (_, i) => (
               <SvgImage
                 key={i}
@@ -245,18 +257,18 @@ export const LivingEnvironment = memo(function LivingEnvironment({
           ) : (
             <>
               {[0, 1, 2].map((i) => {
-                const p = (time * 0.7 + i / 3) % 1;
+                const ripple = lakeRipple(time, i);
                 return (
                   <Ellipse
                     key={i}
-                    cx={804}
-                    cy={504}
-                    rx={3 + p * 40}
-                    ry={1 + p * 12}
+                    cx={ripple.x}
+                    cy={ripple.y}
+                    rx={ripple.rx}
+                    ry={ripple.ry}
                     stroke="#d9fcff"
                     strokeWidth={1}
                     fill="none"
-                    opacity={(1 - p) * 0.7}
+                    opacity={ripple.opacity}
                   />
                 );
               })}
@@ -295,39 +307,17 @@ export const LivingEnvironment = memo(function LivingEnvironment({
             );
           })}
           {[0, 1].map((i) => {
-            const t = (time + i * 13) % 29,
-              flight = t < 6,
-              u = t / 6,
-              reverse = i === 1;
-            const x = flight
-                ? reverse
-                  ? 920 - u * 770
-                  : 90 + u * 770
-                : reverse
-                  ? 150
-                  : 860,
-              y = flight
-                ? 240 + i * 140 - Math.sin(u * Math.PI) * 90
-                : 240 + i * 140;
+            const bird = birdMotion(time, i);
             return (
               <View
                 key={"bird" + i}
-                style={[place(x, y, 23), { zIndex: 3100 }]}
+                style={[place(bird.x, bird.y, 23), { zIndex: 3100 }]}
               >
                 <AtlasFrame
                   source={wildlife}
-                  cell={
-                    flight
-                      ? 8 + (Math.floor(time * 10) % 4)
-                      : 12 +
-                        (Math.floor(t) % 8 === 0
-                          ? 1
-                          : Math.floor(t) % 11 === 0
-                            ? 2
-                            : 0)
-                  }
+                  cell={bird.frame}
                   size={23 * scale}
-                  flip={reverse}
+                  flip={bird.reverse}
                 />
               </View>
             );

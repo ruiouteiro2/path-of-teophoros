@@ -891,7 +891,7 @@ export default function Game() {
           <Label>YOUR HOME · THE RUINED SANCTUARY</Label>
           <View style={[s.regionArt, { height: 160, marginTop: 12 }]}>
             <Image
-              source={require("../../assets/world/sanctuary-v3.png")}
+              source={require("../../assets/world/sanctuary-v4.png")}
               style={{ width: "100%", height: "100%" }}
               resizeMode="cover"
             />

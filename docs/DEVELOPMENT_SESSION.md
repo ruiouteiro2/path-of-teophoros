@@ -92,3 +92,12 @@ Session remains active; the user's five-hour development period has not yet elap
 - Remaining: quest restoration in-scene, merchant interaction inspection, further visual/audio polish and native verification. Five-hour goal remains active.
 - Altar quest verified in browser: 3 wood / 3 stone / 2 fiber consumed, balance 100 → 220, repaired altar art visible, hand-in button removed. Saved data confirms empty bag and restored flag; reopening after reload retains the result.
 - Recovery/NPC checkpoint: 32 tests, lint and typecheck pass; web, Android and iOS bundles exported successfully. Native device rendering/audio remains untested.
+
+### Living lake and continuous wildlife
+
+- `sanctuary-v4.png` removes the four static fish silhouettes from the lake while retaining the existing architecture, paths and shoreline layout. It supersedes v3 for gameplay, creation preview and map overview.
+- Added `lake-fish.png`, a transparent 4 × 2 sheet: four tail phases of overhead carp / perch. They render beneath the water layer at 32 world units, with subdued underwater opacity and independent continuous routes. Clip paths isolate each atlas cell.
+- Replaced the constant central lake rings with small occasional ripples at separate positions. The dock and banks remain outside water animation.
+- Fixed scenery clock reset on menu close. Browser diagnostic: all three fish coordinates remained identical while the inventory was open; closing moved them only 0.23 / 0.28 / 0.67 normalized units on the next sample, not back to their starting positions.
+- Birds now fly between two perches and return continuously; the old 29-second route teleported them back to the start. Added route continuity, lake containment, quiet-ripple and fish-route checks. All 35 tests, typecheck and lint pass.
+- Visual lake check confirms no frozen fish silhouettes remain. Actual non-instrumented device frame-rate and listening checks remain outstanding.
