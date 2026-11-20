@@ -316,3 +316,8 @@ Session remains active; the user's five-hour development period has not yet elap
 - Narrow screens now show a framed Find exit button with a44-unit minimum touch target. The exit destination remains in its accessibility label and the existing directional message is unchanged.
 - Removed desktop E-key suffix and redundant movement instructions from compact controls; retained keyboard behavior. Long player/Familiar labels fit one line instead of expanding the action column.
 - Inspected390x844,320x568 and844x390. Interaction and exit controls remain separate from the direction pad; Find exit displayed the correct left-edge courtyard guidance. TypeScript and lint pass.
+
+### Full runtime fishing catch
+- Completed cast, bite, hook, reel, catch result, shore return and reload at844x390. A temporary developer test controller followed rendered catch-bar/fish positions and sent normal keyboard input events; it did not change minigame state or grant inventory directly.
+- Result: one silver perch, caught count1, energy100 to95. Result panel fitted short landscape. After returning and reloading, perch1/caught1/energy95 persisted without another award.
+- Removed controller/keyup state, then restored original QA save/backup while on title. This verifies UI-to-save integration, not manual play feel or physical-device performance. Browser instrumentation significantly slows simulation.
