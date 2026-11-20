@@ -88,7 +88,8 @@ function Label({ children }: { children: React.ReactNode }) {
 }
 export default function Game() {
   const { width, height } = useWindowDimensions(),
-    compact = width < 850;
+    compact = width < 850,
+    shortScreen = height < 500;
   const [name, setName] = useState(""),
     [petName, setPetName] = useState(""),
     [pet, setPet] = useState<PetKind>("Boxer"),
@@ -576,7 +577,7 @@ export default function Game() {
                 {regions[save.region].name}
               </Text>
               <Text style={s.small}>
-                Spring · Day {save.progress?.day ?? 1} ☀
+                {shortScreen ? `Day ${save.progress?.day ?? 1} · Energy ${save.progress?.energy ?? 100}` : `Spring · Day ${save.progress?.day ?? 1} ☀`}
               </Text>
             </View>
             <Pressable
@@ -594,7 +595,7 @@ export default function Game() {
               </Text>
             </Pressable>
           </View>
-          {!inStory && (
+          {!inStory && !shortScreen && (
             <View style={[s.quest, { left: compact ? 12 : 32 }]}>
               <Text style={s.eyebrow}>
                 {save.region === "cabin"
@@ -663,7 +664,7 @@ export default function Game() {
                 maxWidth: compact ? Math.min(200, width - 180) : 340,
               }}
             >
-              <Text style={s.gameHint}>
+              <Text style={[s.gameHint, shortScreen && { display: "none" }]}>
                 {save.name} & {save.petName}
               </Text>
               <Button onPress={gather}>
@@ -693,7 +694,7 @@ export default function Game() {
                                       : "Gather / pick up"}{" "}
                 · E
               </Button>
-              <Text style={s.gameHint}>
+              <Text style={[s.gameHint, shortScreen && { display: "none" }]}>
                 {compact
                   ? "Use the arrows to explore"
                   : "WASD / arrows to walk · E to interact"}

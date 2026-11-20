@@ -145,3 +145,6 @@ Session remains active; the user's five-hour development period has not yet elap
 
 ### Phone storage layout
 - At 390x844 emulation, found day/energy text clipping and repeated Stored labels crowding chest slots. Narrow stats now use a full-width wrapping row; currency can shrink/wrap. Removed redundant per-slot Stored text while preserving it in accessibility labels and the chest heading. Re-inspected screenshot: full day/energy line fits, icons remain clear. Typecheck/lint pass.
+
+### Short landscape HUD
+- Checked storage at 844x390: scrolling reaches both transfer actions. Gameplay inspection found the quest panel obscuring the hero beside the cabin chest. On screens shorter than 500 logical pixels, hide the large quest panel and redundant bottom hints, and show energy beside day in the compact location panel. Re-inspected: hero/Familiar visible, movement, inventory, interaction and destination help remain available. Typecheck/lint pass.
