@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { AtlasFrame } from "./AtlasFrame";
 import { Npc, npcFacing, npcBaseline, NpcKind } from "./Npc";
@@ -153,6 +153,65 @@ export function Resource({
   );
 }
 
+// Pickups and harvest markers change on collection, not on every walking frame.
+// A fragment preserves their world-level depth sorting with actors.
+const emptyIds: string[] = [];
+const WorldPickups = memo(function WorldPickups({
+  region, seed, pickedDrops, gathered, scale, ox, oy,
+}: {
+  region: Region; seed: number; pickedDrops: string[]; gathered: string[];
+  scale: number; ox: number; oy: number;
+}) {
+  const anchor = (p: Point, size: number, baseline: number) => ({
+    position: 'absolute' as const,
+    left: ox + (p.x - size / 2) * scale,
+    top: oy + (p.y - size * baseline) * scale,
+    width: size * scale, height: size * scale,
+  });
+  return <>
+      {dropsFor(seed, region)
+        .filter((d) => !pickedDrops.includes(d.id))
+        .map((d) => (
+          <View
+            key={d.id}
+            style={[anchor(d, 26, 0.85), { zIndex: Math.round(d.y) }]}
+          >
+            <ItemIcon id={d.kind} size={26 * scale} />
+          </View>
+        ))}
+      {resources[region].map((p, i) => {
+        const harvested = gathered.includes(region + "-" + i);
+        if (region === "forest" && harvested) return null;
+        const size = region === "forest" ? 22 : 100;
+        return (
+          <View
+            key={i}
+            style={[
+              anchor(p, size, region === "forest" ? 0.96 : 0.96),
+              { zIndex: Math.round(p.y) },
+            ]}
+          >
+            {region === "forest" && (
+              <Resource region={region} size={size * scale} />
+            )}
+            {!harvested && (
+              <Text
+                style={[styles.spark, { fontSize: 9 * scale, top: -2 * scale }]}
+              >
+                ✦
+              </Text>
+            )}
+            {harvested && (
+              <View style={{ position: "absolute", bottom: 0, right: 0 }}>
+                <Sprite name="basket" size={18 * scale} />
+              </View>
+            )}
+          </View>
+        );
+      })}
+  </>;
+});
+
 export type WorldProps = {
   garden?: Garden;
   recovery?: RecoveryPose;
@@ -186,7 +245,7 @@ export function World({
   showFamiliar = true,
   restoredAltar = false,
   facing = "front",
-  gathered = [],
+  gathered = emptyIds,
   heroFrame = 0,
   petFrame = 1,
   petPosition,
@@ -198,7 +257,7 @@ export function World({
   paused = false,
   appearance = defaultAppearance,
   seed = 12345,
-  pickedDrops = [],
+  pickedDrops = emptyIds,
 }: WorldProps) {
   const [layout, setLayout] = useState({ w: 1000, h: 667 });
   const WORLD = dimensions(region);
@@ -293,46 +352,8 @@ export function World({
       {region === "temple" && (
         <GardenPlots garden={garden} scale={scale} ox={ox} oy={oy} />
       )}
-      {dropsFor(seed, region)
-        .filter((d) => !pickedDrops.includes(d.id))
-        .map((d) => (
-          <View
-            key={d.id}
-            style={[anchor(d, 26, 0.85), { zIndex: Math.round(d.y) }]}
-          >
-            <ItemIcon id={d.kind} size={26 * scale} />
-          </View>
-        ))}
-      {resources[region].map((p, i) => {
-        const harvested = gathered.includes(region + "-" + i);
-        if (region === "forest" && harvested) return null;
-        const size = region === "forest" ? 22 : 100;
-        return (
-          <View
-            key={i}
-            style={[
-              anchor(p, size, region === "forest" ? 0.96 : 0.96),
-              { zIndex: Math.round(p.y) },
-            ]}
-          >
-            {region === "forest" && (
-              <Resource region={region} size={size * scale} />
-            )}
-            {!harvested && (
-              <Text
-                style={[styles.spark, { fontSize: 9 * scale, top: -2 * scale }]}
-              >
-                ✦
-              </Text>
-            )}
-            {harvested && (
-              <View style={{ position: "absolute", bottom: 0, right: 0 }}>
-                <Sprite name="basket" size={18 * scale} />
-              </View>
-            )}
-          </View>
-        );
-      })}
+      <WorldPickups region={region} seed={seed} pickedDrops={pickedDrops}
+        gathered={gathered} scale={scale} ox={ox} oy={oy} />
       {region !== "cabin" && (
         <View style={anchor(gate, 43, 0.84)}>
           <Sprite name="sign" size={43 * scale} flip={region === "temple"} />

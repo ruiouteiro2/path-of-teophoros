@@ -563,7 +563,7 @@ export default function Game() {
               gathered={save.gathered}
               appearance={save.appearance ?? defaultAppearance}
               seed={save.seed ?? 12345}
-              pickedDrops={save.pickedDrops ?? []}
+              pickedDrops={save.pickedDrops}
             />
           </View>
           <View
