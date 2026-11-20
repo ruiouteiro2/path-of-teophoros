@@ -8,6 +8,8 @@ An Olympus-themed, top-down life game with the readability and color separation 
 
 Judge assets at their actual in-game size, beside existing assets. A beautiful isolated PNG is not an acceptance test. Source resolution does not establish consistency. The rejected olive tree was technically pixel art but had tiny outlined individual leaves, thin branches, and far more detail than the map trees.
 
+Whole-map regeneration has now caused an observed regression: successive sanctuary edits softened the terrain and enlarged the floor motif. Do not regenerate the complete map to fix one landmark. Preserve the approved terrain as a stable source, author bounded replacement layers, and compare the affected scene at the actual camera scale. The latest map appearance is under user review; passing code or atlas checks does not resolve that art feedback.
+
 ### Reference hierarchy
 
 1. Terrain and trees: `assets/world/olivewild-v2.png` and `sanctuary-v5.png`. Match their chunky leaf groups, stepped silhouettes, warm earth, and broad shadow masses. The old `olivewild.png`, `temple.png`, and `sanctuary-v2.png` are superseded terrain drafts.
@@ -39,6 +41,7 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 - Raster atlas originals are kept intact. Runtime cropping and measured anchors are preferred to destructive image processing. Use the image-generation workflow for raster edits unless the user requests another method.
 - Before accepting an atlas change, run `python scripts/audit_assets.py --report .expo/asset-audit.json` (Python/Pillow). `docs/asset-manifest.json` records current frame layouts and contact-anchor owners. The read-only check rejects empty cells, solid silhouettes at cell edges and stale contact baselines. Alpha below129 is ignored as edge noise; this is a technical check, not proof of artistic consistency, frame timing or physical-device rendering.
 - `pets/owl-v2.png` and `items-v2.png` repair flight-wing and carp cell bleed. Use these in production; the older sheets remain reference history. Update the manifest and measured anchors whenever replacing a sheet.
+- `sprites-v2.png` repairs the shared pine's bleed into the sapling cell above it. The manifest also checks altar states, the hoe and grilled-fish icon. Intentionally edge-to-edge terrain and soil tiles are not silhouette-margin assets.
 
 ## 4. Palette and light
 

@@ -21,6 +21,10 @@
     { "file": "lake-fish.png", "columns": 4, "rows": 2 },
     { "file": "hearth-flame.png", "columns": 4, "rows": 2 },
     { "file": "items-v2.png", "columns": 4, "rows": 4 },
-    { "file": "garden-items.png", "columns": 4, "rows": 2 }
+    { "file": "garden-items.png", "columns": 4, "rows": 2 },
+    { "file": "sprites-v2.png", "columns": 4, "rows": 4 },
+    { "file": "altar-states.png", "columns": 2, "rows": 1 },
+    { "file": "hoe.png", "columns": 1, "rows": 1 },
+    { "file": "grilled-fish.png", "columns": 1, "rows": 1 }
   ]
 }
