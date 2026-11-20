@@ -321,3 +321,11 @@ Session remains active; the user's five-hour development period has not yet elap
 - Completed cast, bite, hook, reel, catch result, shore return and reload at844x390. A temporary developer test controller followed rendered catch-bar/fish positions and sent normal keyboard input events; it did not change minigame state or grant inventory directly.
 - Result: one silver perch, caught count1, energy100 to95. Result panel fitted short landscape. After returning and reloading, perch1/caught1/energy95 persisted without another award.
 - Removed controller/keyup state, then restored original QA save/backup while on title. This verifies UI-to-save integration, not manual play feel or physical-device performance. Browser instrumentation significantly slows simulation.
+
+### Forest foreground depth, first three path-side trees
+- Added original-pixel foreground masks for west olive, southwest olive and trail pine. Masks are depth-sorted by trunk foot, with source coordinates transformed to match the terrain cover image. Small trunk footprints are solid; the pine previously lay inside the navigable trail.
+- Browser inspection proved opaque foliage occludes actors behind the southwest olive, while the character/Familiar draw in front of the pine when south of its trunk. Original art remains unchanged, with no new tree style.
+- Tested a transparent-canopy approach with a generated clean-ground plate, but rejected it because fixed silhouette edges remained visible. The unused workspace plate was removed; its original generated source remains `C:\Users\Rui\.codex\generated_images\01a1f5f4-26a2-7a00-ae45-8dbb5e9f3179\exec-de601781-0921-47d9-b0ee-f9dc9820d09a.png`. Final runtime uses opaque masks only. Most other trees are still baked terrain, so this is not universal occlusion.
+- Added trunk/nearby-route assertions; all five navigation tests pass, including flood-fill connectivity. TypeScript, lint and web export pass. Original QA save/backup restored with simulation paused.
+- Consulted Expo58 react-native-svg documentation before using the existing installed15.16.0 primitives. No new package added.
+- Final checks for this depth pass: all61 tests pass; Android/iOS bundle exports pass with93 assets. Physical-device validation remains outstanding.

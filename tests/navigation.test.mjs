@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { walkable, regions, resources } from "../src/game.ts";
 import { homeLocations, cabinLocations } from "../src/worldLayout.ts";
 import { gardenPlots } from "../src/garden.ts";
+import { forestTrees, forestImagePoint } from "../src/terrainDepth.ts";
 import { exitTriggered, lakeReeds } from "../src/inventory.ts";
 
 // Flood the actual navigation geometry, rather than only testing target points.
@@ -82,4 +83,12 @@ test("forest boulder blocks movement while its surrounding path stays open", () 
     { x: 500, y: 830 },
   ])
     assert(walkable(p, "forest"));
+});
+
+test("path-side forest trunks are solid while the nearby route stays open", () => {
+  for (const tree of forestTrees)
+    assert.equal(walkable(forestImagePoint(tree.footX, tree.footY), "forest"), false);
+  const pine = forestImagePoint(418, 829);
+  assert.equal(walkable({ x: pine.x + 24, y: pine.y }, "forest"), true);
+  assert.equal(walkable({ x: pine.x - 24, y: pine.y + 24 }, "forest"), true);
 });

@@ -1,4 +1,5 @@
 /** Authored navigation in normalized 1000×667 terrain coordinates. Gameplay is twice this size. */
+import { forestTrees, forestImagePoint } from './terrainDepth.ts';
 export type XY = { x: number; y: number };
 export const WORLD_SCALE = 2;
 export const toWorld = (x: number, y: number): XY => ({
@@ -275,6 +276,10 @@ export function terrainArea(p: XY, region: "forest" | "temple" | "cabin") {
 export function terrainWalkable(p: XY, region: "forest" | "temple" | "cabin") {
   if (!terrainArea(p, region)) return false;
   if (region === "forest") {
+    if (forestTrees.some(tree => {
+      const foot = forestImagePoint(tree.footX, tree.footY);
+      return ((p.x - foot.x) / 13) ** 2 + ((p.y - foot.y + 6) / 9) ** 2 < 1;
+    })) return false;
     const x = p.x / WORLD_SCALE,
       y = p.y / WORLD_SCALE;
     // Boulder beside the western bend: source image ~384,604 at 1536�1024.
