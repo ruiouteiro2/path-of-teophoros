@@ -52,7 +52,7 @@ import { Conversation } from "./Conversation";
 import { Fishing } from "./Fishing";
 import { GardenPanel } from "./Garden";
 import { nearestPlot } from "../garden";
-import { terrainAssets } from "../terrainAssets";
+import { Terrain } from "./Terrain";
 
 const serif = gameFont;
 function Button({
@@ -1005,8 +1005,8 @@ export default function Game() {
           />
           <Label>YOUR HOME · THE RUINED SANCTUARY</Label>
           <View style={[s.regionArt, { height: 160, marginTop: 12 }]}>
-            <Image
-              source={terrainAssets.temple}
+            <Terrain
+              region="temple"
               style={{ width: "100%", height: "100%" }}
               resizeMode="cover"
             />

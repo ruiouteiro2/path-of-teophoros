@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { View, Image, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import { GameButton, GameText as Text, ui } from "./GameUI";
 import type { Save, Region } from "../game";
 import { dimensions, regions } from "../game";
 import { homeLocations, cabinLocations } from "../worldLayout";
 import { gardenPlots } from "../garden";
-import { terrainAssets as maps } from "../terrainAssets";
+import { Terrain } from "./Terrain";
 
 const destinations = {
   temple: [
@@ -70,8 +70,8 @@ export function WorldMap({ save }: { save: Save }) {
           borderColor: "#694529",
         }}
       >
-        <Image
-          source={maps[region]}
+        <Terrain
+          region={region}
           style={{ width: "100%", height: "100%" }}
           resizeMode="stretch"
         />

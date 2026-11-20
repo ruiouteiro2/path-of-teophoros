@@ -11,6 +11,7 @@ import { homeLocations } from "../worldLayout";
 import { pickupsFor } from "../inventory";
 import { TerrainForeground } from "./TerrainForeground";
 import { terrainAssets } from "../terrainAssets";
+import { Terrain } from "./Terrain";
 import anchors from "../sprite-anchors.json";
 import { LivingEnvironment, Flowers } from "./LivingEnvironment";
 import {
@@ -339,12 +340,9 @@ export function World({
         })
       }
     >
-      <Image
-        source={art[region]}
-        testID="terrain-image"
+      <Terrain
+        region={region}
         style={[StyleSheet.absoluteFill, { width: "100%", height: "100%" }]}
-        resizeMode="cover"
-        fadeDuration={0}
       />
         <LivingEnvironment
           region={region}

@@ -12,6 +12,8 @@ Whole-map regeneration has now caused an observed regression: successive sanctua
 
 `src/terrainAssets.ts` owns the current terrain revisions for gameplay, foreground masks, world-map menu, creation preview and startup caching. Do not add independent terrain file references to those consumers. Any art replacement must review the corresponding `worldLayout.ts`, `terrainDepth.ts`, water masks and fish routes together; matching image dimensions alone does not preserve landmarks.
 
+`Terrain.tsx` now reuses the preserved v4 floor disc within source bounds604..884,387..637 over the v5 base, at unchanged source scale. This restores the earlier smaller motif without regenerating scenery. World, creation preview and map menu share this renderer. The v4 disc already has missing slabs and interrupted borders and stays ruined after altar restoration. The base map's broader softness remains under review.
+
 ### Reference hierarchy
 
 1. Terrain and trees: `assets/world/olivewild-v2.png` and `sanctuary-v5.png`. Match their chunky leaf groups, stepped silhouettes, warm earth, and broad shadow masses. The old `olivewild.png`, `temple.png`, and `sanctuary-v2.png` are superseded terrain drafts.
@@ -152,4 +154,4 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 
 - ItemIcon must map stable item IDs to explicit atlas cells. Never derive sprite cells from inventory display order. The TypeScript mapping must cover every item ID so a new item cannot silently reuse another item's graphic.
 
-- `sanctuary-v5.png` supersedes v4: the central floor mosaic has substantial missing tesserae, broken borders and broad cracks. The floor stays damaged even after the small altar is secured; altar restoration is not a whole-temple rebuild. Preserve the damaged emblem in future terrain edits.
+- `sanctuary-v5.png` remains the terrain base; its oversized central motif is superseded by the bounded v4 floor reuse described above. The floor stays damaged even after the small altar is secured; altar restoration is not a whole-temple rebuild.

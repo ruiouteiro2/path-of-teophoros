@@ -30,11 +30,11 @@ figcaption{margin:10px 0;color:#d2c5a7}figure{margin:0;min-width:0}.notice{borde
 </style>
 <main><h1>Sanctuary map — preserved versions</h1>
 <p>Compare the same area and scale. Look at the tree edges, path texture and size of the temple motif in the floor mosaic.</p>
-<p class="notice">Review only. The game still uses version 5; this page does not change terrain or saved journeys.</p>
+<p class="notice">Preserved source images only. The live game now uses version 5 with the earlier version 4 floor disc layered over it. This page shows the unmodified originals and does not change terrain or saved journeys.</p>
 <div class="controls"><button id="whole" aria-pressed="true">Whole map</button><button id="detail" aria-pressed="false">Courtyard detail</button></div>
 <div class="pair" id="pair">
 <figure><label>Earlier version <select id="earlier" aria-label="Earlier map version"><option value="2">v2 — earlier texture</option><option value="3">v3 — cabin, grove and lake</option><option value="4" selected>v4 — lake without painted fish</option></select></label><div class="frame"><img id="before" src="map-review/sanctuary-v4.png" alt="Earlier sanctuary map"></div><figcaption id="caption">Version 4, before the final floor-mosaic edit.</figcaption></figure>
-<figure><label>Current version <strong>v5</strong></label><div class="frame"><img src="map-review/sanctuary-v5.png" alt="Current version five sanctuary map"></div><figcaption>Version 5: more damaged mosaic, enlarged central motif and softer detail.</figcaption></figure>
+<figure><label>Preserved base <strong>v5</strong></label><div class="frame"><img src="map-review/sanctuary-v5.png" alt="Unmodified version five sanctuary map"></div><figcaption>Version 5 before the bounded floor repair: enlarged central motif and softer detail.</figcaption></figure>
 </div></main><script>
 const pair=document.getElementById('pair'),whole=document.getElementById('whole'),detail=document.getElementById('detail');
 function showDetail(on){pair.classList.toggle('detail',on);whole.setAttribute('aria-pressed',String(!on));detail.setAttribute('aria-pressed',String(on));}

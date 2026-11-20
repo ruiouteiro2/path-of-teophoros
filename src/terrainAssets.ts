@@ -6,3 +6,6 @@ export const terrainAssets = {
   forest: require('../assets/world/olivewild-v2.png'),
   cabin: require('../assets/world/cabin-interior.png'),
 } as const;
+
+// Only the ruined floor disc is sampled from this preserved earlier revision.
+export const sanctuaryFloorSource = require('../assets/world/sanctuary-v4.png');
