@@ -202,3 +202,9 @@ Session remains active; the user's five-hour development period has not yet elap
 - Chest offers Store stack / Take stack, capped to available destination space. Single transfers and purchases disable at full stacks.
 - Verified 3 wood stored and withdrawn through the actual browser controls, preserving the total. Screenshots inspected at 390x844 and 844x390: status remains visible while item/actions scroll independently.
 - Added capacity/remaining-stack regression coverage; 12 progression tests pass. TypeScript and lint pass.
+
+### Automatic cabin transition runtime check
+- Used a declared save fixture immediately outside the cabin at (1574,495), then delivered directional keydown/keyup input through the browser. Walking upward entered the cabin at (450,490), with no interaction-button activation.
+- Walking downward through the interior doorway returned to Temple of the Dawn. Arrival did not immediately retrigger the cabin entrance.
+- Browser instrumentation makes timed movement much slower than nominal simulation speed; checked actual saved position/region rather than assuming key-hold duration implied distance. No device FPS conclusion.
+- Restored original QA save and backup after verification.
