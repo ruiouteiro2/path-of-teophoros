@@ -341,6 +341,7 @@ export function World({
     >
       <Image
         source={art[region]}
+        testID="terrain-image"
         style={[StyleSheet.absoluteFill, { width: "100%", height: "100%" }]}
         resizeMode="cover"
         fadeDuration={0}

@@ -1,0 +1,11 @@
+/* Web only: preserve source pixel edges while the camera enlarges terrain.
+ * React Native Web paints Image through a child background-image element;
+ * the foreground masks use SVG images. Both must use identical sampling.
+ * Keep this scoped: portraits and downscaled animation atlases need their
+ * existing filtering, and this cannot restore detail lost in source artwork. */
+[data-testid="terrain-image"],
+[data-testid="terrain-image"] *,
+[data-testid="terrain-foreground"],
+[data-testid="terrain-foreground"] * {
+  image-rendering: pixelated;
+}

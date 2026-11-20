@@ -12,7 +12,7 @@ export const TerrainForeground = memo(function TerrainForeground({ region, scale
   return <>{trees.map(tree => {
     const point = forestImagePoint(tree.x, tree.y);
     const foot = forestImagePoint(tree.footX, tree.footY);
-    return <View key={tree.id} pointerEvents="none" style={{ position: 'absolute',
+    return <View key={tree.id} testID="terrain-foreground" pointerEvents="none" style={{ position: 'absolute',
       left: ox + point.x * scale, top: oy + point.y * scale,
       width: tree.width * forestImageScale * scale, height: tree.height * forestImageScale * scale,
       zIndex: Math.round(foot.y),

@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import '../terrain.css';
 import { useEffect, useState } from "react";
 import { Asset } from "expo-asset";
 import { startupAssets } from "../startupAssets";
