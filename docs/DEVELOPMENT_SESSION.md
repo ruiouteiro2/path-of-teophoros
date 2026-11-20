@@ -181,3 +181,6 @@ Session remains active; the user's five-hour development period has not yet elap
 ### Familiar corner following
 - Added line-of-travel collision sampling before skipping ahead on the breadcrumb trail. Earlier breadcrumbs remain until the Familiar has a clear route around the corner; normal following distance/gait are unchanged.
 - Simulated a recorded bend around the forest boulder for 300 frames: Familiar took the upper bend, stayed outside the footprint, advanced to the far side and never moved 3 world units in a frame. All ten motion tests, typecheck and lint pass.
+
+### Stable inventory artwork mapping
+- Reviewed materials atlas and 26-unit world pickup renderer: both use the same art as inventory. Replaced index-based icon lookup with an explicit typed ID-to-cell mapping. Reordering inventory or adding an item now cannot silently shift existing artwork; missing mappings fail typecheck. Typecheck/lint pass; no artwork or gameplay counts changed.

@@ -138,3 +138,5 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 - Built-in image generation prompt: eight equal cells, flame only, warm orange/gold/cream, chunky pixel clusters, fixed center/base, subtle curling tips, transparent margins, no smoke, logs, text or glow halo. Reviewed in the cabin at phone landscape scale.
 
 - Hearth interaction at cabin (135,265) opens cooking. Barley bread uses one harvested barley; thyme infusion uses two thyme. Cooking uses existing item art and panels, consumes bag ingredients only, and preserves ingredients if output is full. Workbench lists torches/rods; food recipes belong at the hearth.
+
+- ItemIcon must map stable item IDs to explicit atlas cells. Never derive sprite cells from inventory display order. The TypeScript mapping must cover every item ID so a new item cannot silently reuse another item's graphic.

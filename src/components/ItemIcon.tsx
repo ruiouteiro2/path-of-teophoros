@@ -1,7 +1,7 @@
 import React from "react";
 import { Image } from "react-native";
 import { AtlasFrame } from "./AtlasFrame";
-import { itemIds, ItemId } from "../progression";
+import { ItemId } from "../progression";
 export function ItemIcon({
   id,
   size = 48,
@@ -15,7 +15,7 @@ export function ItemIcon({
     barley: 2,
     onion: 3,
     wateringJug: 5,
-  };
+  } as const;
   if (id === "hoe")
     return (
       <Image
@@ -34,10 +34,15 @@ export function ItemIcon({
         size={size}
       />
     );
-  const extra = { money: 12, chest: 13, axe: 14, pickaxe: 15 };
-  const cell = itemIds.includes(id as ItemId)
-    ? itemIds.indexOf(id as ItemId)
-    : extra[id as keyof typeof extra];
+  // Explicit atlas cells: inventory order can change without changing artwork.
+  // Adding an ItemId requires an intentional art mapping at compile time.
+  const cells = {
+    wood: 0, stone: 1, fiber: 2, thyme: 3, olives: 4,
+    bread: 5, tea: 6, carp: 7, perch: 8, reed: 9, torch: 10, rod: 11,
+    money: 12, chest: 13, axe: 14, pickaxe: 15,
+  } satisfies Record<Exclude<ItemId, keyof typeof garden | "hoe"> |
+    "money" | "chest" | "axe" | "pickaxe", number>;
+  const cell = cells[id as keyof typeof cells];
   return (
     <AtlasFrame
       source={require("../../assets/world/items.png")}
