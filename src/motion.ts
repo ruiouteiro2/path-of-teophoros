@@ -106,7 +106,8 @@ export function advance(
     state.region,
   );
   if (index > 1) trail.splice(0, index - 1);
-  const idleTime = moving || petStep > 0.025 ? 0 : state.idleTime + dt;
+  const petTraveled = Math.hypot(pet.x - state.pet.x, pet.y - state.pet.y);
+  const idleTime = moving || petTraveled > 0.025 ? 0 : state.idleTime + dt;
   const phase = idleTime % 17;
   // Hold meaningful poses; do not cycle sniff/blink/sit as walking frames.
   const petPose =
@@ -120,7 +121,7 @@ export function advance(
   const dx = pet.x - state.pet.x,
     dy = pet.y - state.pet.y;
   const petFacing =
-    petStep > 0.025
+    petTraveled > 0.025
       ? Math.abs(dx) > Math.abs(dy)
         ? dx < 0
           ? "left"
@@ -148,9 +149,9 @@ export function advance(
         ? pet.x < state.pet.x
         : state.petLeft,
     distance: state.distance + traveled,
-    petDistance: state.petDistance + petStep,
+    petDistance: state.petDistance + petTraveled,
     trail,
     moving,
-    petMoving: petStep > 0.025,
+    petMoving: petTraveled > 0.025,
   };
 }

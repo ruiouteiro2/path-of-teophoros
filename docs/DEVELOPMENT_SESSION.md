@@ -174,3 +174,6 @@ Session remains active; the user's five-hour development period has not yet elap
 ### Shore-based audio falloff
 - Replaced lake-center distance with distance to an authored lake ellipse, so the fishing dock gets near-water ambience. River distance includes its width. A smooth cubic falloff reaches silence 260 world units from the water; cabin always returns zero. Existing channel gain remains unchanged.
 - Added tests for dock/bridge, distant sanctuary/forest, cabin silence and monotonic approach. This is an approximate acoustic region, not a replacement for collision shoreline geometry. Typecheck/lint and audio tests pass.
+
+### Familiar collision animation
+- Found that Familiar gait distance, walking flag and facing used attempted petStep even when collision rejected movement. Switched these to measured displacement. A blocked Familiar now stops its gait and retains facing instead of walking in place. Added a boulder-blocked regression; all nine motion tests pass, plus typecheck/lint. Route-following around tight corners remains a separate inspection.

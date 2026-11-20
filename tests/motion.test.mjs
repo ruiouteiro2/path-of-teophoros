@@ -64,3 +64,17 @@ test("companion turns toward vertical travel", () => {
   assert.equal(down.petFacing, "front");
   assert.equal(up.petFacing, "back");
 });
+
+
+test("a Familiar blocked by a boulder does not walk in place or accumulate gait distance", () => {
+  const s = createMotion("forest", {x:600,y:790});
+  s.pet = {x:460,y:790};
+  s.petFacing = "right";
+  s.trail = [{x:460,y:790},{x:540,y:790},{x:600,y:790}];
+  const next = advance(s, {x:0,y:0}, 1/60);
+  assert.deepEqual(next.pet, s.pet);
+  assert.equal(next.petMoving, false);
+  assert.equal(next.petDistance, s.petDistance);
+  assert.equal(next.petFacing, "right");
+  assert(next.idleTime > 0);
+});
