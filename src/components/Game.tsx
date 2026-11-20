@@ -20,13 +20,11 @@ import {
   Save,
   Region,
   PetKind,
-  SAVE_KEY,
   regions,
   nearest,
-  validSave,
-  migrateProgress,
   dimensions,
 } from "../game";
+import { readSavedJourney, writeSavedJourney } from "../saveStorage";
 import { Appearance, defaultAppearance } from "../appearance";
 import { AppearancePicker } from "./AppearancePicker";
 import { nearestDrop, collectDrop, exitTriggered } from "../inventory";
@@ -153,16 +151,11 @@ export default function Game() {
   );
   const playEffect = audio.effect;
   useEffect(() => {
-    AsyncStorage.getItem(SAVE_KEY)
-      .then((raw) => {
-        if (raw) {
-          const data = JSON.parse(raw);
-          if (validSave(data)) setSave(migrateProgress(data));
-          else
-            setMessage(
-              "The old save could not be read. You can begin a new journey.",
-            );
-        }
+    readSavedJourney(AsyncStorage)
+      .then(({ save: stored, recovered, corrupt }) => {
+        if (stored) setSave(stored);
+        if (recovered) setMessage("Your previous save was recovered. Continue your journey.");
+        else if (corrupt) setMessage("The saved journey could not be read. You can begin a new journey.");
       })
       .catch(() => setStorageError(true))
       .finally(() => setLoaded(true));
@@ -170,7 +163,7 @@ export default function Game() {
   useEffect(() => {
     if (!save || !loaded) return;
     queue.current = queue.current
-      .then(() => AsyncStorage.setItem(SAVE_KEY, JSON.stringify(save)))
+      .then(() => writeSavedJourney(AsyncStorage, save))
       .then(() => setStorageError(false))
       .catch(() => setStorageError(true));
   }, [save, loaded]);

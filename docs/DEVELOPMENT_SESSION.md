@@ -184,3 +184,7 @@ Session remains active; the user's five-hour development period has not yet elap
 
 ### Stable inventory artwork mapping
 - Reviewed materials atlas and 26-unit world pickup renderer: both use the same art as inventory. Replaced index-based icon lookup with an explicit typed ID-to-cell mapping. Reordering inventory or adding an item now cannot silently shift existing artwork; missing mappings fail typecheck. Typecheck/lint pass; no artwork or gameplay counts changed.
+
+### Previous-save recovery
+- Added serialized previous-valid-save rotation using the existing storage adapter. Loading prefers valid primary data, then recovers the backup if primary is absent/corrupt. Corrupt primary data never replaces a valid backup; invalid new state is rejected. Existing outer write queue still serializes writes.
+- Three storage tests cover rotation/recovery, failed primary writes, invalid new state and empty versus corrupt storage. Typecheck/lint pass. Device-local backup only; runtime corruption/recovery UI check remains next.
