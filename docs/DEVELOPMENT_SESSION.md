@@ -129,3 +129,6 @@ Session remains active; the user's five-hour development period has not yet elap
 ### Cabin runtime checks
 - On isolated QA origin, repeated Enter inputs on sleep confirmation advanced day 5 to 6 exactly once. Energy became 100, money stayed 236, watered fixture crops advanced one stage and dry crops did not grow. Cabin rendered after waking with hero and Familiar grounded beside bed.
 - Storage fixture: seeded 3 wood solely for this check. Stored twice through UI (bag 1/chest 2), reloaded, observed the same quantities in both grids, then withdrew twice (bag 3/chest 0). No duplication or loss. User's separate localhost save was untouched.
+
+### Contextual home presentation
+- Cabin HUD now shows Hearth & Home and its available activities rather than the outdoor altar objective. Completed altar text reports the actual completed repair, not a checked but outstanding instruction to talk. Keyboard guidance says interact; navigation help names the destination instead of calling it another map. Typecheck and lint passed.

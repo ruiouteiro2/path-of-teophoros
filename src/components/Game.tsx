@@ -614,14 +614,18 @@ export default function Game() {
           {!inStory && (
             <View style={[s.quest, { left: compact ? 12 : 32 }]}>
               <Text style={s.eyebrow}>
-                {save.progress?.restoredAltar
-                  ? "A SANCTUARY REBORN"
-                  : "RESTORE THE OLD ALTAR"}
+                {save.region === "cabin"
+                  ? "HEARTH & HOME"
+                  : save.progress?.restoredAltar
+                    ? "A SANCTUARY REBORN"
+                    : "RESTORE THE OLD ALTAR"}
               </Text>
               <Text style={s.questText}>
-                {save.progress?.restoredAltar
-                  ? "✓ Speak to the High Priest for guidance"
-                  : "Wood 3 · Stone 3 · Fiber 2"}
+                {save.region === "cabin"
+                  ? "Rest · Store supplies · Change clothes"
+                  : save.progress?.restoredAltar
+                    ? "✓ The old altar is restored"
+                    : "Wood 3 · Stone 3 · Fiber 2"}
               </Text>
               <Text style={s.questText}>
                 Energy {save.progress?.energy ?? 100}/100
@@ -709,7 +713,7 @@ export default function Game() {
               <Text style={s.gameHint}>
                 {compact
                   ? "Use the arrows to explore"
-                  : "WASD / arrow keys to walk · E to gather"}
+                  : "WASD / arrows to walk · E to interact"}
               </Text>
               <Pressable
                 accessibilityRole="button"
@@ -723,7 +727,9 @@ export default function Game() {
                   )
                 }
               >
-                <Text style={s.hintLink}>Where is the other map?</Text>
+                <Text style={s.hintLink}>
+                  {save.region === "cabin" ? "Way to the sanctuary" : "Path to " + regions[save.region].destination}
+                </Text>
               </Pressable>
             </View>
           </View>
