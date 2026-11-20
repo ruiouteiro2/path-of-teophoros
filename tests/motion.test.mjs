@@ -22,6 +22,12 @@ test("pausing settles both actors without discarding their route or moving them"
   const resumed = advance(paused, { x: 1, y: 0 }, 1 / 60);
   assert(Math.hypot(resumed.pet.x-paused.pet.x, resumed.pet.y-paused.pet.y) < 3);
 });
+test("loading preserves the hero's saved facing until movement changes it", () => {
+  const loaded = createMotion("cabin", {x:450,y:490}, "left");
+  assert.equal(loaded.facing, "left");
+  assert.equal(advance(loaded, {x:0,y:0}, 1/60).facing, "left");
+  assert.equal(createMotion("cabin", {x:450,y:490}).facing, "front");
+});
 test("motion is independent of refresh rate", () => {
   const a = run(30, { x: 1, y: 0 }),
     b = run(60, { x: 1, y: 0 });

@@ -30,3 +30,11 @@ test('empty and wholly corrupt storage are distinguished',async()=>{
  const bad=await readSavedJourney(storage({[SAVE_KEY]:'null',[BACKUP_KEY]:'{}'}));
  assert.equal(bad.save,null);assert.equal(bad.corrupt,true);
 });
+test('invalid facing falls back to a valid backup instead of reaching the sprite renderer',async()=>{
+ const good={...journey(50),facing:'left'};
+ const store=storage({[SAVE_KEY]:JSON.stringify({...good,facing:'sideways'}),[BACKUP_KEY]:JSON.stringify(good)});
+ const recovered=await readSavedJourney(store);
+ assert.equal(recovered.recovered,true);
+ assert.equal(recovered.save.facing,'left');
+ assert.equal(recovered.save.progress.money,50);
+});

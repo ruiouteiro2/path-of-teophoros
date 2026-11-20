@@ -105,6 +105,7 @@ export function validSave(value: unknown): value is Save {
     (s.worldVersion === undefined || s.worldVersion === 2) &&
     (s.progress === undefined || validProgression(s.progress)) &&
     (s.appearance === undefined || validAppearance(s.appearance)) &&
+    (s.facing === undefined || ["front", "back", "left", "right"].includes(s.facing)) &&
     (s.seed === undefined ||
       (Number.isInteger(s.seed) && s.seed >= 0 && s.seed <= 4294967295)) &&
     (s.pickedDrops === undefined ||

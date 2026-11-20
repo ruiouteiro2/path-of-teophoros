@@ -21,7 +21,7 @@ export function pauseMotion(state: MotionState): MotionState {
   if (!state.moving && !state.petMoving && !state.velocity.x && !state.velocity.y) return state;
   return { ...state, moving: false, petMoving: false, velocity: { x: 0, y: 0 } };
 }
-export function createMotion(region: Region, p: Point): MotionState {
+export function createMotion(region: Region, p: Point, facing: Facing = "front"): MotionState {
   const pet = [
     { x: p.x - 24, y: p.y },
     { x: p.x + 24, y: p.y },
@@ -34,7 +34,7 @@ export function createMotion(region: Region, p: Point): MotionState {
     pet,
     camera: { ...p },
     velocity: { x: 0, y: 0 },
-    facing: "front",
+    facing,
     petLeft: false,
     petFacing: "right",
     idleTime: 0,

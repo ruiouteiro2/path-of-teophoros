@@ -249,3 +249,8 @@ Session remains active; the user's five-hour development period has not yet elap
 - Movement view now publishes the transition from petMoving=true to false even when the hero already stopped. Previously the final gait frame could linger until a later idle-pose change.
 - Pausing settles both movement flags and player velocity while retaining actor positions, gait distances and the Familiar breadcrumb route. The Familiar-only movement case now enters the pause branch.
 - Added regression coverage for preservation of positions/route and bounded resumed movement. All 11 motion tests, TypeScript and lint pass. Hook transition reviewed in source; no new native-device animation claim.
+
+### Saved orientation validation
+- Save validation now rejects unknown facing directions before they can index sprite rows/anchors. Backup recovery handles such malformed primary saves.
+- Motion initialization respects a valid saved facing instead of always starting front-facing; legacy saves without direction retain the default.
+- Added loading/idle orientation and corrupt-facing backup tests. All 16 targeted motion/storage tests, TypeScript and lint pass.

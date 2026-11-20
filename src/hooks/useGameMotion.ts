@@ -43,7 +43,7 @@ export function useGameMotion(
         const key = cfg.session + ":" + cfg.save.region;
         if (epoch.current !== key || !engine.current) {
           epoch.current = key;
-          engine.current = createMotion(cfg.save.region, cfg.save.position);
+          engine.current = createMotion(cfg.save.region, cfg.save.position, cfg.save.facing);
           setView(engine.current);
           last = time;
         }
