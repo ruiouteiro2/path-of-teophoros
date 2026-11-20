@@ -311,3 +311,8 @@ Session remains active; the user's five-hour development period has not yet elap
 - Added controlled delayed-write and failure-then-success tests. They verify latest primary state, previous valid backup and recovery of the queue. Six persistence tests pass; TypeScript and lint pass.
 - Added Retry saving to the existing game/title storage warning when a journey is available.
 - Runtime fault injection: temporarily rejected primary localStorage writes, renamed Familiar to Argos QA, observed the game-styled warning on a390x844 viewport. Restored storage setter, pressed Retry saving, verified saved name and warning disappearance. Removed injection and restored original QA save/backup with the simulation paused in its menu.
+
+### Compact exploration HUD
+- Narrow screens now show a framed Find exit button with a44-unit minimum touch target. The exit destination remains in its accessibility label and the existing directional message is unchanged.
+- Removed desktop E-key suffix and redundant movement instructions from compact controls; retained keyboard behavior. Long player/Familiar labels fit one line instead of expanding the action column.
+- Inspected390x844,320x568 and844x390. Interaction and exit controls remain separate from the direction pad; Find exit displayed the correct left-edge courtyard guidance. TypeScript and lint pass.

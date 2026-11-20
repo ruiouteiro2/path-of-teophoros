@@ -681,7 +681,7 @@ export default function Game() {
                 maxWidth: compact ? Math.min(200, width - 180) : 340,
               }}
             >
-              <Text style={[s.gameHint, shortScreen && { display: "none" }]}>
+              <Text numberOfLines={1} style={[s.gameHint, { maxWidth: "100%" }, shortScreen && { display: "none" }]}>
                 {save.name} & {save.petName}
               </Text>
               <Button onPress={gather}>
@@ -711,15 +711,15 @@ export default function Game() {
                                         ? "Gather " +
                                           regions[save.region].resource
                                         : "Gather / pick up"}{" "}
-                · E
+                {!compact && " · E"}
               </Button>
-              <Text style={[s.gameHint, shortScreen && { display: "none" }]}>
-                {compact
-                  ? "Use the arrows to explore"
-                  : "WASD / arrows to walk · E to interact"}
-              </Text>
+              {!compact && !shortScreen && <Text style={s.gameHint}>
+                WASD / arrows to walk · E to interact
+              </Text>}
               <Pressable
                 accessibilityRole="button"
+                accessibilityLabel={"Find exit to " + regions[save.region].destination}
+                style={compact ? s.exitHintButton : undefined}
                 onPress={() =>
                   setMessage(
                     save.region === "cabin"
@@ -730,8 +730,8 @@ export default function Game() {
                   )
                 }
               >
-                <Text style={s.hintLink}>
-                  {save.region === "cabin"
+                <Text style={compact ? s.exitHintText : s.hintLink}>
+                  {compact ? "Find exit" : save.region === "cabin"
                     ? "Way to the sanctuary"
                     : "Path to " + regions[save.region].destination}
                 </Text>
@@ -1359,6 +1359,8 @@ const s = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
   },
   hintLink: { fontSize: 10, color: "#fff5d7", textDecorationLine: "underline" },
+  exitHintButton: { minHeight: 44, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 2, borderColor: "#754727", backgroundColor: "#ffe3a3", justifyContent: "center" },
+  exitHintText: { fontSize: 17, color: "#36523d" },
   toast: {
     position: "absolute",
     bottom: 170,
