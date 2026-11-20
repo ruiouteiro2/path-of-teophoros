@@ -352,6 +352,7 @@ export default function Game() {
     if (
       Platform.OS !== "web" ||
       !playing ||
+      traveling ||
       inStory ||
       conversation ||
       sleepPrompt ||
@@ -360,6 +361,7 @@ export default function Game() {
     )
       return;
     const key = (e: KeyboardEvent) => {
+      if (travelLock.current) return;
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
       if (!e.repeat && (e.key === "Escape" || e.key.toLowerCase() === "i")) {
@@ -373,6 +375,7 @@ export default function Game() {
     return () => window.removeEventListener("keydown", key);
   }, [
     playing,
+    traveling,
     inStory,
     conversation,
     sleepPrompt,
@@ -597,7 +600,10 @@ export default function Game() {
             </View>
             <Pressable
               accessibilityRole="button"
+              disabled={!exploring}
+              accessibilityState={{ disabled: !exploring }}
               onPress={() => {
+                if (travelLock.current || !exploring) return;
                 stop();
                 setMenuTab("satchel");
                 setJournal(true);
@@ -612,7 +618,8 @@ export default function Game() {
           </View>
           {!inStory && !shortScreen && (
             <Pressable accessibilityRole="button" accessibilityLabel="Open quest journal"
-              onPress={() => { stop(); setMenuTab("journal"); setJournal(true); }}
+              disabled={!exploring} accessibilityState={{ disabled: !exploring }}
+              onPress={() => { if (travelLock.current || !exploring) return; stop(); setMenuTab("journal"); setJournal(true); }}
               style={[s.quest, { left: compact ? 12 : 32 }]}>
               <Text style={s.eyebrow}>
                 {save.region === "cabin"
@@ -880,7 +887,7 @@ export default function Game() {
             />
           )}
           <Animated.View
-            pointerEvents="none"
+            pointerEvents={traveling ? "auto" : "none"}
             style={[
               StyleSheet.absoluteFill,
               { backgroundColor: "#000000", opacity: transition, zIndex: 100 },

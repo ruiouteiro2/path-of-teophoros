@@ -334,3 +334,9 @@ Session remains active; the user's five-hour development period has not yet elap
 - Added1/5/10 quantity controls and total buy/sell prices. Selecting another item resets quantity to1. Buttons use the same pure transaction validation as the exchange, including funds, carried count,999-stack limit and currency cap.
 - Runtime390x844: bought5 barley seeds for25 drachmae, money236→211 and seeds5→10. Switching to rod reset quantity1; selecting10 displayed600 drachmae and disabled purchase. Original QA save/backup restored while menu-paused.
 - Existing transaction quantity tests cover conservation/overspending; no duplicated UI-mirroring test added. TypeScript and lint pass.
+
+### Transition input isolation
+- Found that the black fade used pointerEvents=none and inventory keyboard handling omitted traveling. Touch/key input could open a menu during a map switch.
+- Fade now intercepts pointers only during travel/rest transitions. Inventory and quest buttons disable outside exploration, with synchronous travel-lock guards; inventory keyboard shortcut also checks travel state/lock.
+- Runtime exit from cabin: repeated I events during the fade did not open the menu; arrived temple1574,500,day6,energy100. Reverse automatic entry: all98 sampled elementFromPoint checks over Inventory hit the black fade, and Inventory was aria-disabled in every sample. Arrived cabin450,490 with day/energy unchanged.
+- Removed probes and restored original QA save/backup while menu-paused. TypeScript and lint pass.
