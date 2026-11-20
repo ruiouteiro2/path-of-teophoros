@@ -386,3 +386,7 @@ Session remains active; the user's five-hour development period has not yet elap
 - Inspected390x844 awakening, world, Familiar and supplies scenes. Lying/sitting/standing poses and portrait text fit; longer supplies copy scrolls. Familiar remained hidden through the grant page, then appeared after Welcome. Starting scene preserved the selected appearance and names.
 - Completion gave exactly100 drachmae, bread2,hoe1,wateringJug1,barleySeed6,water6,energy80,day1,storycomplete. Reload retained identical progression without repeating rewards. Restored original QA primary/backup on title and removed fixture key.
 - This verifies the production story/creation flow. It does not resolve the separate map-art regression raised by the user.
+
+### Map-version review artifact
+- Added `scripts/create_map_review.py`, which copies preserved PNGs unchanged into the ignored web-export folder and writes a standalone comparison page. It does not edit raster pixels, game code or saves.
+- Opened `http://127.0.0.1:8082/map-review.html` in the agent browser. Verified whole-map and synchronized courtyard-detail views, equal image sizes and aligned comparison frames. Earlier versions2/3/4 can be selected against current5. This is review evidence, not a map repair or approval.
