@@ -277,3 +277,8 @@ Session remains active; the user's five-hour development period has not yet elap
 - Replayed all five opening pages through real displayed buttons at 844x390 on v5 terrain. Portrait/text scroll area and answer buttons remained usable; lying-to-standing recovery displayed in scene.
 - At Familiar page: familiarGranted=false and money=0. Advancing to supplies: familiarGranted=true, money still0. Completing supplies: story=complete, money100, energy80, bread2, barleySeed6, hoe1, wateringJug1, water6; normal movement/inventory controls returned.
 - Reloaded and continued: no opening replay, money100/bread2/seeds6 unchanged. Original QA save/backup restored after verification.
+
+### Confirmation keyboard cancellation
+- Escape now cancels the sleep and new-journey confirmations, ignoring held-key repeats. Existing conversation/garden/fishing handlers remain separate.
+- Opened replacement confirmation with a draft name, pressed Escape, and verified the confirmation closed while saved Alexios/day6/236 drachmae remained unchanged. Cleared draft fields afterwards. Sleep uses the same cancel handler; not separately runtime-tested in this pass.
+- TypeScript and lint pass.

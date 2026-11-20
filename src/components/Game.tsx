@@ -380,6 +380,17 @@ export default function Game() {
     gardenPlot,
     stop,
   ]);
+  useEffect(() => {
+    if (Platform.OS !== "web" || (!sleepPrompt && !replacing)) return;
+    const cancel = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.repeat) return;
+      event.preventDefault();
+      setSleepPrompt(false);
+      setReplacing(false);
+    };
+    window.addEventListener("keydown", cancel);
+    return () => window.removeEventListener("keydown", cancel);
+  }, [sleepPrompt, replacing]);
   function start() {
     if (!name.trim() || !petName.trim()) return;
     setLoadNotice("");
