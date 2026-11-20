@@ -196,3 +196,9 @@ Session remains active; the user's five-hour development period has not yet elap
 - Cache the title, three terrain scenes, human variants/recovery, priest portrait/NPCs and Familiar atlases before opening the title. Expo 58 Asset.loadAsync; failed requests show a retry button. Audio stays lazy-loaded.
 - Browser reload reached Continue through the loading gate. This verifies startup completion, not physical-device image decoding or a simulated network-failure retry.
 - All 51 behavior tests pass; TypeScript and Expo lint pass. Fresh web, Android and iOS exports succeed after the save-recovery, shoreline audio and Familiar corner-following changes. Native exports are not signed builds or physical-device tests.
+
+### Visible menu feedback and bulk storage
+- Transaction confirmations were below the menu scrim. Menu-local persistent status now keeps storage, trade, cooking and crafting results readable; changing tabs clears the status.
+- Chest offers Store stack / Take stack, capped to available destination space. Single transfers and purchases disable at full stacks.
+- Verified 3 wood stored and withdrawn through the actual browser controls, preserving the total. Screenshots inspected at 390x844 and 844x390: status remains visible while item/actions scroll independently.
+- Added capacity/remaining-stack regression coverage; 12 progression tests pass. TypeScript and lint pass.

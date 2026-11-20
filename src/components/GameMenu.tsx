@@ -61,14 +61,19 @@ export function GameMenu({
   onMessage,
 }: Props) {
   const [tab, setTab] = useState<MenuTab>(initialTab),
+    [notice, setNotice] = useState(""),
     [selected, setSelected] = useState<ItemId>("wood"),
     [name, setName] = useState(save.petName);
   const { width, height } = useWindowDimensions();
   const narrow = width < 650;
   const p = save.progress!;
+  function notify(text: string) {
+    setNotice(text);
+    onMessage(text);
+  }
   function transaction(fn: (p: Progression) => Progression, success: string) {
     if (fn(p) === p) {
-      onMessage(
+      notify(
         "Unable to complete that exchange. Check your supplies and stack space.",
       );
       return;
@@ -81,7 +86,7 @@ export function GameMenu({
     audio.effect(
       tab === "trade" ? "coins" : tab === "cook" ? "pickup" : "wood",
     );
-    onMessage(success);
+    notify(success);
   }
   const tabs: MenuTab[] = [
     "satchel",
@@ -135,7 +140,7 @@ export function GameMenu({
               <GameButton
                 key={t}
                 selected={t === tab}
-                onPress={() => setTab(t)}
+                onPress={() => { setTab(t); setNotice(""); }}
               >
                 {t[0].toUpperCase() + t.slice(1)}
               </GameButton>
@@ -143,7 +148,7 @@ export function GameMenu({
           </View>
         </ScrollView>
         <ScrollView
-          style={{ maxHeight: height - 210 }}
+          style={{ maxHeight: height - (notice ? 280 : 210) }}
           contentContainerStyle={{ paddingBottom: 16, gap: 14 }}
         >
           <View style={m.money}>
@@ -350,7 +355,7 @@ export function GameMenu({
                 Stored {count(p.chest, selected)}
               </Text>
               <GameButton
-                disabled={!count(p.bag, selected)}
+                disabled={!count(p.bag, selected) || count(p.chest, selected) >= 999}
                 onPress={() =>
                   transaction(
                     (q) => transfer(q, selected, true),
@@ -361,7 +366,7 @@ export function GameMenu({
                 Store one
               </GameButton>
               <GameButton
-                disabled={!count(p.chest, selected)}
+                disabled={!count(p.chest, selected) || count(p.bag, selected) >= 999}
                 onPress={() =>
                   transaction(
                     (q) => transfer(q, selected, false),
@@ -371,6 +376,19 @@ export function GameMenu({
               >
                 Take one
               </GameButton>
+              {([true, false] as const).map((toChest) => {
+                const amount = Math.min(
+                  count(toChest ? p.bag : p.chest, selected),
+                  999 - count(toChest ? p.chest : p.bag, selected),
+                );
+                return <GameButton key={String(toChest)} disabled={!amount}
+                  onPress={() => transaction(
+                    (q) => transfer(q, selected, toChest, amount),
+                    `${toChest ? 'Stored' : 'Took'} ${amount} ${items[selected].name}.`,
+                  )}>
+                  {toChest ? 'Store stack' : 'Take stack'} · {amount}
+                </GameButton>;
+              })}
             </>
           )}
           {tab === "trade" && (
@@ -404,7 +422,7 @@ export function GameMenu({
               </GameButton>
               {items[selected].buy && (
                 <GameButton
-                  disabled={p.money < items[selected].buy!}
+                  disabled={p.money < items[selected].buy! || count(p.bag, selected) >= 999}
                   onPress={() =>
                     transaction(
                       (q) => trade(q, selected, true),
@@ -462,6 +480,9 @@ export function GameMenu({
             </>
           )}
         </ScrollView>
+        {!!notice && <View style={m.notice}>
+          <Text accessibilityLiveRegion="polite" style={{ fontSize: 17 }}>{notice}</Text>
+        </View>}
       </GamePanel>
     </View>
   );
@@ -482,6 +503,7 @@ const m = StyleSheet.create({
     gap: 12,
   },
   tabs: { flexDirection: "row", gap: 5, paddingBottom: 5 },
+  notice: { borderTopWidth: 2, borderColor: palette.edge, paddingTop: 8, marginTop: 6 },
   money: {
     flexDirection: "row",
     alignItems: "center",

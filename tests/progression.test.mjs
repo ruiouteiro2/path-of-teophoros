@@ -74,6 +74,15 @@ test("chest transfer round trip neither duplicates nor destroys stacks", () => {
   const b = transfer(a, "stone", false, 5);
   assert.deepEqual(b, p);
 });
+test("bulk storage respects destination capacity without losing the remaining stack", () => {
+  const p = { ...newProgression(), bag: { wood: 80 }, chest: { wood: 990 } };
+  assert.strictEqual(transfer(p, "wood", true, 80), p);
+  const filled = transfer(p, "wood", true, 9);
+  assert.equal(filled.bag.wood, 71);
+  assert.equal(filled.chest.wood, 999);
+  assert.strictEqual(transfer(filled, "wood", true), filled);
+  assert.deepEqual(transfer(filled, "wood", false, 9), p);
+});
 test("crafting is atomic and consumes ingredients once", () => {
   let p = addItem(addItem(newProgression(), "wood", 3), "fiber", 2);
   const rod = craft(p, "rod");
