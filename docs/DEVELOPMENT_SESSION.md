@@ -138,3 +138,7 @@ Session remains active; the user's five-hour development period has not yet elap
 
 ### Navigation connectivity regression
 - Flood-filled actual walkable geometry from each map spawn on an 8-world-unit grid. All sanctuary home interactions, all harvest nodes, six garden plots, cabin entrance, cabin activities and each map exit are reachable. Added three connectivity regression tests (43 total passing). This proves navigation connectivity, not visual agreement between every polygon edge and the artwork; that inspection remains separate.
+
+### Forest collision correction
+- Inspected original forest/sanctuary terrain. Forest boulder near normalized (250,395) was inside a broad walkable rectangle. Added a ground footprint while keeping the surrounding path connected.
+- Separated original terrain area from solid-footprint corrections so seeded material generation retains its old sequence and IDs. Only drops obstructed by corrected solids are relocated using the existing deterministic relocation pass. Existing tests pass; added a boulder/path regression (44 total tests). Typecheck/lint passed before formatting; targeted navigation suite passed afterward.

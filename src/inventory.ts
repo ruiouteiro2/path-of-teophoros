@@ -1,6 +1,7 @@
 import type { Point, Region, Save } from "./game.ts";
 import { walkable, regions, resources } from "./game.ts";
 import { addItem } from "./progression.ts";
+import { terrainArea } from "./worldLayout.ts";
 import { gardenPlots } from "./garden.ts";
 export type Material = "wood" | "stone" | "fiber";
 export type Drop = Point & { id: string; kind: Material };
@@ -22,7 +23,7 @@ export function dropsFor(seed: number, region: Region): Drop[] {
       y: Math.round(380 + random() * 850),
     };
     if (
-      !walkable(p, region) ||
+      !terrainArea(p, region) ||
       Math.hypot(p.x - regions[region].spawn.x, p.y - regions[region].spawn.y) <
         45 ||
       resources[region].some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 35) ||
@@ -36,38 +37,39 @@ export function dropsFor(seed: number, region: Region): Drop[] {
     });
   }
   // Keep the original generation and IDs stable for old saves. Only relocate
-  // materials that would otherwise be hidden beneath the new garden plots.
-  if (region === "temple")
-    for (const drop of result) {
-      const overlaps = (p: Point) =>
-        gardenPlots.some((g) => Math.hypot(p.x - g.x, p.y - g.y) < 50);
-      if (!overlaps(drop)) continue;
-      let placed = false;
-      for (let radius = 60; radius <= 360 && !placed; radius += 30)
-        for (let angle = 0; angle < 16; angle++) {
-          const candidate = {
-            x: Math.round(drop.x + Math.cos((angle * Math.PI) / 8) * radius),
-            y: Math.round(drop.y + Math.sin((angle * Math.PI) / 8) * radius),
-          };
-          if (
-            !walkable(candidate, region) ||
-            overlaps(candidate) ||
-            result.some(
-              (d) =>
-                d !== drop &&
-                Math.hypot(d.x - candidate.x, d.y - candidate.y) < 28,
-            ) ||
-            resources[region].some(
-              (r) => Math.hypot(r.x - candidate.x, r.y - candidate.y) < 35,
-            )
+  // materials hidden beneath new garden plots or corrected solid footprints.
+  for (const drop of result) {
+    const overlaps = (p: Point) =>
+      !walkable(p, region) ||
+      (region === "temple" &&
+        gardenPlots.some((g) => Math.hypot(p.x - g.x, p.y - g.y) < 50));
+    if (!overlaps(drop)) continue;
+    let placed = false;
+    for (let radius = 60; radius <= 360 && !placed; radius += 30)
+      for (let angle = 0; angle < 16; angle++) {
+        const candidate = {
+          x: Math.round(drop.x + Math.cos((angle * Math.PI) / 8) * radius),
+          y: Math.round(drop.y + Math.sin((angle * Math.PI) / 8) * radius),
+        };
+        if (
+          !walkable(candidate, region) ||
+          overlaps(candidate) ||
+          result.some(
+            (d) =>
+              d !== drop &&
+              Math.hypot(d.x - candidate.x, d.y - candidate.y) < 28,
+          ) ||
+          resources[region].some(
+            (r) => Math.hypot(r.x - candidate.x, r.y - candidate.y) < 35,
           )
-            continue;
-          drop.x = candidate.x;
-          drop.y = candidate.y;
-          placed = true;
-          break;
-        }
-    }
+        )
+          continue;
+        drop.x = candidate.x;
+        drop.y = candidate.y;
+        placed = true;
+        break;
+      }
+  }
   if (layoutCache.size >= 16)
     layoutCache.delete(layoutCache.keys().next().value!);
   layoutCache.set(key, result);

@@ -253,7 +253,7 @@ function inPolygon(p: XY, vertices: number[][]) {
   }
   return inside;
 }
-export function terrainWalkable(p: XY, region: "forest" | "temple" | "cabin") {
+export function terrainArea(p: XY, region: "forest" | "temple" | "cabin") {
   if (region === "cabin") {
     const floor = p.x > 55 && p.x < 850 && p.y > 238 && p.y < 535;
     const doorway = p.x > 400 && p.x < 505 && p.y >= 520 && p.y < 590;
@@ -267,4 +267,17 @@ export function terrainWalkable(p: XY, region: "forest" | "temple" | "cabin") {
     : forestRects.some(
         ([x1, y1, x2, y2]) => q.x >= x1 && q.x <= x2 && q.y >= y1 && q.y <= y2,
       ) || forestTrails.some((trail) => nearTrail(q, trail));
+}
+
+// Solid foreground footprints are separate from the original navigation area.
+// Keep terrainArea stable for seeded drop generation in existing saves.
+export function terrainWalkable(p: XY, region: "forest" | "temple" | "cabin") {
+  if (!terrainArea(p, region)) return false;
+  if (region === "forest") {
+    const x = p.x / WORLD_SCALE,
+      y = p.y / WORLD_SCALE;
+    // Boulder beside the western bend: source image ~384,604 at 1536�1024.
+    if (((x - 250) / 20) ** 2 + ((y - 395) / 15) ** 2 < 1) return false;
+  }
+  return true;
 }
