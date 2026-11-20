@@ -23,6 +23,7 @@ export type Save = {
   pickedDrops?: string[];
   progress?: Progression;
   worldVersion?: 2;
+  ambientMotion?: boolean;
 };
 export const SAVE_KEY = "teophoros.save.v2";
 export const WORLD = { width: 2000, height: 1334 };
@@ -103,6 +104,7 @@ export function validSave(value: unknown): value is Save {
   return (
     !!s &&
     (s.worldVersion === undefined || s.worldVersion === 2) &&
+    (s.ambientMotion === undefined || typeof s.ambientMotion === "boolean") &&
     (s.progress === undefined || validProgression(s.progress)) &&
     (s.appearance === undefined || validAppearance(s.appearance)) &&
     (s.facing === undefined || ["front", "back", "left", "right"].includes(s.facing)) &&

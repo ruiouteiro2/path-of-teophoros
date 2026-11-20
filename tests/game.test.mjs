@@ -25,6 +25,13 @@ function fixture(region = "forest") {
     visited: [region],
   };
 }
+test("ambient motion preference is optional for old saves and strictly boolean", () => {
+  assert(validSave(fixture()));
+  for (const ambientMotion of [true, false])
+    assert(validSave(JSON.parse(JSON.stringify({ ...fixture(), ambientMotion }))));
+  for (const ambientMotion of [0, 1, "false", null, {}])
+    assert.equal(validSave({ ...fixture(), ambientMotion }), false);
+});
 for (const region of ["forest", "temple", "cabin"]) {
   test(region + ": every collectible and exit is reachable from spawn", () => {
     const queue = [regions[region].spawn],

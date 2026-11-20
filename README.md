@@ -27,6 +27,7 @@ Node 24 is recommended for the built-in TypeScript test runner. Mobile developme
 - Cook harvested barley into bread, two thyme into infusion, or a carp/perch with one onion into grilled lake fish at the cabin hearth. The fish meal restores 55 energy. Ingredients must be in your satchel.
 - Trade gathered supplies for drachmae at the camp. Bring three wood, three stone and two fiber to the High Priest to secure the altar and earn 120 drachmae.
 - Open **Inventory** (**I** / **Escape**) for the satchel, quest journal, Familiar naming, appearance and separate music/ambience/effect/footstep controls.
+- Settings also offers an ambient-animation toggle for a quieter scene. It defaults on and saves with the journey; character and Familiar movement remain animated.
 - Progress saves on this device. A new journey asks before replacing the local save.
 
 ## Implemented

@@ -291,6 +291,11 @@ export function GameMenu({
           )}
           {tab === "settings" && (
             <>
+              <Text style={ui.title}>World animation</Text>
+              <Text>Wind, water and wildlife bring the world to life. Turn these effects off for a quieter scene; you and your Familiar still animate.</Text>
+              <GameButton onPress={() => onSave(s => ({ ...s, ambientMotion: s.ambientMotion === false }))}>
+                {save.ambientMotion === false ? "Ambient animation off · Turn on" : "Ambient animation on · Turn off"}
+              </GameButton>
               <Text style={ui.title}>Sound & music</Text>
               {(["music", "ambience", "effects", "steps"] as const).map(
                 (channel) => (

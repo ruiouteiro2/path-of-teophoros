@@ -340,6 +340,7 @@ export default function Game() {
   useEffect(() => {
     if (Platform.OS !== "web" || !playing || journal) return;
     const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key.toLowerCase() === "e" && !e.repeat) {
         e.preventDefault();
         gather();
@@ -361,6 +362,7 @@ export default function Game() {
     )
       return;
     const key = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (travelLock.current) return;
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
@@ -547,6 +549,7 @@ export default function Game() {
                     : undefined
               }
               region={save.region}
+              lively={save.ambientMotion !== false}
               hero={liveSave.position}
               pet={save.pet}
               showFamiliar={save.progress?.familiarGranted ?? true}
