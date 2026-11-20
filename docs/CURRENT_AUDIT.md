@@ -1,6 +1,6 @@
 # Current scope audit
 
-This is an evidence ledger, not a completion declaration. Last reviewed at commit 892a8a8. Session elapsed work was about 2 hours 50 minutes at review; the requested five-hour pass is still active.
+This is an evidence ledger, not a completion declaration. Last reviewed after commit 8f2c2c7 and the full garden runtime cycle. Session elapsed work is just over four hours; the requested five-hour pass is still active.
 
 | Requested result | Current owning evidence | Assessment / remaining check |
 | --- | --- | --- |
@@ -23,9 +23,17 @@ This is an evidence ledger, not a completion declaration. Last reviewed at commi
 
 ## Next substantive passes
 
-1. Inspect and improve outdoor navigation/occlusion against the actual terrain, including cabin approach, shoreline and forest trails. Verify normal walking transitions and persistence.
-2. Recheck the opening and inventory at phone portrait and short landscape sizes; repair any clipping or unreadable controls.
-3. Review animation consistency in motion and improve remaining mismatches, using one asset family at a time.
-4. Rebuild all platforms after final changes and record exactly what was tested. Native exports must not be presented as device testing.
+1. Continue outdoor navigation/occlusion inspection. Three forest path-side trees now have depth masks and solid trunks; other trees remain baked terrain. Cabin and region transitions have runtime evidence, including input isolation during fades.
+2. Review remaining animation and asset consistency in motion, using one asset family at a time. Opening and compact inventory/HUD have now been inspected; see the session ledger for exact viewport coverage.
+3. Rebuild all platforms after final changes and record exactly what was tested. Latest exports predate trade quantities, fade-input isolation and region-scoped water playback. Native exports must not be presented as device testing.
+
+## Additional completed integration checks
+
+- Fishing: actual cast, hook, reel and catch awarded one perch and persisted across reload. A rendered-position test controller supplied ordinary input; manual play feel remains unverified.
+- Garden: till, plant, water, sleep and harvest performed through real UI actions. Three watered nights matured barley; one intervening dry night did not advance it. Harvest awarded exactly one barley and persisted with an empty tilled plot. Test repositioning skipped travel between bed and garden.
+- Home cooking: carp and onion became one grilled fish meal; eating restored55 energy and consumed it. The perch recipe has behavioral coverage.
+- Shop: quantity1/5/10 controls verified at phone width, including total price and unaffordable purchase rejection.
+- Persistence: queued writes and failure recovery tested; a runtime storage failure displayed a retry action, which saved successfully after storage recovered.
+- Water playback: unused regional loops pause, both pause indoors, and lake playback resumes its prior position when leaving the cabin.
 
 Combat, seasons, construction placement and full NPC schedules remain expansion work, not implemented features. The story mentions monsters; there is currently no combat system. Existing optional growth/trade systems do not substitute for the requested presentation and home-world polish.

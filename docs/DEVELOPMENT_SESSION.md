@@ -345,3 +345,9 @@ Session remains active; the user's five-hour development period has not yet elap
 - Previously both ambient water players ran silently in every region. Now forest runs only stream ambience, sanctuary runs only lake ambience, and cabin pauses both. Existing proximity volume and music selection remain unchanged.
 - Live player probe: sanctuary music playing0.3, lake playing, forest stream paused. Walking through cabin door paused lake and stream while music continued. Walking out resumed lake from13.057s to15.071s, without restarting; arrival temple1574,500.
 - Removed media prototype probes and restored QA save/backup while menu-paused. TypeScript and lint pass. This confirms playback state, not a new subjective listening assessment.
+
+### Complete garden runtime cycle
+- Exercised till, plant barley, water, sleep and harvest through the displayed controls. Test-only saved-position changes skipped already-tested walking routes between garden and bed; this was not a continuous walking playthrough.
+- Day6: till/plant/water consumed one barley seed,6 energy and1 jug charge. First sleep produced age1 on day7 and restored100 energy. A dry sleep produced day8 with age still1. Two subsequent watered sleeps produced age2 on day9 and mature age3 on day10; jug charges fell6 to3 in total.
+- Harvest added exactly one barley, reset the plot to tilled/empty/age0 and removed the harvest action. Reload preserved barley1 and the empty plot, preventing another harvest award from the same crop.
+- Restored the original QA primary and backup while on title and removed the garden fixture backup key. No production state or garden logic was changed by this verification pass.
