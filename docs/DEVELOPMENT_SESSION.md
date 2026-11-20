@@ -125,3 +125,7 @@ Session remains active; the user's five-hour development period has not yet elap
 
 ### Home interaction follow-up
 - Sleep confirmation now takes the immediate shared transition lock, preventing rapid duplicate confirmations from advancing multiple days. The prompt explains watered crop growth and retained storage. Code-path review, 40 behavior tests, typecheck and lint passed; rapid-tap runtime verification remains in the next home QA pass.
+
+### Cabin runtime checks
+- On isolated QA origin, repeated Enter inputs on sleep confirmation advanced day 5 to 6 exactly once. Energy became 100, money stayed 236, watered fixture crops advanced one stage and dry crops did not grow. Cabin rendered after waking with hero and Familiar grounded beside bed.
+- Storage fixture: seeded 3 wood solely for this check. Stored twice through UI (bag 1/chest 2), reloaded, observed the same quantities in both grids, then withdrew twice (bag 3/chest 0). No duplication or loss. User's separate localhost save was untouched.
