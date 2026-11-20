@@ -1,14 +1,14 @@
 # Current scope audit
 
-This is an evidence ledger, not a completion declaration. Reviewed after commit cbd438d. The requested five-hour pass remains active. The user's latest map screenshot exposes an unresolved visual regression; successful tests do not establish completion.
+Final audit of the requested development pass, reviewed against fc7e683 after more than five hours of work. The reported map regression was addressed with bounded reuse of preserved artwork and corrected browser sampling, followed by production-scene inspection. This is a playable prototype audit, not a claim of a finished commercial game or physical-device certification.
 
 | Requested result | Current owning evidence | Assessment / remaining check |
 | --- | --- | --- |
 | React Native with Android/iOS path | Expo 58 package.json, native bundle exports | Implemented; signed binaries and physical-device rendering/audio not tested. |
-| Original Olympus art resembling reference game | assets/world, ASSET_GUIDE, scene inspections in DEVELOPMENT_SESSION | **Incomplete:** successive sanctuary edits softened texture and enlarged the central motif. v2 retains sharper texture but has a different grove and pond. Do not blindly swap it into the current collision layout. No extracted Stardew assets. |
+| Original Olympus art resembling reference game | Terrain.tsx, terrainAssets.ts, terrain.css, ASSET_GUIDE, scene inspections in DEVELOPMENT_SESSION | Original upper grove, camp and façade detail restored from v2; smaller ruined disc restored from v4; new cabin/lower grove/lake retained. A ground blend removes the tested join, and web sampling no longer adds interpolation blur. Reviewed in gameplay and map overview; no whole-map regeneration or extracted Stardew assets. |
 | Larger temple home, grove, cabin and fish lake | sanctuary-v5, cabin-interior, worldLayout, fishing, environmentMotion | Implemented and playable; navigation uses approximate polygons, so route/obstacle inspection remains important. |
 | Ruined floor symbol | Terrain.tsx, preserved v4 floor, altar-states and restoration progression | Bounded reuse of the earlier disc corrects the enlarged motif without replacing the base map. Browser inspected at1100×760 and390×844; broken slabs remain after the separate altar is repaired. |
-| Nearly dying rescue and High Priest dialogue | story.ts, Dialogue, recovery atlas, progression advanceStory | Production opening verified at 390×844 through rescue, recovery, naming/customization, Familiar grant and supplies. Reload preserves the exact one-time reward. Short-landscape final opening remains to be checked. |
+| Nearly dying rescue and High Priest dialogue | story.ts, Dialogue, recovery atlas, progression advanceStory | Production opening verified at390×844 through rescue, recovery, naming/customization, Familiar grant and supplies. Reload preserves the exact one-time reward. Short-landscape dialogue verified at844×390 and568×320; fixed the clipped portrait/panel at the latter size and checked calling, Familiar and supplies pages. |
 | Familiar identity, naming and walking | referenced Boxer/small dog sheets, GameMenu, motion | Implemented; names persist, grant gated by story, directional gait and held idle behavior. |
 | Hair/clothing customization and consistent human style | AppearancePicker, Hero, four sheets and measured anchors | Browser inspected; native filter/recoloring remains unverified on device. |
 | Wood/stone/fiber once-only drops | inventory.ts and behavioral tests | Stable seeded IDs, saved collection, capacity guards and reachability tested. |
@@ -19,20 +19,20 @@ This is an evidence ledger, not a completion declaration. Reviewed after commit 
 | Readable game-styled UI | GameUI minimum 17px, ochre panels, contextual HUD | Phone/landscape storage and fishing inspected. Top HUD now flows around wrapping labels; 320×568, 390×844 and 844×390 inspected. Production opening verified at phone width. This does not prove every possible text/viewport combination. |
 | Written durable consistency guide | docs/ASSET_GUIDE.md | Implemented, includes scale, palette, animation, authoring, provenance and acceptance rules. |
 | Study reference mechanics | DEVELOPMENT_SESSION reference ledger | Controls, inventory, menu, options, farmhouse, fishing, quests, cooking and crops consulted. This is selected relevant research, not a claim to have inspected every asset in Stardew Valley. |
-| Five hours of development and verification | active goal accounting | Reached during the short-landscape dialogue repair. The goal remains active because visual repair is unfinished. Banked usage resets cannot be activated by this agent. |
+| Five hours of development and verification | active goal accounting | Exceeded; subsequent map repairs and final audit completed. Banked usage resets cannot be activated by this agent. |
 
-## Next substantive passes
+## Release limitations and future work
 
-1. Repair the map regression with bounded art changes. Keep v2–v5 intact and compare actual gameplay-scale views. The read-only `/map-review.html` comparison is generated by `scripts/create_map_review.py`; it is evidence, not the repair. Current gameplay still uses v5.
+1. Keep v2–v5 intact for future art review. The live terrain is a layered composition; `/map-review.html` explicitly shows unmodified historical sources. Further art changes must be judged at game scale and must not silently replace the entire map.
 2. Preserve navigation and foreground alignment during any terrain change. Three forest and four sanctuary trees now have masks and solid trunks; other trees remain baked terrain. The garden olive has behind/in-front runtime evidence. Changing the grove requires re-authoring masks and collision footprints together.
-3. Review remaining animation and asset consistency in motion, one family at a time. The owl, carp icon and shared pine cell bleed were repaired. Loose materials now share natural branch/stone/fiber/reed artwork with inventory and measured ground contacts. These changes do not repair the underlying map.
-4. Rebuild final selected artwork and verify native bundles. Physical-device rendering, recoloring, performance and listening remain unverified; native exports must not be presented as device testing.
+3. Continue future asset work one family at a time. Owl, carp icon and shared pine cell bleed were repaired. Loose materials share natural branch/stone/fiber/reed artwork with inventory and measured ground contacts. A generated mosaic that failed in-scene consistency was rejected and removed.
+4. Physical-device rendering, recoloring, performance and listening remain unverified; native exports must not be presented as device testing. Signed native builds and store distribution are outside this development pass.
 
 ## Latest automated checks
 
-- After cbd438d: 63 behavior tests passed, TypeScript and ESLint passed, Expo Doctor passed all 20 checks.
+- Final fc7e683: 63 behavior tests passed again; current code passed TypeScript and ESLint. Expo Doctor passed all20 checks with the same dependency/configuration set.
 - Asset audit: 25 sheets / 400 frames passed the technical margin/contact checks. This cannot judge style, good animation or map texture.
-- Android/iOS export after cbd438d completed with exit code0: 94 assets and two 2.9MB Hermes bundles. This verifies packaging, not device behavior.
+- Combined web/Android/iOS export after fc7e683 changes completed with exit0:178 platform assets, six web bundles and one2.9MB Hermes bundle per native platform. Final production browser view at1100×760 had no incomplete img elements, expected pixel sampling on both ground layers, and no pending QA save fixtures. Remote main matched the tested source revision before this documentation-only audit.
 
 ## Additional completed integration checks
 
