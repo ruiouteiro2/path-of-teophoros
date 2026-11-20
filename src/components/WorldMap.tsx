@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Image } from "react-native";
+import { View, Image, ScrollView } from "react-native";
 import { GameButton, GameText as Text, ui } from "./GameUI";
 import type { Save, Region } from "../game";
 import { dimensions, regions } from "../game";
@@ -21,12 +21,14 @@ const destinations = {
     ["6", "Fishing dock", homeLocations.lake],
     ["7", "Garden", gardenPlots[1]],
     ["8", "Well", homeLocations.well],
+    ["9", "Olivewild path", regions.temple.gate],
   ],
   cabin: [
     ["1", "Bed", cabinLocations.bed],
     ["2", "Storage", cabinLocations.chest],
     ["3", "Wardrobe", cabinLocations.wardrobe],
     ["4", "Hearth", cabinLocations.hearth],
+    ["5", "South doorway", regions.cabin.gate],
   ],
   forest: [["1", "Sanctuary path", regions.forest.gate]],
 } satisfies Record<Region, [string, string, { x: number; y: number }][]>;
@@ -34,6 +36,7 @@ const destinations = {
 /** Read-only illustrated navigation. Traveling still requires walking to an exit. */
 export function WorldMap({ save }: { save: Save }) {
   const [region, setRegion] = useState<Region>(save.region);
+  const [selected, setSelected] = useState("1");
   const size = dimensions(region);
   return (
     <View style={{ gap: 12 }}>
@@ -42,7 +45,7 @@ export function WorldMap({ save }: { save: Save }) {
           <GameButton
             key={r}
             selected={r === region}
-            onPress={() => setRegion(r)}
+            onPress={() => { setRegion(r); setSelected("1"); }}
           >
             {r === "temple"
               ? "Sanctuary"
@@ -53,13 +56,22 @@ export function WorldMap({ save }: { save: Save }) {
         ))}
       </View>
       <Text style={ui.title}>{regions[region].name}</Text>
+      <Text>Swipe through landmarks; choose one to highlight it.</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator>
+        <View style={{ flexDirection: "row", gap: 6, paddingBottom: 5 }}>
+          {destinations[region].map(([n, label]) => (
+            <GameButton key={n} selected={selected === n} onPress={() => setSelected(n)}>
+              {n} · {label}
+            </GameButton>
+          ))}
+        </View>
+      </ScrollView>
       <View
         style={{
           width: "100%",
           aspectRatio: size.width / size.height,
           borderWidth: 3,
           borderColor: "#694529",
-          overflow: "hidden",
         }}
       >
         <Image
@@ -75,9 +87,10 @@ export function WorldMap({ save }: { save: Save }) {
               position: "absolute",
               left: `${(p.x / size.width) * 100}%`,
               top: `${(p.y / size.height) * 100}%`,
-              transform: [{ translateX: -11 }, { translateY: -11 }],
-              width: 23,
-              height: 23,
+              transform: [{ translateX: number === selected ? -13 : -3 }, { translateY: number === selected ? -13 : -3 }],
+              width: number === selected ? 27 : 6,
+              height: number === selected ? 27 : 6,
+              zIndex: number === selected ? 2 : 1,
               backgroundColor: "#ffe1a0",
               borderWidth: 2,
               borderColor: "#663923",
@@ -85,7 +98,7 @@ export function WorldMap({ save }: { save: Save }) {
               justifyContent: "center",
             }}
           >
-            <Text style={{ fontSize: 17, lineHeight: 18 }}>{number}</Text>
+            {number === selected && <Text style={{ fontSize: 17, lineHeight: 22 }}>{number}</Text>}
           </View>
         ))}
         {region === save.region && (
@@ -102,18 +115,12 @@ export function WorldMap({ save }: { save: Save }) {
               borderWidth: 2,
               borderColor: "#fff3b9",
               backgroundColor: "#b53933",
+              zIndex: 3,
             }}
           />
         )}
       </View>
-      <Text>● Red marker: you are here</Text>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
-        {destinations[region].map(([n, label]) => (
-          <Text key={n}>
-            {n} · {label}
-          </Text>
-        ))}
-      </View>
+      <Text>{region === save.region ? "● Red marker: you are here" : `You are currently in ${save.region === "cabin" ? "your cabin" : regions[save.region].name}.`}</Text>
       <Text>
         {region === "cabin"
           ? "The south doorway leads back to the sanctuary."

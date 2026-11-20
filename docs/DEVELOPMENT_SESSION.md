@@ -254,3 +254,8 @@ Session remains active; the user's five-hour development period has not yet elap
 - Save validation now rejects unknown facing directions before they can index sprite rows/anchors. Backup recovery handles such malformed primary saves.
 - Motion initialization respects a valid saved facing instead of always starting front-facing; legacy saves without direction retain the default.
 - Added loading/idle orientation and corrupt-facing backup tests. All 16 targeted motion/storage tests, TypeScript and lint pass.
+
+### Readable map landmarks on phones
+- Replaced overlapping numbered pins with one selected numbered landmark plus small dots for the others. A horizontal landmark strip above the map keeps selection close to the terrain preview.
+- Added explicit Olivewild exit and cabin south-doorway markers. Viewing another region now reports the player's actual region instead of claiming a missing red marker is present.
+- Verified selecting Workbench at 390x844 moves the numbered marker and preserves map visibility. No fast travel added. TypeScript and lint pass.
