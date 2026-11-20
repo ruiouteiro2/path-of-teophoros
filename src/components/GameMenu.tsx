@@ -63,6 +63,7 @@ export function GameMenu({
   const [tab, setTab] = useState<MenuTab>(initialTab),
     [notice, setNotice] = useState(""),
     [selected, setSelected] = useState<ItemId>("wood"),
+    [tradeQuantity, setTradeQuantity] = useState(1),
     [name, setName] = useState(save.petName);
   const { width, height } = useWindowDimensions();
   const narrow = width < 650;
@@ -106,7 +107,7 @@ export function GameMenu({
           accessibilityRole="button"
           accessibilityLabel={`${storage ? "Stored " : ""}${items[id].name}: ${count(bag, id)}`}
           accessibilityState={{ selected: selected === id }}
-          onPress={() => setSelected(id)}
+          onPress={() => { setSelected(id); setTradeQuantity(1); }}
           style={[m.slot, selected === id && m.selected]}
         >
           <ItemIcon id={id} size={narrow ? 42 : 52} />
@@ -412,28 +413,35 @@ export function GameMenu({
               {stackGrid(p.bag)}
               <Text style={ui.title}>{items[selected].name}</Text>
               <Text>{items[selected].description}</Text>
+              <Text>Carrying {count(p.bag, selected)} · Trade quantity</Text>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                {[1, 5, 10].map(amount => <GameButton key={amount}
+                  accessibilityLabel={`Trade quantity ${amount}`}
+                  selected={tradeQuantity === amount}
+                  onPress={() => setTradeQuantity(amount)}>{amount}</GameButton>)}
+              </View>
               <GameButton
-                disabled={!count(p.bag, selected) || !items[selected].sell}
+                disabled={trade(p, selected, false, tradeQuantity) === p}
                 onPress={() =>
                   transaction(
-                    (q) => trade(q, selected, false),
-                    "Sold one " + items[selected].name + ".",
+                    (q) => trade(q, selected, false, tradeQuantity),
+                    `Sold ${tradeQuantity} × ${items[selected].name}.`,
                   )
                 }
               >
-                Sell one · {items[selected].sell} drachmae
+                Sell {tradeQuantity} · {items[selected].sell * tradeQuantity} drachmae
               </GameButton>
               {items[selected].buy && (
                 <GameButton
-                  disabled={p.money < items[selected].buy! || count(p.bag, selected) >= 999}
+                  disabled={trade(p, selected, true, tradeQuantity) === p}
                   onPress={() =>
                     transaction(
-                      (q) => trade(q, selected, true),
-                      "Bought " + items[selected].name + ".",
+                      (q) => trade(q, selected, true, tradeQuantity),
+                      `Bought ${tradeQuantity} × ${items[selected].name}.`,
                     )
                   }
                 >
-                  Buy one · {items[selected].buy} drachmae
+                  Buy {tradeQuantity} · {items[selected].buy! * tradeQuantity} drachmae
                 </GameButton>
               )}
               <Text>

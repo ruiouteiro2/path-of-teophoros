@@ -329,3 +329,8 @@ Session remains active; the user's five-hour development period has not yet elap
 - Added trunk/nearby-route assertions; all five navigation tests pass, including flood-fill connectivity. TypeScript, lint and web export pass. Original QA save/backup restored with simulation paused.
 - Consulted Expo58 react-native-svg documentation before using the existing installed15.16.0 primitives. No new package added.
 - Final checks for this depth pass: all61 tests pass; Android/iOS bundle exports pass with93 assets. Physical-device validation remains outstanding.
+
+### Shop trade quantities
+- Added1/5/10 quantity controls and total buy/sell prices. Selecting another item resets quantity to1. Buttons use the same pure transaction validation as the exchange, including funds, carried count,999-stack limit and currency cap.
+- Runtime390x844: bought5 barley seeds for25 drachmae, money236→211 and seeds5→10. Switching to rod reset quantity1; selecting10 displayed600 drachmae and disabled purchase. Original QA save/backup restored while menu-paused.
+- Existing transaction quantity tests cover conservation/overspending; no duplicated UI-mirroring test added. TypeScript and lint pass.
