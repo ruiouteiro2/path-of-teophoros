@@ -60,7 +60,7 @@ export function Dialogue({
         </GameText>
       </View>
       <GamePanel style={[d.box, { width: small ? "96%" : "88%" }]}>
-        <View style={{ flexDirection: small ? "column" : "row", gap: 20 }}>
+        <View style={{ flexDirection: small && !short ? "column" : "row", gap: short ? 12 : 20 }}>
           <View
             style={[
               d.portrait,

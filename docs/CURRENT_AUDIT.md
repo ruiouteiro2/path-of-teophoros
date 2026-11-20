@@ -19,7 +19,7 @@ This is an evidence ledger, not a completion declaration. Reviewed after commit 
 | Readable game-styled UI | GameUI minimum 17px, ochre panels, contextual HUD | Phone/landscape storage and fishing inspected. Top HUD now flows around wrapping labels; 320×568, 390×844 and 844×390 inspected. Production opening verified at phone width. This does not prove every possible text/viewport combination. |
 | Written durable consistency guide | docs/ASSET_GUIDE.md | Implemented, includes scale, palette, animation, authoring, provenance and acceptance rules. |
 | Study reference mechanics | DEVELOPMENT_SESSION reference ledger | Controls, inventory, menu, options, farmhouse, fishing, quests, cooking and crops consulted. This is selected relevant research, not a claim to have inspected every asset in Stardew Valley. |
-| Five hours of development and verification | active goal accounting | Not reached. Continue meaningful work; no artificial waiting. Banked usage resets cannot be activated by this agent. |
+| Five hours of development and verification | active goal accounting | Reached during the short-landscape dialogue repair. The goal remains active because visual repair is unfinished. Banked usage resets cannot be activated by this agent. |
 
 ## Next substantive passes
 

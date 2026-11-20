@@ -422,3 +422,10 @@ Session remains active; the user's five-hour development period has not yet elap
 - Added shared Terrain renderer for world, creation preview and navigation map so the bounded patch cannot drift between them. Source v4 is cached with the base map. The outer ground sampling remains pixelated on web.
 - Inspected the scene at1100×760 and390×844 beside the hero and Familiar. No hard edge was visible around the clipped area; smaller motif and broken borders remain readable. The broader v5 source softness remains unresolved. The generated decal from the previous experiment is not used.
 - Typecheck and lint passed. Web export completed (81 assets); native exports completed with exit0 (95 assets,2.9MB bundles). Restored the original dev QA primary/backup and removed `teophoros.qa.floorReuse`. Updated comparison page to explicitly identify its images as unmodified historical sources rather than the new layered live terrain.
+
+## Short-landscape dialogue correction
+
+- Inspected production dialogue at844×390 and568×320. At568×320 the narrow-screen column layout put the portrait and panel top above the viewport. Short screens now keep portrait and text side by side with a12px gap; portrait phone layouts retain the stacked arrangement.
+- Verified the calling, Familiar and long supplies pages in the corrected exported build at568×320; portrait, title, scrollable text and action remain inside the viewport. The test resumed story stages in a saved fixture, so it verifies dialogue layout and advancement rather than normal opening actor placement or initial reward amounts (separately tested earlier).
+- Restored primary and backup from paused dialogue and removed `teophoros.qa.landscapeStory`. Typecheck, lint and web export passed. The active work timer has reached five hours; outstanding artwork feedback still prevents declaring the overall goal complete.
+- Final Android/iOS export after the dialogue correction completed with exit0, 95 assets and two2.9MB Hermes bundles.
