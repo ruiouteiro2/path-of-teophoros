@@ -5,12 +5,8 @@ import type { Save, Region } from "../game";
 import { dimensions, regions } from "../game";
 import { homeLocations, cabinLocations } from "../worldLayout";
 import { gardenPlots } from "../garden";
+import { terrainAssets as maps } from "../terrainAssets";
 
-const maps = {
-  temple: require("../../assets/world/sanctuary-v5.png"),
-  forest: require("../../assets/world/olivewild-v2.png"),
-  cabin: require("../../assets/world/cabin-interior.png"),
-};
 const destinations = {
   temple: [
     ["1", "High Priest", homeLocations.priest],

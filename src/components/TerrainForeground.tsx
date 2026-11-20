@@ -2,12 +2,13 @@ import React, { memo } from 'react';
 import { View } from 'react-native';
 import Svg, { Defs, ClipPath, Path, Image as SvgImage } from 'react-native-svg';
 import { forestTrees, templeTrees, forestImagePoint, forestImageScale } from '../terrainDepth';
+import { terrainAssets } from '../terrainAssets';
 
 export const TerrainForeground = memo(function TerrainForeground({ region, scale, ox, oy }: {
   region: 'forest' | 'temple'; scale: number; ox: number; oy: number;
 }) {
   const trees = region === 'forest' ? forestTrees : templeTrees;
-  const source = region === 'forest' ? require('../../assets/world/olivewild-v2.png') : require('../../assets/world/sanctuary-v5.png');
+  const source = terrainAssets[region];
   return <>{trees.map(tree => {
     const point = forestImagePoint(tree.x, tree.y);
     const foot = forestImagePoint(tree.footX, tree.footY);

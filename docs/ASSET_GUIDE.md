@@ -10,6 +10,8 @@ Judge assets at their actual in-game size, beside existing assets. A beautiful i
 
 Whole-map regeneration has now caused an observed regression: successive sanctuary edits softened the terrain and enlarged the floor motif. Do not regenerate the complete map to fix one landmark. Preserve the approved terrain as a stable source, author bounded replacement layers, and compare the affected scene at the actual camera scale. The latest map appearance is under user review; passing code or atlas checks does not resolve that art feedback.
 
+`src/terrainAssets.ts` owns the current terrain revisions for gameplay, foreground masks, world-map menu, creation preview and startup caching. Do not add independent terrain file references to those consumers. Any art replacement must review the corresponding `worldLayout.ts`, `terrainDepth.ts`, water masks and fish routes together; matching image dimensions alone does not preserve landmarks.
+
 ### Reference hierarchy
 
 1. Terrain and trees: `assets/world/olivewild-v2.png` and `sanctuary-v5.png`. Match their chunky leaf groups, stepped silhouettes, warm earth, and broad shadow masses. The old `olivewild.png`, `temple.png`, and `sanctuary-v2.png` are superseded terrain drafts.
