@@ -90,7 +90,7 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 
 ## 9. Sound
 
-- Original quiet lyre/plucked-string character, not copied music from another game. Current music is `sanctuary-dawn.m4a`, approximately 4 minutes 46 seconds, authored in `scripts/compose_sanctuary.py` with distinct themes and quiet sections. `generate_audio.py` is the superseded first synthesized pass and must not overwrite current audio.
+- Original quiet lyre/plucked-string character, not copied music from another game. Current music is `sanctuary-dawn.m4a` (4:46, `scripts/compose_sanctuary.py`) and `olivewild-paths.m4a` (4:42, `scripts/compose_olivewild.py`). Both have distinct themes and quiet sections; the forest cue uses a separate brighter harmonic progression. Regional changes crossfade for 800 ms and pause the inactive cue at its current position. `generate_audio.py` is the superseded first synthesized pass and must not overwrite current audio.
 - Music must leave room for ambience and interaction sounds. Water volume increases with proximity; distant water and cabin water are silent. No bird audio loop is active. Do not reintroduce the rejected repeating whistle.
 - Field recordings and Kenney CC0 foley are documented in `assets/audio/foley/README.md`; retain source/license notices. `scripts/prepare_foley.py` prepares the selected files. Grass, stone and cabin-floor footsteps are different sample sets, cycled without consecutive repeats.
 - Lake water should shimmer gently, not flow downstream like the river. Masks must exclude the dock and banks. Door creaks are only for cabin travel, never outdoor map boundaries.

@@ -33,7 +33,7 @@ Node 24 is recommended for the built-in TypeScript test runner. Mobile developme
 
 Two connected outdoor maps plus a cabin interior, five Familiars, portrait dialogue, eight harvest nodes, 60 seeded material drops per outdoor map, customization, altar restoration quest, currency, stack inventory, storage, trading, crafting, food/energy, sleep, fishing, six-plot gardening, and local saving. Movement uses acceleration, eight-phase directional human walks with measured foot anchors, directional Familiar gait, held idle poses and breadcrumb following. Environmental layers include flowing river water, gentle lake shimmer, independently swimming carp and perch, fixed-root flowers, butterflies, perching birds and blue/red dragonflies. Travel uses automatic black fades.
 
-The original music arrangement is approximately 4 minutes 46 seconds. Recorded water ambience and CC0 foley replace the first synthetic sound pass; no repeating bird-call audio is active. Sound levels persist and playback pauses in the background. Source credits are in `assets/audio/foley/README.md`.
+Two original regional music arrangements run approximately 4:46 (sanctuary/cabin) and 4:42 (forest), with short crossfades and preserved playback positions. Recorded water ambience and CC0 foley replace the first synthetic sound pass; no repeating bird-call audio is active. Sound levels persist and playback pauses in the background. Source credits are in `assets/audio/foley/README.md`.
 
 The art direction follows the user's Stardew Valley reference: compact outlined sprites, bright terrain, small plants, readable color ramps, and a top-down game perspective. It does not reuse extracted game assets.
 
@@ -53,7 +53,7 @@ The art direction follows the user's Stardew Valley reference: compact outlined 
 - `docs/ASSET_GUIDE.md`: mandatory current art, animation, UI and sound standard.
 - `docs/ART_DIRECTION.md`: historical production specifications.
 
-Outdoor coordinates are 2000 × 1334; the cabin is 900 × 600. Maps are composited terrain images with explicit navigation zones and live sprite/animation layers, not an editable tile-map engine. Navigation boundaries are approximate. Human sheets use eight frames per direction; Familiars have directional cycles and alert, sniff, blink and resting poses. Seasons, fertilizer, combat, construction placement and a full NPC schedule remain future work. Current music is authored in `scripts/compose_sanctuary.py`; licensed foley preparation is in `scripts/prepare_foley.py`. The old `generate_audio.py` is historical. Native bundles compile, but device audio and SVG recoloring still need physical-device testing.
+Outdoor coordinates are 2000 × 1334; the cabin is 900 × 600. Maps are composited terrain images with explicit navigation zones and live sprite/animation layers, not an editable tile-map engine. Navigation boundaries are approximate. Human sheets use eight frames per direction; Familiars have directional cycles and alert, sniff, blink and resting poses. Seasons, fertilizer, combat, construction placement and a full NPC schedule remain future work. Current music is authored in `scripts/compose_sanctuary.py` and `scripts/compose_olivewild.py`; licensed foley preparation is in `scripts/prepare_foley.py`. The old `generate_audio.py` is historical. Native bundles compile, but device audio and SVG recoloring still need physical-device testing.
 
 ## Verify
 

@@ -229,3 +229,10 @@ Session remains active; the user's five-hour development period has not yet elap
 - Disabled till/water actions now explain missing tools or insufficient energy. Empty-jug guidance appears only for dry, non-mature soil when a jug is carried.
 - Mature crops show a harvest instruction when space exists, and a specific storage/selling explanation only at the 999-item limit; no misleading blanket full-satchel warning.
 - Inspected a mature barley panel at 844x390 with actual saved growth-stage fixture; scrollable controls remain available. Restored QA save/backup. TypeScript and lint pass; progression rules unchanged.
+
+### Distinct regional music
+- Added original Olivewild Paths score (282.3 seconds), with G Mixolydian harmony, eight chord voicings, new answering themes and a longer sparse bridge. Existing Sanctuary Dawn remains the temple/cabin cue. Authoring source: compose_olivewild.py; no sampled or copied music.
+- Region changes crossfade across 800 ms. Inactive cue pauses at its current position; mute/background/title pause both tracks. Documented against Expo SDK 58 AudioPlayer play/pause/volume APIs.
+- Render signal: peak 0.214, RMS 0.0368, AAC 128k file 4,456,941 bytes. No clipping; this is a signal check, not a subjective listening claim.
+- Browser walking transition temple→forest verified sanctuary paused at 4.168s/volume0 and forest playing at volume0.3. Mute paused both; unmute resumed forest from 39.087s rather than restarting. Temporary playback probe removed and QA save/backup restored; original sound-on preference restored.
+- TypeScript and lint pass. Physical-device playback/mix listening remains outstanding.

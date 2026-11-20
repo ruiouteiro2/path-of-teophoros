@@ -12,9 +12,11 @@ export function useGameAudio(
   distance: number,
   moving: boolean,
 ) {
-  const music = useAudioPlayer(
+  const sanctuaryMusic = useAudioPlayer(
     require("../../assets/audio/sanctuary-dawn.m4a"),
   );
+  const forestMusic = useAudioPlayer(require("../../assets/audio/olivewild-paths.m4a"));
+  const music = region === "forest" ? forestMusic : sanctuaryMusic;
   const water = useAudioPlayer(
     require("../../assets/audio/foley/stream-field.wav"),
   );
@@ -161,20 +163,40 @@ export function useGameAudio(
       ).catch(() => {});
   }, [muted, musicOn, mix]);
   useEffect(() => {
-    music.loop = true;
+    sanctuaryMusic.loop = true;
+    forestMusic.loop = true;
     water.loop = true;
     lake.loop = true;
-    music.volume = mix.music;
     for (const p of steps) p.volume = mix.steps;
-  }, [music, water, lake, steps, mix.music, mix.steps]);
+  }, [sanctuaryMusic, forestMusic, water, lake, steps, mix.steps]);
   const unlock = useCallback(() => {
     unlocked.current = true;
     if (!muted) {
-      if (musicOn) music.play();
+      if (musicOn) { music.volume = mix.music; music.play(); }
       water.play();
       lake.play();
     }
-  }, [muted, musicOn, music, water, lake]);
+  }, [muted, musicOn, music, mix.music, water, lake]);
+  useEffect(() => {
+    const tracks = [sanctuaryMusic, forestMusic];
+    if (!active || !foreground || muted || !musicOn || !unlocked.current) {
+      for (const track of tracks) { track.pause(); track.volume = 0; }
+      return;
+    }
+    const from = tracks.map((track) => track.volume);
+    music.play();
+    const started = Date.now();
+    const fade = setInterval(() => {
+      const t = Math.min(1, (Date.now() - started) / 800);
+      tracks.forEach((track, i) => {
+        const target = track === music ? mix.music : 0;
+        track.volume = from[i] + (target - from[i]) * t;
+        if (t === 1 && track !== music) track.pause();
+      });
+      if (t === 1) clearInterval(fade);
+    }, 40);
+    return () => clearInterval(fade);
+  }, [active, foreground, muted, musicOn, music, sanctuaryMusic, forestMusic, mix.music]);
   useEffect(() => {
     playbackEpoch.current++;
     const on = active && foreground && !muted && unlocked.current;
@@ -182,8 +204,6 @@ export function useGameAudio(
       if (on) p.play();
       else p.pause();
     }
-    if (on && musicOn) music.play();
-    else music.pause();
     if (!on)
       for (const p of [
         pickup,
@@ -201,8 +221,6 @@ export function useGameAudio(
     active,
     foreground,
     muted,
-    musicOn,
-    music,
     water,
     lake,
     coins,
