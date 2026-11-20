@@ -78,3 +78,20 @@ test("a Familiar blocked by a boulder does not walk in place or accumulate gait 
   assert.equal(next.petFacing, "right");
   assert(next.idleTime > 0);
 });
+
+
+test("Familiar follows a recorded bend around a boulder without crossing it", () => {
+  let s = createMotion("forest", {x:600,y:790});
+  s.pet = {x:450,y:790};
+  s.trail = [{x:450,y:790},{x:450,y:740},{x:550,y:740},{x:550,y:790},{x:600,y:790}];
+  let minimumY = 790;
+  for (let i=0;i<300;i++) {
+    const previous = s.pet;
+    s=advance(s,{x:0,y:0},1/60);
+    minimumY=Math.min(minimumY,s.pet.y);
+    assert(Math.hypot(s.pet.x-previous.x,s.pet.y-previous.y)<3);
+    assert(((s.pet.x-500)/40)**2+((s.pet.y-790)/30)**2>=1);
+  }
+  assert(minimumY<765, "must follow the upper bend");
+  assert(s.pet.x>540, "must reach the far side rather than remain stuck");
+});

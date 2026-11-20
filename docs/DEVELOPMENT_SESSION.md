@@ -177,3 +177,7 @@ Session remains active; the user's five-hour development period has not yet elap
 
 ### Familiar collision animation
 - Found that Familiar gait distance, walking flag and facing used attempted petStep even when collision rejected movement. Switched these to measured displacement. A blocked Familiar now stops its gait and retains facing instead of walking in place. Added a boulder-blocked regression; all nine motion tests pass, plus typecheck/lint. Route-following around tight corners remains a separate inspection.
+
+### Familiar corner following
+- Added line-of-travel collision sampling before skipping ahead on the breadcrumb trail. Earlier breadcrumbs remain until the Familiar has a clear route around the corner; normal following distance/gait are unchanged.
+- Simulated a recorded bend around the forest boulder for 300 frames: Familiar took the upper bend, stayed outside the footprint, advanced to the far side and never moved 3 world units in a frame. All ten motion tests, typecheck and lint pass.

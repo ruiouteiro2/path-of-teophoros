@@ -42,6 +42,16 @@ export function createMotion(region: Region, p: Point): MotionState {
     petMoving: false,
   };
 }
+function clearRoute(from: Point, to: Point, region: Region) {
+  const distance = Math.hypot(to.x - from.x, to.y - from.y);
+  const samples = Math.max(1, Math.ceil(distance / 3));
+  for (let i = 1; i <= samples; i++) {
+    const t = i / samples;
+    if (!walkable({ x: from.x + (to.x - from.x) * t,
+      y: from.y + (to.y - from.y) * t }, region)) return false;
+  }
+  return true;
+}
 export function advance(
   state: MotionState,
   input: Point,
@@ -96,6 +106,9 @@ export function advance(
     );
     index--;
   }
+  // Keep earlier breadcrumbs until the Familiar can actually pass the corner.
+  // A direct shortcut to the desired trailing distance may cross a solid object.
+  while (index > 0 && !clearRoute(state.pet, trail[index], state.region)) index--;
   const target = trail[index],
     gap = Math.hypot(target.x - state.pet.x, target.y - state.pet.y);
   const petStep = Math.min(gap, Math.min(135, Math.max(0, gap - 1) * 7) * dt);
