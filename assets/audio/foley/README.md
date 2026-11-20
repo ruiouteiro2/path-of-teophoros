@@ -22,3 +22,5 @@ Prepared with `scripts/prepare_foley.py`. These replace the initial synthesized 
 `prepare_foley.py` removes the measured DC tail offset from impact/step recordings, trims inaudible tails, applies 2 ms onset and 18 ms release ramps, and limits peaks to 0.88. It retains the recorded impact/decay and does not change pitch. Footsteps now last approximately 0.085–0.175 seconds, with zero-valued endpoints.
 
 `soil-work.wav` adapts Kenney's grass scuff for working soil. `water-action.wav` is a short, filtered, faded excerpt of TyberiusGames' CC0 water recording for watering/refilling; it is not a synthetic noise burst. These cues share the effects volume control.
+
+The river loop uses a 600 ms equal-power tail/head crossfade instead of separate fade-out/fade-in ramps. The resulting loop is approximately 5.07 seconds. This removes the repeated near-silent tail while retaining the recorded water texture; no synthetic noise is added.

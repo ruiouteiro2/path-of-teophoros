@@ -166,3 +166,7 @@ Session remains active; the user's five-hour development period has not yet elap
 
 ### Cooking guidance and completed quest state
 - Added hearth marker to cabin map, cooking instructions to journal and cooking to home HUD. Completed altar journal now reports reward received and hides already-consumed ingredient requirements. Browser readback verifies completed state and cooking guidance. Typecheck/lint and web/Android/iOS exports pass for the cooking checkpoint.
+
+### River loop continuity
+- Measured the previous 5.67-second stream: final 100 ms RMS 0.00464 versus middle 0.02408, producing a recurring level dip. Replaced endpoint fades with a 600 ms equal-power wrap crossfade in the reproducible preparation script.
+- New 5.07-second loop: start/end 100 ms RMS 0.02368/0.02720, middle 0.02423; peak 0.22168. Seam sample jump 0.00748 is below the 99th percentile ordinary adjacent jump 0.05695. This is measured signal continuity, not a claim of physical-device listening.

@@ -64,9 +64,17 @@ if source.exists():
         str(ROOT/'assets/audio/lakeshore.m4a')],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 source=Path.home()/'Downloads/waterflow.mp3'
 if source.exists():
-    subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(),'-y','-i',str(source),
-        '-af','highpass=f=130,lowpass=f=4800,volume=0.4,afade=t=in:d=0.1,afade=t=out:st=5.4:d=0.25',
-        '-ac','2','-ar','32000',str(OUT/'stream-field.wav')],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+    # Join the recorded tail to the head without a recurring fade-to-silence.
+    raw=subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(),'-i',str(source),
+        '-af','highpass=f=130,lowpass=f=4800,volume=0.4',
+        '-ac','2','-ar','32000','-f','f32le','pipe:1'],check=True,
+        stdout=subprocess.PIPE,stderr=subprocess.DEVNULL).stdout
+    data=np.frombuffer(raw,dtype=np.float32).reshape(-1,2)
+    overlap=min(int(32000*.6),len(data)//4)
+    theta=np.linspace(0,np.pi/2,overlap)[:,None]
+    join=data[-overlap:]*np.cos(theta)+data[:overlap]*np.sin(theta)
+    loop=np.concatenate([data[overlap:-overlap],join])
+    sf.write(OUT/'stream-field.wav',loop,32000,subtype='PCM_16')
     subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(),'-y','-ss','1.3','-i',str(source),'-t','0.65',
         '-af','highpass=f=180,lowpass=f=4500,volume=0.35,afade=t=in:d=0.04,afade=t=out:st=0.4:d=0.25',
         '-ac','2','-ar','32000',str(OUT/'water-action.wav')],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
