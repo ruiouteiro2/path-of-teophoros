@@ -84,7 +84,7 @@ const petArt = {
   Boxer: require("../../assets/world/pets/boxer.png"),
   Cat: require("../../assets/world/pets/cat.png"),
   Fox: require("../../assets/world/pets/fox.png"),
-  Owl: require("../../assets/world/pets/owl.png"),
+  Owl: require("../../assets/world/pets/owl-v2.png"),
 };
 const petKeys = {
   Dog: "pets/small-dog",

@@ -37,6 +37,8 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 - Characters and animals: short clean dark outlines, coherent simple shapes, roughly 4–6 useful tones per material. Preserve detail needed for species, face, clothing, and gait; remove microtexture that becomes noise at gameplay size.
 - Avoid smooth gradients, airbrushed lighting, bloom, photographic fur, and thin ink illustration.
 - Raster atlas originals are kept intact. Runtime cropping and measured anchors are preferred to destructive image processing. Use the image-generation workflow for raster edits unless the user requests another method.
+- Before accepting an atlas change, run `python scripts/audit_assets.py --report .expo/asset-audit.json` (Python/Pillow). `docs/asset-manifest.json` records current frame layouts and contact-anchor owners. The read-only check rejects empty cells, solid silhouettes at cell edges and stale contact baselines. Alpha below129 is ignored as edge noise; this is a technical check, not proof of artistic consistency, frame timing or physical-device rendering.
+- `pets/owl-v2.png` and `items-v2.png` repair flight-wing and carp cell bleed. Use these in production; the older sheets remain reference history. Update the manifest and measured anchors whenever replacing a sheet.
 
 ## 4. Palette and light
 

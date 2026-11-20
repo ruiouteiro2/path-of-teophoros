@@ -64,4 +64,6 @@ npm run lint
 npm run build:web
 npx expo export --platform android --platform ios --output-dir .expo/native-export
 npx expo-doctor
+# Read-only art integrity checks (requires Python and Pillow):
+python scripts/audit_assets.py --report .expo/asset-audit.json
 ```

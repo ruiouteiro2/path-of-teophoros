@@ -47,7 +47,7 @@ export function ItemIcon({
   const cell = cells[id as keyof typeof cells];
   return (
     <AtlasFrame
-      source={require("../../assets/world/items.png")}
+      source={require("../../assets/world/items-v2.png")}
       cell={cell}
       size={size}
     />

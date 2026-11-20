@@ -1,0 +1,26 @@
+{
+  "alphaThreshold": 128,
+  "anchorTolerance": 0.015,
+  "atlases": [
+    { "file": "hero/short-chiton.png", "columns": 8, "rows": 4, "anchors": "hero-anchors.json", "key": "short-chiton" },
+    { "file": "hero/short-cloak.png", "columns": 8, "rows": 4, "anchors": "hero-anchors.json", "key": "short-cloak" },
+    { "file": "hero/tied-chiton.png", "columns": 8, "rows": 4, "anchors": "hero-anchors.json", "key": "tied-chiton" },
+    { "file": "hero/tied-cloak.png", "columns": 8, "rows": 4, "anchors": "hero-anchors.json", "key": "tied-cloak" },
+    { "file": "hero/recovery.png", "columns": 4, "rows": 2, "anchors": "recovery-anchors.json" },
+    { "file": "npcs/priest-walk-v2.png", "columns": 8, "rows": 4, "anchors": "priest-anchors.json" },
+    { "file": "npcs/keeper-walk.png", "columns": 8, "rows": 4, "anchors": "keeper-anchors.json" },
+    { "file": "pets/boxer.png", "columns": 4, "rows": 4, "anchors": "sprite-anchors.json", "key": "pets/boxer" },
+    { "file": "pets/small-dog.png", "columns": 4, "rows": 4, "anchors": "sprite-anchors.json", "key": "pets/small-dog" },
+    { "file": "pets/cat.png", "columns": 4, "rows": 4, "anchors": "sprite-anchors.json", "key": "pets/cat" },
+    { "file": "pets/fox.png", "columns": 4, "rows": 4, "anchors": "sprite-anchors.json", "key": "pets/fox" },
+    { "file": "pets/owl-v2.png", "columns": 4, "rows": 4, "anchors": "sprite-anchors.json", "key": "pets/owl" },
+    { "file": "flowers.png", "columns": 4, "rows": 4, "anchors": "sprite-anchors.json", "key": "flowers" },
+    { "file": "crops.png", "columns": 4, "rows": 2, "anchors": "crop-anchors.json" },
+    { "file": "wildlife.png", "columns": 4, "rows": 4 },
+    { "file": "dragonflies.png", "columns": 4, "rows": 4 },
+    { "file": "lake-fish.png", "columns": 4, "rows": 2 },
+    { "file": "hearth-flame.png", "columns": 4, "rows": 2 },
+    { "file": "items-v2.png", "columns": 4, "rows": 4 },
+    { "file": "garden-items.png", "columns": 4, "rows": 2 }
+  ]
+}

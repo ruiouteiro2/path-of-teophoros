@@ -17,5 +17,5 @@ export const startupAssets = [
   require('../assets/world/pets/small-dog.png'),
   require('../assets/world/pets/cat.png'),
   require('../assets/world/pets/fox.png'),
-  require('../assets/world/pets/owl.png'),
+  require('../assets/world/pets/owl-v2.png'),
 ];
