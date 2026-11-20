@@ -5,11 +5,15 @@ export const AtlasFrame = memo(function AtlasFrame({
   cell,
   size,
   flip = false,
+  columns = 4,
+  rows = 4,
 }: {
   source: ImageSourcePropType;
   cell: number;
   size: number;
   flip?: boolean;
+  columns?: number;
+  rows?: number;
 }) {
   return (
     <View
@@ -27,10 +31,10 @@ export const AtlasFrame = memo(function AtlasFrame({
         fadeDuration={0}
         style={{
           position: "absolute",
-          width: size * 4,
-          height: size * 4,
-          left: -(cell % 4) * size,
-          top: -Math.floor(cell / 4) * size,
+          width: size * columns,
+          height: size * rows,
+          left: -(cell % columns) * size,
+          top: -Math.floor(cell / columns) * size,
         }}
       />
     </View>

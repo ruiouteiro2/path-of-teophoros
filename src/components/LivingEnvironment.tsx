@@ -107,16 +107,18 @@ export const LivingEnvironment = memo(function LivingEnvironment({
   ox,
   oy,
   lively,
+  paused = false,
 }: {
   region: Region;
   scale: number;
   ox: number;
   oy: number;
   lively: boolean;
+  paused?: boolean;
 }) {
   const [time, setTime] = useState(0);
   useEffect(() => {
-    if (!lively) return;
+    if (!lively || paused) return;
     let active = true,
       last = Date.now(),
       elapsed = 0;
@@ -136,11 +138,11 @@ export const LivingEnvironment = memo(function LivingEnvironment({
       clearInterval(timer);
       sub.remove();
     };
-  }, [lively]);
+  }, [lively, paused]);
   const place = (x: number, y: number, size: number) => ({
     position: "absolute" as const,
-    left: ox + (x - size / 2) * scale,
-    top: oy + (y - size * 0.96) * scale,
+    left: ox + (x * 2 - size / 2) * scale,
+    top: oy + (y * 2 - size * 0.96) * scale,
     width: size * scale,
     height: size * scale,
   });
@@ -180,7 +182,10 @@ export const LivingEnvironment = memo(function LivingEnvironment({
                   ))}
                 </>
               ) : (
-                <Ellipse cx={893} cy={145} rx={30} ry={8} fill="white" />
+                <>
+                  <Ellipse cx={804} cy={504} rx={106} ry={49} fill="white" />
+                  <Rect x={675} y={486} width={47} height={34} fill="black" />
+                </>
               )}
             </Mask>
           </Defs>
@@ -189,24 +194,40 @@ export const LivingEnvironment = memo(function LivingEnvironment({
               <SvgImage
                 key={i}
                 href={water}
-                x={region === "forest" ? 728 : 855}
-                y={i * 96 - 96 + ((time * 13) % 96)}
-                width={96}
+                x={region === "forest" ? 728 : 700}
+                y={
+                  i * 96 -
+                  96 +
+                  (region === "forest"
+                    ? (time * 13) % 96
+                    : Math.sin(time * 0.3) * 2)
+                }
+                width={region === "forest" ? 96 : 210}
                 height={96}
                 preserveAspectRatio="none"
-                opacity={0.86}
+                opacity={
+                  region === "forest"
+                    ? 0.86
+                    : 0.18 + 0.04 * Math.sin(time * 0.7)
+                }
               />
             ))}
             {Array.from({ length: 9 }, (_, i) => (
               <SvgImage
                 key={"b" + i}
                 href={water}
-                x={region === "forest" ? 735 : 862}
-                y={i * 96 - 96 + ((time * 8) % 96)}
-                width={96}
+                x={region === "forest" ? 735 : 720}
+                y={
+                  i * 96 -
+                  96 +
+                  (region === "forest"
+                    ? (time * 8) % 96
+                    : Math.cos(time * 0.2) * 3)
+                }
+                width={region === "forest" ? 96 : 210}
                 height={96}
                 preserveAspectRatio="none"
-                opacity={0.22}
+                opacity={region === "forest" ? 0.22 : 0.09}
               />
             ))}
           </G>
@@ -228,10 +249,10 @@ export const LivingEnvironment = memo(function LivingEnvironment({
                 return (
                   <Ellipse
                     key={i}
-                    cx={893}
-                    cy={145}
-                    rx={3 + p * 25}
-                    ry={1 + p * 6}
+                    cx={804}
+                    cy={504}
+                    rx={3 + p * 40}
+                    ry={1 + p * 12}
                     stroke="#d9fcff"
                     strokeWidth={1}
                     fill="none"
@@ -239,21 +260,6 @@ export const LivingEnvironment = memo(function LivingEnvironment({
                   />
                 );
               })}
-              <Path
-                d="M893 105Q891 120 893 139"
-                stroke="#a6e6ff"
-                strokeWidth={2}
-              />
-              {[0, 1, 2, 3].map((i) => (
-                <Ellipse
-                  key={i}
-                  cx={893 + Math.sin(time * 3 + i)}
-                  cy={108 + ((time * 35 + i * 9) % 30)}
-                  rx={1}
-                  ry={2}
-                  fill="#edffff"
-                />
-              ))}
             </>
           )}
         </Svg>
@@ -278,7 +284,7 @@ export const LivingEnvironment = memo(function LivingEnvironment({
             return (
               <View
                 key={"butterfly" + i}
-                style={[place(x, y, 12), { zIndex: 900 }]}
+                style={[place(x, y, 12), { zIndex: 3000 }]}
               >
                 <AtlasFrame
                   source={wildlife}
@@ -304,7 +310,10 @@ export const LivingEnvironment = memo(function LivingEnvironment({
                 ? 240 + i * 140 - Math.sin(u * Math.PI) * 90
                 : 240 + i * 140;
             return (
-              <View key={"bird" + i} style={[place(x, y, 23), { zIndex: 950 }]}>
+              <View
+                key={"bird" + i}
+                style={[place(x, y, 23), { zIndex: 3100 }]}
+              >
                 <AtlasFrame
                   source={wildlife}
                   cell={
@@ -337,9 +346,9 @@ export const LivingEnvironment = memo(function LivingEnvironment({
             const a = sample(leg),
               b = sample(leg + 1);
             const x =
-                (region === "forest" ? 774 : 893) + a.x + (b.x - a.x) * ease,
+                (region === "forest" ? 774 : 804) + a.x + (b.x - a.x) * ease,
               y =
-                (region === "forest" ? 180 + i * 113 : 145) +
+                (region === "forest" ? 180 + i * 113 : 504) +
                 a.y +
                 (b.y - a.y) * ease +
                 Math.sin(t * 3) * 0.6;
@@ -349,7 +358,7 @@ export const LivingEnvironment = memo(function LivingEnvironment({
                 style={[
                   place(x, y, 16),
                   {
-                    zIndex: 980,
+                    zIndex: 3200,
                     transform: [
                       {
                         rotate: `${(Math.atan2(b.x - a.x, -(b.y - a.y)) * 180) / Math.PI}deg`,

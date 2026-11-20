@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { AtlasFrame } from "./AtlasFrame";
+import { Hero, heroBaseline } from "./Hero";
+import { Appearance, defaultAppearance } from "../appearance";
+import { ItemIcon } from "./ItemIcon";
+import { homeLocations } from "../worldLayout";
+import { dropsFor } from "../inventory";
 import anchors from "../sprite-anchors.json";
 import { LivingEnvironment, Flowers } from "./LivingEnvironment";
 import {
@@ -8,17 +13,17 @@ import {
   PetKind,
   Point,
   Region,
-  WORLD,
+  dimensions,
   regions,
   resources,
 } from "../game";
 
 export const art = {
-  forest: require("../../assets/world/olivewild.png"),
-  temple: require("../../assets/world/temple.png"),
+  cabin: require("../../assets/world/cabin-interior.png"),
+  forest: require("../../assets/world/olivewild-v2.png"),
+  temple: require("../../assets/world/sanctuary-v3.png"),
   atlas: require("../../assets/world/sprites.png"),
-  hero: require("../../assets/world/hero-walk.png"),
-  olive: require("../../assets/world/olive-tree.png"),
+  olive: require("../../assets/world/olive-tree-v2.png"),
 };
 export type SpriteName =
   | "thyme"
@@ -55,7 +60,6 @@ const cells: Record<SpriteName, number> = {
   basket: 14,
   stone: 15,
 };
-const rows: Record<Facing, number> = { front: 0, back: 1, left: 2, right: 3 };
 
 export function Sprite({
   name,
@@ -68,23 +72,6 @@ export function Sprite({
 }) {
   return (
     <AtlasFrame source={art.atlas} cell={cells[name]} size={size} flip={flip} />
-  );
-}
-export function Hero({
-  facing = "front",
-  size = 80,
-  frame = 1,
-}: {
-  facing?: Facing;
-  size?: number;
-  frame?: number;
-}) {
-  return (
-    <AtlasFrame
-      source={art.hero}
-      cell={rows[facing] * 4 + (frame % 4)}
-      size={size}
-    />
   );
 }
 const petArt = {
@@ -167,6 +154,8 @@ export type WorldProps = {
   region?: Region;
   hero?: Point;
   pet?: PetKind;
+  showFamiliar?: boolean;
+  restoredAltar?: boolean;
   facing?: Facing;
   gathered?: string[];
   color?: string;
@@ -178,14 +167,20 @@ export type WorldProps = {
   petMoving?: boolean;
   petPose?: number;
   lively?: boolean;
+  paused?: boolean;
+  appearance?: Appearance;
+  seed?: number;
+  pickedDrops?: string[];
 };
 export function World({
   region = "forest",
   hero,
   pet = "Dog",
+  showFamiliar = true,
+  restoredAltar = false,
   facing = "front",
   gathered = [],
-  heroFrame = 1,
+  heroFrame = 0,
   petFrame = 1,
   petPosition,
   petLeft = false,
@@ -193,8 +188,13 @@ export function World({
   petMoving = false,
   petPose = 0,
   lively = true,
+  paused = false,
+  appearance = defaultAppearance,
+  seed = 12345,
+  pickedDrops = [],
 }: WorldProps) {
   const [layout, setLayout] = useState({ w: 1000, h: 667 });
+  const WORLD = dimensions(region);
   const scale = Math.max(layout.w / WORLD.width, layout.h / WORLD.height),
     ox = (layout.w - WORLD.width * scale) / 2,
     oy = (layout.h - WORLD.height * scale) / 2;
@@ -213,9 +213,10 @@ export function World({
   const petSize = pet === "Boxer" ? 43 : pet === "Owl" ? 33 : 32;
   const petAnchor =
     anchors[petKeys[pet]][petCell(petFacing, petFrame, petMoving, petPose)];
-  const heroAnchor = anchors["hero-walk"][rows[facing] * 4 + (heroFrame % 4)];
+  const heroAnchor = { y: heroBaseline(appearance, facing, heroFrame) };
   const renderPet = () =>
-    hero && (
+    hero &&
+    showFamiliar && (
       <View
         key="pet"
         style={[
@@ -270,13 +271,26 @@ export function World({
         resizeMode="cover"
         fadeDuration={0}
       />
-      <LivingEnvironment
-        region={region}
-        scale={scale}
-        ox={ox}
-        oy={oy}
-        lively={lively}
-      />
+      {region !== "cabin" && (
+        <LivingEnvironment
+          region={region}
+          scale={scale}
+          ox={ox}
+          oy={oy}
+          lively={lively}
+          paused={paused}
+        />
+      )}
+      {dropsFor(seed, region)
+        .filter((d) => !pickedDrops.includes(d.id))
+        .map((d) => (
+          <View
+            key={d.id}
+            style={[anchor(d, 26, 0.85), { zIndex: Math.round(d.y) }]}
+          >
+            <ItemIcon id={d.kind} size={26 * scale} />
+          </View>
+        ))}
       {resources[region].map((p, i) => {
         const harvested = gathered.includes(region + "-" + i);
         if (region === "forest" && harvested) return null;
@@ -289,7 +303,9 @@ export function World({
               { zIndex: Math.round(p.y) },
             ]}
           >
-            <Resource region={region} size={size * scale} />
+            {region === "forest" && (
+              <Resource region={region} size={size * scale} />
+            )}
             {!harvested && (
               <Text
                 style={[styles.spark, { fontSize: 9 * scale, top: -2 * scale }]}
@@ -305,9 +321,41 @@ export function World({
           </View>
         );
       })}
-      <View style={anchor(gate, 43, 0.84)}>
-        <Sprite name="sign" size={43 * scale} flip={region === "temple"} />
-      </View>
+      {region !== "cabin" && (
+        <View style={anchor(gate, 43, 0.84)}>
+          <Sprite name="sign" size={43 * scale} flip={region === "temple"} />
+        </View>
+      )}
+      {region === "temple" && (
+        <View
+          style={[
+            anchor(homeLocations.priest, 76, 0.94),
+            { zIndex: Math.round(homeLocations.priest.y) },
+          ]}
+        >
+          <AtlasFrame
+            source={require("../../assets/world/npcs/priest-walk.png")}
+            cell={0}
+            size={76 * scale}
+          />
+        </View>
+      )}
+      {region === "temple" && (
+        <View
+          style={[
+            anchor(homeLocations.altar, 100, 0.81),
+            { zIndex: Math.round(homeLocations.altar.y) },
+          ]}
+        >
+          <AtlasFrame
+            source={require("../../assets/world/altar-states.png")}
+            cell={restoredAltar ? 1 : 0}
+            columns={2}
+            rows={1}
+            size={100 * scale}
+          />
+        </View>
+      )}
       {hero && companion.y < hero.y && renderPet()}
       {hero && (
         <>
@@ -329,7 +377,12 @@ export function World({
               { zIndex: Math.round(hero.y) },
             ]}
           >
-            <Hero facing={facing} size={76 * scale} frame={heroFrame} />
+            <Hero
+              facing={facing}
+              size={76 * scale}
+              frame={heroFrame}
+              appearance={appearance}
+            />
           </View>
         </>
       )}
@@ -348,3 +401,5 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
 });
+
+export { Hero } from "./Hero";

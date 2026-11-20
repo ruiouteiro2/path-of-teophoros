@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { homeLocations, cabinLocations } from "../src/worldLayout.ts";
 import {
   move,
   walkable,
@@ -11,6 +12,7 @@ import {
 } from "../src/game.ts";
 function fixture(region = "forest") {
   return {
+    worldVersion: 2,
     name: "Tester",
     petName: "Argos",
     pet: "Dog",
@@ -22,7 +24,7 @@ function fixture(region = "forest") {
     visited: [region],
   };
 }
-for (const region of ["forest", "temple"]) {
+for (const region of ["forest", "temple", "cabin"]) {
   test(region + ": every collectible and exit is reachable from spawn", () => {
     const queue = [regions[region].spawn],
       seen = new Set();
@@ -51,6 +53,27 @@ for (const region of ["forest", "temple"]) {
         points.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 48),
         "unreachable collectible",
       );
+    const locations =
+      region === "temple"
+        ? homeLocations
+        : region === "cabin"
+          ? cabinLocations
+          : {};
+    for (const [name, p] of Object.entries(locations))
+      assert(
+        points.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 48),
+        "unreachable home interaction: " + name,
+      );
+    if (region === "forest")
+      for (const p of [
+        { x: 150, y: 760 },
+        { x: 410, y: 1140 },
+        { x: 184, y: 392 },
+      ])
+        assert(
+          points.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 40),
+          "unreachable new woodland trail",
+        );
     assert(
       points.some((position) => atGate({ ...fixture(region), position })),
       "unreachable map exit",
@@ -58,11 +81,11 @@ for (const region of ["forest", "temple"]) {
   });
 }
 test("river cannot be crossed outside bridge", () => {
-  assert.equal(walkable({ x: 770, y: 230 }, "forest"), false);
-  assert.equal(walkable({ x: 770, y: 340 }, "forest"), true);
-  assert.deepEqual(move({ x: 716, y: 300 }, 12, 0, "forest"), {
-    x: 716,
-    y: 300,
+  assert.equal(walkable({ x: 1540, y: 460 }, "forest"), false);
+  assert.equal(walkable({ x: 1540, y: 680 }, "forest"), true);
+  assert.deepEqual(move({ x: 1432, y: 600 }, 24, 0, "forest"), {
+    x: 1432,
+    y: 600,
   });
 });
 test("a harvested plant cannot be harvested again", () => {

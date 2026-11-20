@@ -40,3 +40,17 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Downloaded authoring packs; selected sounds and licenses are tracked separately.
+assets/audio/kenney-impact/
+assets/audio/kenney-rpg/
+
+# Superseded synthesized authoring previews (not used by the game).
+assets/audio/birds.wav
+assets/audio/fiber.wav
+assets/audio/olympus-theme.wav
+assets/audio/step.wav
+assets/audio/stone.wav
+assets/audio/stream.wav
+assets/audio/travel.wav
+assets/audio/wood.wav

@@ -3,7 +3,6 @@ import {
   Animated,
   Image,
   View,
-  Text,
   TextInput,
   Pressable,
   ScrollView,
@@ -25,10 +24,32 @@ import {
   regions,
   nearest,
   validSave,
-  atGate,
+  migrateProgress,
+  dimensions,
 } from "../game";
+import { Appearance, defaultAppearance } from "../appearance";
+import { AppearancePicker } from "./AppearancePicker";
+import { nearestDrop, collectDrop, exitTriggered } from "../inventory";
+import { useGameAudio } from "../hooks/useGameAudio";
 import { Direction, useGameMotion } from "../hooks/useGameMotion";
-const serif = Platform.OS === "ios" ? "Courier" : "monospace";
+import { GameText as Text, gameFont, GamePanel, GameButton } from "./GameUI";
+import { Dialogue } from "./Dialogue";
+import { GameMenu, MenuTab } from "./GameMenu";
+import {
+  newProgression,
+  advanceStory,
+  addItem,
+  restoreAltar,
+  altarCost,
+  count,
+  ItemId,
+  rest,
+} from "../progression";
+import { nearestHome } from "../worldLayout";
+import { Conversation } from "./Conversation";
+import { Fishing } from "./Fishing";
+
+const serif = gameFont;
 function Button({
   children,
   onPress,
@@ -66,7 +87,13 @@ export default function Game() {
   const [name, setName] = useState(""),
     [petName, setPetName] = useState(""),
     [pet, setPet] = useState<PetKind>("Boxer"),
-    [region, setRegion] = useState<Region>("forest");
+    [region] = useState<Region>("temple");
+  const [appearance, setAppearance] = useState<Appearance>(defaultAppearance);
+  const [menuTab, setMenuTab] = useState<MenuTab>("satchel");
+  const [conversation, setConversation] = useState(false);
+  const [sleepPrompt, setSleepPrompt] = useState(false);
+  const [fishingSeed, setFishingSeed] = useState<number | null>(null);
+  const travelLock = useRef(false);
   const color = "#467d81";
   const [save, setSave] = useState<Save | null>(null),
     [playing, setPlaying] = useState(false),
@@ -76,9 +103,25 @@ export default function Game() {
     [storageError, setStorageError] = useState(false),
     [replacing, setReplacing] = useState(false);
   const queue = useRef(Promise.resolve());
+  const inStory = !!save?.progress && save.progress.story !== "complete";
   const [session, setSession] = useState(0),
     [traveling, setTraveling] = useState(false),
     [transition] = useState(() => new Animated.Value(0));
+  const caughtFish = useCallback(
+    (fish: ItemId) =>
+      setSave((v) =>
+        v?.progress
+          ? {
+              ...v,
+              progress: {
+                ...addItem(v.progress, fish),
+                caught: v.progress.caught + 1,
+              },
+            }
+          : v,
+      ),
+    [],
+  );
   const checkpoint = useCallback(
     (position: Point, facing: Facing, region: Region) =>
       setSave((v) =>
@@ -88,17 +131,31 @@ export default function Game() {
   );
   const motion = useGameMotion(
     save,
-    playing && !journal && !traveling,
+    playing &&
+      !journal &&
+      !traveling &&
+      !inStory &&
+      !conversation &&
+      !sleepPrompt &&
+      fishingSeed === null,
     session,
     checkpoint,
   );
   const stop = motion.stop;
+  const audio = useGameAudio(
+    playing,
+    save?.region ?? region,
+    motion.state?.position ?? save?.position ?? regions[region].spawn,
+    motion.state?.distance ?? 0,
+    !!motion.state?.moving && !journal && !traveling,
+  );
+  const playEffect = audio.effect;
   useEffect(() => {
     AsyncStorage.getItem(SAVE_KEY)
       .then((raw) => {
         if (raw) {
           const data = JSON.parse(raw);
-          if (validSave(data)) setSave(data);
+          if (validSave(data)) setSave(migrateProgress(data));
           else
             setMessage(
               "The old save could not be read. You can begin a new journey.",
@@ -122,20 +179,133 @@ export default function Game() {
   }, [message]);
   const getMotion = motion.getState;
   const gather = useCallback(() => {
-    setSave((v) => {
-      if (!v) return v;
-      const m = getMotion();
-      const live = m?.region === v.region ? { ...v, position: m.position } : v;
-      const i = nearest(live);
-      return i < 0
-        ? v
-        : {
-            ...live,
+    if (
+      !save ||
+      traveling ||
+      journal ||
+      inStory ||
+      conversation ||
+      sleepPrompt ||
+      fishingSeed !== null
+    )
+      return;
+    const m = getMotion();
+    const live =
+      m?.region === save.region ? { ...save, position: m.position } : save;
+    const home = nearestHome(live.position, live.region);
+    if (home) {
+      stop();
+      if (home === "priest" || home === "altar") {
+        setConversation(true);
+        return;
+      }
+      if (home === "bed") {
+        setSleepPrompt(true);
+        return;
+      }
+      if (home === "wardrobe") {
+        setMenuTab("appearance");
+        setJournal(true);
+        return;
+      }
+      if (home === "lake") {
+        if (!save.progress || !count(save.progress.bag, "rod")) {
+          setMessage(
+            "Craft a reed fishing rod at the workbench, or buy one at the camp.",
+          );
+          return;
+        }
+        if (save.progress.energy < 5) {
+          setMessage(
+            "You need 5 energy to fish. Eat some bread or rest in your cabin.",
+          );
+          return;
+        }
+        setSave((v) =>
+          v?.progress
+            ? {
+                ...v,
+                progress: { ...v.progress, energy: v.progress.energy - 5 },
+              }
+            : v,
+        );
+        setFishingSeed((save.seed ?? 12345) + (save.progress.caught + 1) * 17);
+        return;
+      }
+      if (home === "chest" || home === "workbench" || home === "provisions") {
+        setMenuTab(
+          home === "workbench"
+            ? "craft"
+            : home === "provisions"
+              ? "trade"
+              : "chest",
+        );
+        setJournal(true);
+        return;
+      }
+    }
+    const drop = nearestDrop(live);
+    if (drop) {
+      if (live.progress && count(live.progress.bag, drop.kind) >= 999) {
+        setMessage("That stack is full. Store or sell some supplies first.");
+        return;
+      }
+      setSave((v) =>
+        v && v.region === live.region
+          ? collectDrop({ ...v, position: live.position }, drop.id)
+          : v,
+      );
+      playEffect(drop.kind);
+      setMessage(`+1 ${drop.kind} · added to inventory`);
+      return;
+    }
+    const i = nearest(live);
+    if (i < 0) {
+      setMessage(
+        "Approach wood, stone, fiber, thyme or an olive tree, then press E or Gather.",
+      );
+      return;
+    }
+    if (
+      live.progress &&
+      count(live.progress.bag, live.region === "forest" ? "thyme" : "olives") >=
+        999
+    ) {
+      setMessage("That stack is full. Store or sell some supplies first.");
+      return;
+    }
+    setSave((v) =>
+      v && v.region === live.region && !v.gathered.includes(v.region + "-" + i)
+        ? {
+            ...v,
+            position: live.position,
             gathered: [...v.gathered, v.region + "-" + i],
             inventory: v.inventory + 1,
-          };
-    });
-  }, [getMotion]);
+            ...(v.progress
+              ? {
+                  progress: addItem(
+                    v.progress,
+                    v.region === "forest" ? "thyme" : "olives",
+                  ),
+                }
+              : {}),
+          }
+        : v,
+    );
+    playEffect("pickup");
+    setMessage("+1 " + regions[live.region].resource);
+  }, [
+    save,
+    traveling,
+    journal,
+    inStory,
+    conversation,
+    sleepPrompt,
+    fishingSeed,
+    getMotion,
+    playEffect,
+    stop,
+  ]);
   useEffect(() => {
     if (Platform.OS !== "web" || !playing || journal) return;
     const onKey = (e: KeyboardEvent) => {
@@ -147,6 +317,29 @@ export default function Game() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [playing, journal, gather]);
+  useEffect(() => {
+    if (
+      Platform.OS !== "web" ||
+      !playing ||
+      inStory ||
+      conversation ||
+      sleepPrompt ||
+      fishingSeed !== null
+    )
+      return;
+    const key = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (!e.repeat && (e.key === "Escape" || e.key.toLowerCase() === "i")) {
+        e.preventDefault();
+        stop();
+        setMenuTab("satchel");
+        setJournal((v) => !v);
+      }
+    };
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
+  }, [playing, inStory, conversation, sleepPrompt, fishingSeed, stop]);
   function start() {
     if (!name.trim() || !petName.trim()) return;
     setSession((v) => v + 1);
@@ -155,47 +348,109 @@ export default function Game() {
       petName: petName.trim(),
       pet,
       color,
-      region,
-      position: regions[region].spawn,
+      region: "temple",
+      position: regions.temple.spawn,
       gathered: [],
       inventory: 0,
-      visited: [region],
+      visited: ["temple"],
+      appearance,
+      seed: Math.floor(Math.random() * 4294967296),
+      pickedDrops: [],
+      progress: newProgression(),
+      worldVersion: 2,
     });
+    audio.unlock();
     setPlaying(true);
     setReplacing(false);
-    setMessage("Welcome. Follow the path, and see what grows along the way.");
+    setMessage("");
   }
-  function travel() {
-    if (!save || traveling) return;
-    stop();
-    setTraveling(true);
-    const next: Region = save.region === "forest" ? "temple" : "forest";
-    Animated.timing(transition, {
-      toValue: 1,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => {
-      setSave((v) =>
-        v
-          ? {
-              ...v,
-              region: next,
-              position:
-                next === "forest" ? { x: 870, y: 330 } : { x: 140, y: 380 },
-              visited: Array.from(new Set([...v.visited, next])),
-            }
-          : v,
-      );
-      setMessage(
-        "You and " + save.petName + " arrived at " + regions[next].name + ".",
-      );
+  const travel = useCallback(
+    (destination?: Region) => {
+      if (!save || traveling || travelLock.current) return;
+      travelLock.current = true;
+      if (save.region === "cabin" || destination === "cabin")
+        playEffect("travel");
+      stop();
+      setTraveling(true);
+      const next: Region =
+        destination ??
+        (save.region === "forest" || save.region === "cabin"
+          ? "temple"
+          : "forest");
       Animated.timing(transition, {
-        toValue: 0,
-        duration: 300,
+        toValue: 1,
+        duration: 450,
         useNativeDriver: true,
-      }).start(() => setTraveling(false));
-    });
-  }
+      }).start(() => {
+        setSave((v) =>
+          v
+            ? {
+                ...v,
+                region: next,
+                position:
+                  next === "cabin"
+                    ? regions.cabin.spawn
+                    : next === "forest"
+                      ? { x: 1740, y: 660 }
+                      : save.region === "cabin"
+                        ? { x: 1574, y: 500 }
+                        : { x: 200, y: 666 },
+                visited: Array.from(new Set([...v.visited, next])),
+              }
+            : v,
+        );
+        setMessage(
+          "You and " + save.petName + " arrived at " + regions[next].name + ".",
+        );
+        Animated.timing(transition, {
+          toValue: 0,
+          duration: 450,
+          useNativeDriver: true,
+        }).start(() => {
+          travelLock.current = false;
+          setTraveling(false);
+        });
+      });
+    },
+    [save, traveling, stop, transition, playEffect],
+  );
+  useEffect(() => {
+    const m = motion.state;
+    if (
+      playing &&
+      !journal &&
+      !inStory &&
+      !traveling &&
+      save &&
+      m?.region === save.region &&
+      exitTriggered(save.region, m.position)
+    )
+      travel();
+  }, [playing, journal, traveling, inStory, save, motion.state, travel]);
+  useEffect(() => {
+    const p = motion.state?.position;
+    if (
+      playing &&
+      !journal &&
+      !traveling &&
+      !inStory &&
+      save?.region === "temple" &&
+      p &&
+      p.x > 1545 &&
+      p.x < 1600 &&
+      p.y < 477 &&
+      p.y > 445
+    )
+      travel("cabin");
+  }, [
+    playing,
+    journal,
+    traveling,
+    inStory,
+    save?.region,
+    motion.state,
+    travel,
+  ]);
   if (playing && save) {
     const liveMotion =
       motion.state?.region === save.region ? motion.state : null;
@@ -203,14 +458,21 @@ export default function Game() {
       ...save,
       position: liveMotion?.position || save.position,
     };
-    const canTravel = atGate(liveSave),
-      camera = liveMotion?.camera || save.position;
+    const camera = liveMotion?.camera || save.position;
+
+    const drop = nearestDrop(liveSave);
+    const home = nearestHome(liveSave.position, liveSave.region);
     // Follow the player on narrow displays; keep the complete world on landscape screens.
-    const worldW = Math.max(width, (height * 1000) / 667),
-      worldH = Math.max(height, (width * 667) / 1000);
+    const WORLD = dimensions(save.region);
+    const viewScale =
+      save.region === "cabin"
+        ? Math.max(width / WORLD.width, height / WORLD.height)
+        : Math.max(0.85, width / 1150, height / 760);
+    const worldW = WORLD.width * viewScale,
+      worldH = WORLD.height * viewScale;
     const left = Math.min(
       0,
-      Math.max(width - worldW, width / 2 - (camera.x * worldW) / 1000),
+      Math.max(width - worldW, width / 2 - (camera.x * worldW) / WORLD.width),
     );
     return (
       <SafeAreaView style={s.root}>
@@ -226,7 +488,7 @@ export default function Game() {
                 0,
                 Math.max(
                   height - worldH,
-                  height / 2 - (camera.y * worldH) / 667,
+                  height / 2 - (camera.y * worldH) / WORLD.height,
                 ),
               ),
             }}
@@ -235,11 +497,12 @@ export default function Game() {
               region={save.region}
               hero={liveSave.position}
               pet={save.pet}
+              showFamiliar={save.progress?.familiarGranted ?? true}
+              restoredAltar={save.progress?.restoredAltar ?? false}
+              paused={journal || inStory || conversation || sleepPrompt || fishingSeed !== null || traveling}
               facing={liveMotion?.facing || save.facing}
               heroFrame={
-                liveMotion?.moving
-                  ? Math.floor(liveMotion.distance / 11) % 4
-                  : 1
+                liveMotion?.moving ? Math.floor(liveMotion.distance / 8) % 8 : 0
               }
               petFrame={
                 liveMotion?.petMoving
@@ -252,6 +515,9 @@ export default function Game() {
               petMoving={liveMotion?.petMoving}
               petPose={liveMotion?.petPose}
               gathered={save.gathered}
+              appearance={save.appearance ?? defaultAppearance}
+              seed={save.seed ?? 12345}
+              pickedDrops={save.pickedDrops ?? []}
             />
           </View>
           <View
@@ -265,33 +531,42 @@ export default function Game() {
               <Text style={[s.locationTitle, compact && { fontSize: 19 }]}>
                 {regions[save.region].name}
               </Text>
-              <Text style={s.small}>Spring · Day 1 ☀ A quiet morning</Text>
+              <Text style={s.small}>
+                Spring · Day {save.progress?.day ?? 1} ☀
+              </Text>
             </View>
             <Pressable
               accessibilityRole="button"
               onPress={() => {
                 stop();
+                setMenuTab("satchel");
                 setJournal(true);
               }}
               style={s.journalButton}
             >
-              <Text style={s.buttonText}>Journal ☷</Text>
+              <Text style={s.buttonText}>Inventory ☷</Text>
               <Text style={{ color: "#d3ddc8", fontSize: 11, marginTop: 5 }}>
-                {save.inventory} / 8 gathered
+                {save.progress?.money ?? 0} drachmae
               </Text>
             </Pressable>
           </View>
-          <View style={[s.quest, { left: compact ? 12 : 32 }]}>
-            <Text style={s.eyebrow}>A PLACE TO BEGIN</Text>
-            <Text style={s.questText}>
-              {save.inventory >= 3 ? "✓" : "○"} Gather 3 wild plants ·{" "}
-              {Math.min(save.inventory, 3)}/3
-            </Text>
-            <Text style={s.questText}>
-              {save.visited.length === 2 ? "✓" : "○"} Walk both ancient paths ·{" "}
-              {save.visited.length}/2
-            </Text>
-          </View>
+          {!inStory && (
+            <View style={[s.quest, { left: compact ? 12 : 32 }]}>
+              <Text style={s.eyebrow}>
+                {save.progress?.restoredAltar
+                  ? "A SANCTUARY REBORN"
+                  : "RESTORE THE OLD ALTAR"}
+              </Text>
+              <Text style={s.questText}>
+                {save.progress?.restoredAltar
+                  ? "✓ Speak to the High Priest for guidance"
+                  : "Wood 3 · Stone 3 · Fiber 2"}
+              </Text>
+              <Text style={s.questText}>
+                Energy {save.progress?.energy ?? 100}/100
+              </Text>
+            </View>
+          )}
           <View
             style={[
               s.bottomHud,
@@ -342,26 +617,28 @@ export default function Game() {
               <Text style={s.gameHint}>
                 {save.name} & {save.petName}
               </Text>
-              {canTravel ? (
-                <Button onPress={travel}>
-                  Travel to {regions[save.region].destination} →
-                </Button>
-              ) : (
-                <Button
-                  onPress={() =>
-                    nearest(liveSave) < 0
-                      ? setMessage(
-                          "Move close to a sparkling plant to gather it.",
-                        )
-                      : gather()
-                  }
-                >
-                  {nearest(liveSave) >= 0
-                    ? "Gather " + regions[save.region].resource
-                    : "Gather"}{" "}
-                  · E
-                </Button>
-              )}
+              <Button onPress={gather}>
+                {home === "lake"
+                  ? "Cast a fishing line"
+                  : home === "bed"
+                    ? "Rest for the night"
+                    : home === "wardrobe"
+                      ? "Change clothes"
+                      : home === "priest" || home === "altar"
+                        ? "Speak to the High Priest"
+                        : home === "chest"
+                          ? "Open storage"
+                          : home === "workbench"
+                            ? "Use workbench"
+                            : home === "provisions"
+                              ? "Trade provisions"
+                              : drop
+                                ? "Pick up " + drop.kind
+                                : nearest(liveSave) >= 0
+                                  ? "Gather " + regions[save.region].resource
+                                  : "Gather / pick up"}{" "}
+                · E
+              </Button>
               <Text style={s.gameHint}>
                 {compact
                   ? "Use the arrows to explore"
@@ -371,9 +648,11 @@ export default function Game() {
                 accessibilityRole="button"
                 onPress={() =>
                   setMessage(
-                    save.region === "forest"
-                      ? "Cross the wooden bridge, then follow the path to the right edge."
-                      : "Follow the golden path to the left edge of the courtyard.",
+                    save.region === "cabin"
+                      ? "Walk through the doorway at the bottom of the room to return to the sanctuary."
+                      : save.region === "forest"
+                        ? "Cross the wooden bridge, then follow the path to the right edge."
+                        : "Follow the golden path to the left edge of the courtyard.",
                   )
                 }
               >
@@ -394,74 +673,111 @@ export default function Game() {
               </Text>
             </View>
           )}
-          {journal && (
-            <View style={s.scrim}>
-              <ScrollView
-                style={{ width: "100%" }}
-                contentContainerStyle={{
-                  flexGrow: 1,
-                  justifyContent: "center",
-                }}
-              >
-                <View style={s.modal}>
-                  <Text style={s.eyebrow}>YOUR STORY SO FAR</Text>
-                  <Text style={s.heading}>{save.name}’s journal</Text>
-                  <Text style={s.body}>
-                    Traveling with {save.petName}, your {save.pet.toLowerCase()}{" "}
-                    companion.
-                  </Text>
-                  <View style={s.divider} />
-                  <Text style={s.sectionTitle}>Gathering pouch</Text>
-                  <Text style={s.body}>
-                    Wild thyme:{" "}
-                    {save.gathered.filter((v) => v.startsWith("forest")).length}{" "}
-                    / 4
-                  </Text>
-                  <Text style={s.body}>
-                    Wild olives:{" "}
-                    {save.gathered.filter((v) => v.startsWith("temple")).length}{" "}
-                    / 4
-                  </Text>
-                  <Text style={s.sectionTitle}>Places discovered</Text>
-                  {save.visited.map((r) => (
-                    <Text key={r} style={s.body}>
-                      ✓ {regions[r].name}
-                    </Text>
-                  ))}
-                  {save.inventory >= 3 && save.visited.length === 2 && (
-                    <Text style={[s.body, { color: "#528064" }]}>
-                      A place to begin — complete. There is more to gather, or
-                      simply wander awhile.
-                    </Text>
-                  )}
-                  <View style={s.divider} />
-                  <Button onPress={() => setJournal(false)}>
-                    Return to the path
-                  </Button>
-                  <Button
-                    secondary
-                    onPress={() => {
-                      stop();
-                      setJournal(false);
-                      setPlaying(false);
-                    }}
-                  >
-                    Save & return to title
-                  </Button>
-                  <Text style={s.small}>
-                    {storageError
-                      ? "Local save unavailable"
-                      : "Your journey is saved automatically on this device."}
-                  </Text>
-                </View>
-              </ScrollView>
+          {journal && save.progress && (
+            <GameMenu
+              save={save}
+              initialTab={menuTab}
+              onSave={(fn) => setSave((v) => (v ? fn(v) : v))}
+              onClose={() => setJournal(false)}
+              onTitle={() => {
+                stop();
+                setJournal(false);
+                setPlaying(false);
+              }}
+              audio={audio}
+              onMessage={setMessage}
+            />
+          )}
+          {fishingSeed !== null && (
+            <Fishing
+              seed={fishingSeed}
+              onCatch={caughtFish}
+              onClose={() => setFishingSeed(null)}
+            />
+          )}
+          {sleepPrompt && (
+            <View style={[s.scrim, { zIndex: 70 }]}>
+              <GamePanel style={{ maxWidth: 500, width: "100%" }}>
+                <Text style={{ fontSize: 28 }}>Rest until morning?</Text>
+                <Text>
+                  Your energy will be restored. Gathered materials remain
+                  collected.
+                </Text>
+                <GameButton
+                  onPress={() => {
+                    setSleepPrompt(false);
+                    setTraveling(true);
+                    Animated.timing(transition, {
+                      toValue: 1,
+                      duration: 450,
+                      useNativeDriver: true,
+                    }).start(() => {
+                      setSave((v) =>
+                        v?.progress ? { ...v, progress: rest(v.progress) } : v,
+                      );
+                      Animated.timing(transition, {
+                        toValue: 0,
+                        duration: 650,
+                        useNativeDriver: true,
+                      }).start(() => setTraveling(false));
+                    });
+                  }}
+                >
+                  Sleep · begin a new day
+                </GameButton>
+                <GameButton onPress={() => setSleepPrompt(false)}>
+                  Not yet
+                </GameButton>
+              </GamePanel>
             </View>
+          )}
+          {conversation && save.progress && (
+            <Conversation
+              text={
+                save.progress.restoredAltar
+                  ? "The altar is secure again. A small beginning, but one that matters. Keep the sanctuary supplied, and let your Familiar guide you along the old paths."
+                  : "Bring me three pieces of wood, three stones and two bundles of fiber. Together we can secure the old altar. You may use the workbench, store supplies in the chest, or trade at the camp."
+              }
+              onClose={() => setConversation(false)}
+              action={
+                !save.progress.restoredAltar &&
+                Object.entries(altarCost).every(
+                  ([id, n]) => count(save.progress!.bag, id as ItemId) >= n!,
+                )
+                  ? {
+                      label: "Give supplies · restore the altar",
+                      onPress: () => {
+                        setSave((v) =>
+                          v?.progress
+                            ? { ...v, progress: restoreAltar(v.progress) }
+                            : v,
+                        );
+                        playEffect("pickup");
+                        setMessage("Altar restored · +120 drachmae");
+                      },
+                    }
+                  : undefined
+              }
+            />
+          )}
+          {save.progress && save.progress.story !== "complete" && (
+            <Dialogue
+              stage={save.progress.story}
+              familiar={save.petName}
+              onNext={() =>
+                setSave((v) =>
+                  v?.progress
+                    ? { ...v, progress: advanceStory(v.progress) }
+                    : v,
+                )
+              }
+            />
           )}
           <Animated.View
             pointerEvents="none"
             style={[
               StyleSheet.absoluteFill,
-              { backgroundColor: "#182d27", opacity: transition },
+              { backgroundColor: "#000000", opacity: transition, zIndex: 100 },
             ]}
           />
         </View>
@@ -490,7 +806,7 @@ export default function Game() {
           >
             PATH OF TEOPHOROS
           </Text>
-          <Text style={s.titleSmall}>A new life beneath the gods</Text>
+          <Text style={s.titleSmall}>A new life beneath the Gods</Text>
         </View>
         <View
           style={[
@@ -505,7 +821,13 @@ export default function Game() {
           {save && (
             <View style={s.continue}>
               <Text style={s.small}>Welcome back, {save.name}.</Text>
-              <Button secondary onPress={() => setPlaying(true)}>
+              <Button
+                secondary
+                onPress={() => {
+                  audio.unlock();
+                  setPlaying(true);
+                }}
+              >
                 CONTINUE ADVENTURE ▶
               </Button>
             </View>
@@ -527,11 +849,12 @@ export default function Game() {
               </Text>
             </View>
             <View style={s.portrait}>
-              <Hero size={130} />
+              <Hero size={130} appearance={appearance} />
               <Text style={s.portraitLabel}>THE WANDERER</Text>
             </View>
           </View>
-          <Label>CHOOSE YOUR COMPANION</Label>
+          <AppearancePicker value={appearance} onChange={setAppearance} />
+          <Label>CHOOSE YOUR FAMILIAR</Label>
           <View style={s.petRow}>
             {(["Boxer", "Small dog", "Cat", "Fox", "Owl"] as PetKind[]).map(
               (p) => (
@@ -549,65 +872,36 @@ export default function Game() {
               ),
             )}
           </View>
+          <Label>YOUR FAMILIAR’S NAME</Label>
           <TextInput
-            accessibilityLabel="Pet name"
+            accessibilityLabel="Familiar name"
             value={petName}
             onChangeText={setPetName}
-            placeholder="Your companion’s name"
+            placeholder="Your Familiar’s name"
             placeholderTextColor="#91958b"
             maxLength={24}
             style={[s.input, { marginTop: 12 }]}
           />
-          <Label>CHOOSE YOUR FIRST PATH</Label>
-          <View style={s.regionRow}>
-            {(["forest", "temple"] as Region[]).map((r) => (
-              <Pressable
-                key={r}
-                accessibilityRole="button"
-                accessibilityLabel={
-                  "Start in " + (r === "forest" ? "forest" : "temple ruins")
-                }
-                accessibilityState={{ selected: region === r }}
-                onPress={() => setRegion(r)}
-                style={[s.regionCard, region === r && s.selected]}
-              >
-                <View style={s.regionArt}>
-                  <World region={r} lively={false} />
-                </View>
-                <View style={s.regionText}>
-                  <Text style={s.regionName}>
-                    {r === "forest" ? "Forest" : "Temple ruins"}
-                  </Text>
-                  <Text style={s.small}>
-                    {r === "forest" ? "Rooted in nature" : "Touched by history"}
-                  </Text>
-                </View>
-                <View
-                  style={[
-                    s.radio,
-                    region === r && {
-                      backgroundColor: "#4a7557",
-                      borderColor: "#4a7557",
-                    },
-                  ]}
-                >
-                  {region === r && (
-                    <Text style={{ color: "#fff", fontSize: 10 }}>✓</Text>
-                  )}
-                </View>
-              </Pressable>
-            ))}
+          <Label>YOUR HOME · THE RUINED SANCTUARY</Label>
+          <View style={[s.regionArt, { height: 160, marginTop: 12 }]}>
+            <Image
+              source={require("../../assets/world/sanctuary-v3.png")}
+              style={{ width: "100%", height: "100%" }}
+              resizeMode="cover"
+            />
           </View>
-          <Text style={s.regionDescription}>{regions[region].description}</Text>
+          <Text style={s.regionDescription}>
+            A High Priest of Zeus finds you at the edge of death. Your journey
+            begins among the ruins, with a home to rebuild and a Familiar to
+            share the road.
+          </Text>
           <Button
             disabled={!name.trim() || !petName.trim() || !loaded}
             onPress={() => (save ? setReplacing(true) : start())}
           >
             BEGIN ADVENTURE ▶
           </Button>
-          <Text style={s.footnote}>
-            Explore both lands with your companion.
-          </Text>
+          <Text style={s.footnote}>Explore both lands with your Familiar.</Text>
           {!!message && <Text style={s.small}>{message}</Text>}
           {storageError && (
             <Text style={s.small}>
@@ -761,12 +1055,13 @@ const s = StyleSheet.create({
     marginBottom: 10,
   },
   input: {
-    height: 47,
+    height: 52,
+    fontFamily: gameFont,
     borderWidth: 1,
     borderColor: "#9c602e",
     borderRadius: 0,
     paddingHorizontal: 14,
-    fontSize: 14,
+    fontSize: 21,
     color: "#314d3e",
     backgroundColor: "#fff0bf",
   },
@@ -958,7 +1253,9 @@ const s = StyleSheet.create({
     bottom: 170,
     alignSelf: "center",
     maxWidth: "88%",
-    backgroundColor: "#f8f2dd",
+    backgroundColor: "#ffe3a3",
+    borderWidth: 3,
+    borderColor: "#754727",
     paddingHorizontal: 20,
     paddingVertical: 13,
     borderRadius: 0,
@@ -972,7 +1269,7 @@ const s = StyleSheet.create({
     padding: 24,
   },
   modal: {
-    backgroundColor: "#f6f2e5",
+    backgroundColor: "#f4d695",
     borderRadius: 0,
     padding: 28,
     width: "100%",

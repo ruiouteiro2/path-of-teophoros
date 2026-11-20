@@ -1,4 +1,9 @@
-export type Region = "forest" | "temple";
+import { terrainWalkable, toWorld } from "./worldLayout.ts";
+import { validAppearance } from "./appearance.ts";
+import type { Appearance } from "./appearance.ts";
+import { validProgression, newProgression, addItem } from "./progression.ts";
+import type { Progression, ItemId } from "./progression.ts";
+export type Region = "forest" | "temple" | "cabin";
 export type PetKind = "Dog" | "Boxer" | "Small dog" | "Cat" | "Fox" | "Owl";
 export type Point = { x: number; y: number };
 export type Facing = "front" | "back" | "left" | "right";
@@ -13,10 +18,26 @@ export type Save = {
   inventory: number;
   visited: Region[];
   facing?: Facing;
+  appearance?: Appearance;
+  seed?: number;
+  pickedDrops?: string[];
+  progress?: Progression;
+  worldVersion?: 2;
 };
 export const SAVE_KEY = "teophoros.save.v2";
-export const WORLD = { width: 1000, height: 667 };
+export const WORLD = { width: 2000, height: 1334 };
+export const dimensions = (region: Region) =>
+  region === "cabin" ? { width: 900, height: 600 } : WORLD;
 export const regions = {
+  cabin: {
+    name: "Your cabin",
+    subtitle: "A roof beneath the Gods",
+    description: "Your home at the sanctuary.",
+    resource: "Supplies",
+    destination: "Temple of the Dawn",
+    spawn: { x: 450, y: 490 },
+    gate: { x: 450, y: 575 },
+  },
   forest: {
     name: "The Olivewild",
     subtitle: "A forest full of small beginnings",
@@ -24,8 +45,8 @@ export const regions = {
       "Sunlit olive groves, wild thyme, and a quiet river. Find your footing beneath the trees.",
     resource: "Wild thyme",
     destination: "Temple of the Dawn",
-    spawn: { x: 450, y: 450 },
-    gate: { x: 952, y: 328 },
+    spawn: toWorld(450, 450),
+    gate: toWorld(952, 328),
   },
   temple: {
     name: "Temple of the Dawn",
@@ -34,48 +55,27 @@ export const regions = {
       "Marble columns stand among poppies. Follow the old paths and bring life back to the sanctuary.",
     resource: "Wild olives",
     destination: "The Olivewild",
-    spawn: { x: 500, y: 450 },
-    gate: { x: 60, y: 380 },
+    spawn: toWorld(475, 285),
+    gate: toWorld(35, 333),
   },
 };
 export const resources: Record<Region, Point[]> = {
+  cabin: [],
   forest: [
-    { x: 330, y: 300 },
-    { x: 570, y: 255 },
-    { x: 640, y: 395 },
-    { x: 400, y: 510 },
+    toWorld(330, 300),
+    toWorld(570, 255),
+    toWorld(640, 395),
+    toWorld(400, 510),
   ],
   temple: [
-    { x: 270, y: 345 },
-    { x: 735, y: 350 },
-    { x: 650, y: 530 },
-    { x: 350, y: 535 },
-  ],
-};
-// Connected navigation zones follow the clearings, paths, and bridge in the artwork.
-// The river can only be crossed within the bridge corridor.
-const zones: Record<Region, number[][]> = {
-  forest: [
-    [220, 190, 660, 480],
-    [330, 170, 590, 500],
-    [365, 420, 500, 650],
-    [480, 285, 720, 370],
-    [700, 315, 840, 365],
-    [830, 295, 985, 350],
-    [370, 460, 460, 545],
-  ],
-  temple: [
-    [270, 275, 740, 490],
-    [400, 235, 620, 520],
-    [425, 480, 555, 650],
-    [25, 355, 330, 407],
-    [340, 470, 635, 535],
+    toWorld(73, 430),
+    toWorld(260, 437),
+    toWorld(332, 520),
+    toWorld(570, 575),
   ],
 };
 export function walkable(p: Point, region: Region) {
-  return zones[region].some(
-    ([x1, y1, x2, y2]) => p.x >= x1 && p.x <= x2 && p.y >= y1 && p.y <= y2,
-  );
+  return terrainWalkable(p, region);
 }
 export function move(
   p: Point,
@@ -102,19 +102,61 @@ export function validSave(value: unknown): value is Save {
   const s = value as Save;
   return (
     !!s &&
+    (s.worldVersion === undefined || s.worldVersion === 2) &&
+    (s.progress === undefined || validProgression(s.progress)) &&
+    (s.appearance === undefined || validAppearance(s.appearance)) &&
+    (s.seed === undefined ||
+      (Number.isInteger(s.seed) && s.seed >= 0 && s.seed <= 4294967295)) &&
+    (s.pickedDrops === undefined ||
+      (Array.isArray(s.pickedDrops) &&
+        new Set(s.pickedDrops).size === s.pickedDrops.length &&
+        s.pickedDrops.every((id) =>
+          /^(forest|temple)-drop-([0-9]|[1-5][0-9])$/.test(id),
+        ))) &&
     typeof s.name === "string" &&
     typeof s.petName === "string" &&
     ["Dog", "Boxer", "Small dog", "Cat", "Fox", "Owl"].includes(s.pet) &&
-    ["forest", "temple"].includes(s.region) &&
+    ["forest", "temple", "cabin"].includes(s.region) &&
     typeof s.color === "string" &&
     Number.isFinite(s.position?.x) &&
     Number.isFinite(s.position?.y) &&
-    walkable(s.position, s.region) &&
+    (s.worldVersion === 2
+      ? s.position.x >= 0 && s.position.x <= dimensions(s.region).width && s.position.y >= 0 && s.position.y <= dimensions(s.region).height
+      : s.position.x >= 0 &&
+        s.position.x <= 1000 &&
+        s.position.y >= 0 &&
+        s.position.y <= 667) &&
     Array.isArray(s.gathered) &&
     s.gathered.every((v) => /^(forest|temple)-[0-3]$/.test(v)) &&
     new Set(s.gathered).size === s.gathered.length &&
     s.inventory === s.gathered.length &&
     Array.isArray(s.visited) &&
-    s.visited.every((v) => v === "forest" || v === "temple")
+    s.visited.every((v) => v === "forest" || v === "temple" || v === "cabin")
   );
+}
+
+/** Upgrade existing journeys without replaying the rescue or duplicating their collected items. */
+export function migrateProgress(save: Save): Save {
+  const position =
+    save.worldVersion === 2 && walkable(save.position, save.region)
+      ? save.position
+      : regions[save.region].spawn;
+  if (save.progress) return { ...save, position, worldVersion: 2 };
+  let progress: Progression = {
+    ...newProgression(),
+    story: "complete",
+    familiarGranted: true,
+    energy: 100,
+    money: 100,
+  };
+  for (const id of save.pickedDrops ?? []) {
+    const index = Number(id.split("-").at(-1));
+    progress = addItem(
+      progress,
+      (["wood", "stone", "fiber"] as ItemId[])[index % 3],
+    );
+  }
+  for (const id of save.gathered)
+    progress = addItem(progress, id.startsWith("forest") ? "thyme" : "olives");
+  return { ...save, progress, position, worldVersion: 2 };
 }

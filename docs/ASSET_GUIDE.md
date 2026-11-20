@@ -1,0 +1,112 @@
+# Path of Teophoros — asset and presentation standard
+
+Status: working production standard. Read this before creating or changing any visual, animation, UI, or sound asset. The user's corrections take precedence. Update this document when a correction changes the standard; do not silently invent a new style for the next asset.
+
+## 1. The visual contract
+
+An Olympus-themed, top-down life game with the readability and color separation of Stardew Valley, using original artwork. Slightly finer sprites are welcome; photorealistic painting, smooth vector cartoons, and intricate illustrated cutouts are not.
+
+Judge assets at their actual in-game size, beside existing assets. A beautiful isolated PNG is not an acceptance test. Source resolution does not establish consistency. The rejected olive tree was technically pixel art but had tiny outlined individual leaves, thin branches, and far more detail than the map trees.
+
+### Reference hierarchy
+
+1. Terrain and trees: `assets/world/olivewild-v2.png` and `sanctuary-v3.png`. Match their chunky leaf groups, stepped silhouettes, warm earth, and broad shadow masses. The old `olivewild.png`, `temple.png`, and `sanctuary-v2.png` are superseded terrain drafts.
+2. Animals: `assets/world/pets/boxer.png` and `small-dog.png`. Their anatomy, outlined shading, and gait are the approved animal direction. Preserve the actual reference dogs in `assets/references/`.
+3. Humans: `assets/world/hero/` is the current character family. Less oversized heads than the obsolete `hero-walk.png`, natural limb proportions, and shading density compatible with the pets at world scale.
+4. UI: the current Olympus sky, ochre panels, dark brown borders, pale inset fields, compact bold labels, and illustrated choices.
+
+Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or the old large-headed `hero-walk.png` as a new asset reference. `olive-tree-v2.png` supersedes the fine-leaf tree. Old files retained in history are not automatically approved references.
+
+## 2. Camera, scale, and silhouettes
+
+- Outdoor world coordinates: 2000 × 1334. Terrain authoring/navigation uses normalized 1000 × 667 coordinates at scale 2. Cabin coordinates: 900 × 600. Ground is viewed from above at a consistent three-quarter RPG angle. The title backdrop may show a horizon; gameplay may not.
+- Human render cell: 76 world units; visible human roughly 65–73 units high. Aim at approximately four heads tall. Do not make the pet realistic and the human a two-head chibi.
+- Boxer cell: 43. Small dog/cat/fox: 32. Owl: 33. Keep species differences, not one arbitrary size for everything.
+- Flowers: 17–23; thyme resource: 22. Flowers stay well below the character's waist, usually below the knee.
+- Loose materials: 26-unit cell with clear recognizable silhouette, using `items.png` in both world and inventory. A stick is not a whole tree trunk; a stone pickup is not a boulder.
+- Harvest olive tree: 100-unit cell. Larger background trees may be larger, but the underlying pixel clusters and shading language must agree.
+- Butterflies: 12; dragonflies: 16; birds: 23. Wildlife should read as wildlife rather than floating UI markers.
+- Provide transparent margins and complete silhouettes. Never repair clipped heads/feet by hiding them behind UI.
+
+## 3. Pixel density and drawing
+
+- Use visible, deliberate pixel clusters and stepped edges. Avoid mixing single-pixel engraving with large terrain pixels.
+- Trees: target the appearance of about 64 × 80 source pixels before enlargement. Draw foliage as grouped masses with a few leaf accents, not hundreds of individually outlined leaves.
+- Characters and animals: short clean dark outlines, coherent simple shapes, roughly 4–6 useful tones per material. Preserve detail needed for species, face, clothing, and gait; remove microtexture that becomes noise at gameplay size.
+- Avoid smooth gradients, airbrushed lighting, bloom, photographic fur, and thin ink illustration.
+- Raster atlas originals are kept intact. Runtime cropping and measured anchors are preferred to destructive image processing. Use the image-generation workflow for raster edits unless the user requests another method.
+
+## 4. Palette and light
+
+- Light comes from upper left. Lit edges are warm; shadows are darker and slightly cooler.
+- Terrain: vivid grassy greens, golden paths, cyan/sapphire water, warm brown trunks, cream marble.
+- Keep a dark outline between a character and similarly colored terrain. Do not solve contrast with a glowing ring or a huge detached shadow.
+- Flowers add controlled red, blue, white/yellow, and purple accents. Do not scatter every hue uniformly across the map.
+- Olive leaves read silver/olive green, with sparse green and purple-black fruits. No generic herb labeled as olives.
+- Boxer: dark chestnut/brindle brown, black stripes/ears/muzzle, white blaze/chest/paws. Small dog: tan, dark floppy ears, pale muzzle, white chest. Preserve these identity cues.
+- Human hair colors: brown, black, gold, silver. Clothing accents: blue, green, terracotta red. White linen, leather and skin retain their colors.
+
+## 5. Character customization pipeline
+
+- `Appearance` is saved data: hairstyle, hair color, garment, garment color. Do not couple one hairstyle permanently to one outfit.
+- Current styles: wavy crop / tied back; linen chiton / travel cloak. New options must work in every direction and every frame before entering the selector.
+- Human source atlases are 8 columns × 4 rows: front, back, left, right; eight gait phases per row.
+- Source magenta marks hair and source cyan marks colored fabric. These are technical keys, never intended in-game colors. Preserve natural skin, white linen, leather, and outlines outside those keys.
+- `Hero.tsx` applies runtime color matrices with the original alpha mask. Inspect every offered palette in the live browser and check native output. If a new material color collides with a key, change the authoring scheme rather than silently recoloring skin.
+- `hero-anchors.json` holds measured contact baselines per frame and variant. Regenerate measurements when a sheet changes; do not keep anchors from a visually similar old sheet.
+- The creation preview and gameplay must use the same renderer and appearance data.
+
+## 6. Animation and physical contact
+
+- Movement is continuous and time-based. Keyboard repeats must never determine distance.
+- Gait phase follows distance traveled. Current human cycle: one frame per 8 world units, eight phases; footstep sounds at 32-unit intervals.
+- Alternate the planted foot and opposing arm. Feet pass beneath the body; knees bend without large body jumps. Stop on a neutral pose.
+- Measure foot contact, rather than assuming every atlas has an 88% baseline. Grounded humans and pets use small contact shadows under their feet. Only flying animals intentionally separate from their ground plane.
+- Pets keep their breadcrumb following and front/back/profile movement. Idle sniff, blink, alert and sit/preen are held behaviors, not an idle slideshow cycling every frame.
+- The root of a plant stays fixed. Animate upper stems/heads and occasional gusts with still intervals. Never rotate a whole tree, bush, or map to imply wind.
+- Rocks, bridges, trunks, ground and architecture stay static unless the gameplay actually moves them.
+- Water has coherent downstream motion, separately masked banks and rock islands, and local wakes. Fountain droplets and ripples are separate. Do not slide the entire terrain image.
+- Butterflies stay near flowers; birds alternate flight/rest. Blue/red dragonflies hover and dart near water. Avoid uniform speed and synchronized trajectories.
+- Backgrounding the app pauses simulation/audio. Long frame stalls must not teleport actors.
+
+## 7. Map composition, resources, and inventory
+
+- Clear paths and entrances must remain readable. Avoid planting a harvest tree through intact paving or in the middle of the main route.
+- Depth-sort dynamic objects by their ground contact; characters can pass behind canopies without drawing over them.
+- Materials are generated from the saved seed, not rerolled on render, map entry, or reload. IDs are stable and consumed once. Keep pickups separated, reachable, away from spawn and large resources.
+- Inventory uses the same sprite artwork as ground pickups, with readable names and quantities in framed slots. Never introduce a modern dashboard card style.
+- Entering an exit strip triggers travel automatically. Fade fully to black, change map while covered, then fade from black. Arrival positions must lie outside the return trigger so travel cannot bounce in a loop.
+- Keep old saves readable when adding appearance, items, or sound preferences. Validate unfamiliar/corrupt values rather than trusting persisted data.
+
+## 8. UI and wording
+
+- Use game panels and inset controls with ochre, cream and brown framing. No split marketing landing page, elegant editorial serif treatment, large empty sales copy, or unrelated rounded dashboard cards.
+- Exact title: Path of Teophoros. Subtitle: A new life beneath the Gods.
+- Name fields must be labeled. Always say **Familiar** in visible game copy. Naming exists at creation and can be changed in the Familiar menu without replacing the save. Legacy `pet`/`petName` identifiers remain internal for save compatibility.
+- Font: bundled Pixelify Sans regular and semibold, with a minimum 17 logical pixels for game text. Dialogue is 21–25 pixels. Use `GameText`, `GamePanel`, and `GameButton`; do not introduce a separate typography/panel system for new features.
+- Every new journey starts at the ruined sanctuary. The High Priest grants the Familiar during the opening, so do not display it walking beside the protagonist before that story beat.
+- Show selected appearance/pet choices clearly. Preview actual game sprites.
+- Support narrow screens: wrap choice rows, allow panel scrolling, keep inputs/actions reachable, and keep HUD controls clear of the player as far as practical.
+
+## 9. Sound
+
+- Original quiet lyre/plucked-string character, not copied music from another game. Current music is `sanctuary-dawn.m4a`, approximately 4 minutes 46 seconds, authored in `scripts/compose_sanctuary.py` with distinct themes and quiet sections. `generate_audio.py` is the superseded first synthesized pass and must not overwrite current audio.
+- Music must leave room for ambience and interaction sounds. Water volume increases with proximity; distant water and cabin water are silent. No bird audio loop is active. Do not reintroduce the rejected repeating whistle.
+- Field recordings and Kenney CC0 foley are documented in `assets/audio/foley/README.md`; retain source/license notices. `scripts/prepare_foley.py` prepares the selected files. Grass, stone and cabin-floor footsteps are different sample sets, cycled without consecutive repeats.
+- Lake water should shimmer gently, not flow downstream like the river. Masks must exclude the dock and banks. Door creaks are only for cabin travel, never outdoor map boundaries.
+- Distinct short wood, stone, fiber, harvest and travel cues. Footsteps follow actual movement, never held keys against a wall.
+- Start playback after a user gesture on web. Provide mute and music controls; preserve preferences. Pause audio in the background and when leaving gameplay.
+- No recording permission is needed. Keep microphone/background playback permissions disabled.
+- Test audio files for nonzero signal, peaks, duration and loop boundaries; verify actual playback in the running app. Physical-device listening remains a separate QA step.
+
+## 10. Required acceptance checklist
+
+1. Read this guide and select the correct reference category before generating.
+2. Produce one asset family or controlled variant at a time. Keep identity, camera, scale, palette and contact points invariant across variants.
+3. Inspect the raw sheet: rows, columns, alpha, margins, complete silhouettes, consistent directions and gait order.
+4. Integrate it into the actual map beside the player, a pet, a terrain tree and a flower. Inspect at desktop and phone gameplay scale. Do not approve only from the large source image.
+5. Inspect a still frame and motion. Check foot/root contact, shadows, palette spill, atlas seams, clipping and sprite jitter. Compare changed palettes and garments.
+6. Verify interaction and persistence: pickup once, inventory count, reload, map change, appearance and pet-name save.
+7. Run typecheck, lint and relevant behavior tests; export web and native bundles after dependency/render changes. Do not describe native export success as physical-device testing.
+8. Record the asset purpose, reference, grid, anchors, animation states and limitations in project documentation. Mark superseded assets explicitly.
+9. If it differs in style when placed in-scene, revise it before shipping. Do not excuse the mismatch as “higher quality.”

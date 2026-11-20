@@ -1,4 +1,6 @@
-# Final art direction
+# Historical art production notes
+
+The current mandatory standard is [ASSET_GUIDE.md](ASSET_GUIDE.md). The four-frame human and fine-leaf olive tree described below are superseded by `assets/world/hero/` (8 × 4 sheets with runtime hair/clothing colors and measured foot anchors) and `olive-tree-v2.png`. Retain these notes as production history, not as instructions to restore obsolete assets.
 
 The user's final direction is essentially Stardew Valley's sprite-based style, with slightly finer pixels and richer shading. The initial flat vector graphics and subsequent naturalistic painted graphics were rejected and replaced. Do not return to either of those directions.
 
