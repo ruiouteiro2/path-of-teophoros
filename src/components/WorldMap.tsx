@@ -4,6 +4,7 @@ import { GameButton, GameText as Text, ui } from "./GameUI";
 import type { Save, Region } from "../game";
 import { dimensions, regions } from "../game";
 import { homeLocations, cabinLocations } from "../worldLayout";
+import { gardenPlots } from "../garden";
 
 const maps = {
   temple: require("../../assets/world/sanctuary-v4.png"),
@@ -18,6 +19,8 @@ const destinations = {
     ["4", "Workbench", homeLocations.workbench],
     ["5", "Provisions", homeLocations.provisions],
     ["6", "Fishing dock", homeLocations.lake],
+    ["7", "Garden", gardenPlots[1]],
+    ["8", "Well", homeLocations.well],
   ],
   cabin: [
     ["1", "Bed", cabinLocations.bed],

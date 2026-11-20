@@ -12,8 +12,9 @@ import { ItemIcon } from "./ItemIcon";
 import { Hero, PetPortrait } from "./WorldAssets";
 import { AppearancePicker } from "./AppearancePicker";
 import { WorldMap } from "./WorldMap";
-import {Npc} from './Npc';
+import { Npc } from "./Npc";
 import { defaultAppearance } from "../appearance";
+import { cropDays } from "../garden";
 import type { Save } from "../game";
 import type { useGameAudio } from "../hooks/useGameAudio";
 import {
@@ -203,6 +204,27 @@ export function GameMenu({
                 {save.visited.filter((r) => r !== "cabin").length} / 2 · Fish
                 caught: {p.caught}
               </Text>
+              <Text style={ui.title}>The western garden</Text>
+              <Text>
+                Till the six marked plots in the western grove, plant barley or
+                onion seed, and water before sleeping. Refill your jug at the
+                well. Dry crops wait for water; they do not grow that night.
+              </Text>
+              <Text>
+                Growing:{" "}
+                {
+                  Object.values(p.garden ?? {}).filter(
+                    (plot) => plot?.crop && plot.age < cropDays[plot.crop],
+                  ).length
+                }{" "}
+                · Ready:{" "}
+                {
+                  Object.values(p.garden ?? {}).filter(
+                    (plot) => plot?.crop && plot.age >= cropDays[plot.crop],
+                  ).length
+                }{" "}
+                · Jug {p.water ?? 0}/6
+              </Text>
             </>
           )}
           {tab === "familiar" && (
@@ -333,9 +355,18 @@ export function GameMenu({
           )}
           {tab === "trade" && (
             <>
-              <View style={{flexDirection:'row',alignItems:'center',gap:12}}><Npc kind="keeper" size={90}/><View style={{flex:1}}><Text style={ui.title}>Thaleia</Text><Text>Sanctuary provision keeper</Text></View></View>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+              >
+                <Npc kind="keeper" size={90} />
+                <View style={{ flex: 1 }}>
+                  <Text style={ui.title}>Thaleia</Text>
+                  <Text>Sanctuary provision keeper</Text>
+                </View>
+              </View>
               <Text>
-                “A little bread for the road? I also buy what you gather. Nothing useful should go to waste.”
+                “A little bread for the road? I also buy what you gather.
+                Nothing useful should go to waste.”
               </Text>
               {stackGrid(p.bag)}
               <Text style={ui.title}>{items[selected].name}</Text>
@@ -364,7 +395,10 @@ export function GameMenu({
                   Buy one · {items[selected].buy} drachmae
                 </GameButton>
               )}
-              <Text>Select bread, infusion or rod to buy provisions.</Text>
+              <Text>
+                Select food, a fishing rod, garden tools or seeds to buy
+                supplies.
+              </Text>
             </>
           )}
           {tab === "craft" && (

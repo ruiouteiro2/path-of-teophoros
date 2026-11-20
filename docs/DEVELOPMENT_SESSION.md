@@ -101,3 +101,15 @@ Session remains active; the user's five-hour development period has not yet elap
 - Fixed scenery clock reset on menu close. Browser diagnostic: all three fish coordinates remained identical while the inventory was open; closing moved them only 0.23 / 0.28 / 0.67 normalized units on the next sample, not back to their starting positions.
 - Birds now fly between two perches and return continuously; the old 29-second route teleported them back to the start. Added route continuity, lake containment, quiet-ripple and fish-route checks. All 35 tests, typecheck and lint pass.
 - Visual lake check confirms no frozen fish silhouettes remain. Actual non-instrumented device frame-rate and listening checks remain outstanding.
+
+### Garden mechanics and assets (in progress)
+
+- Research: https://stardewvalleywiki.com/Crops#Basics and #Grow_Times. Adapted tilled soil, seed placement, watering before sleep, and growth measured in watered nights. Unwatered crops wait rather than die. Seasonal withering and fertilizer are not implemented.
+- Added six garden plots in the western grove, barley (3 watered nights), onions (4), hoe, seed pouches, harvested crop icons and watering jug. The first generated hoe looked like an axe and was rejected; `hoe.png` replaces the unused tool cell in `garden-items.png`.
+- Crop sheet `crops.png`: 4 × 2, barley/onion rows, seed/shoot/young/ripe stages, measured root baselines. Garden items: 4 × 2; barley seed, onion seed, barley, onion / rejected tool, watering jug, dry soil, wet soil.
+- Pure transactions preserve mature crops if the bag is full; repeated till/water/harvest cannot duplicate costs or rewards. Sleep grows only watered crops and resets soil moisture. A jug holds six uses and refills at the well. New stories grant starter tools and six barley seeds; existing saves can buy them from Thaleia without replaying the story.
+- Material generation IDs remain unchanged. Only drops overlapping the new garden are relocated after generation, preserving old collected IDs.
+- Browser completed barley cycle: plant consumed one seed, till/water used correct energy, three actual sleeps with watering grew age 0 → 1 → 2 → 3, harvest added one barley and cleared the crop, camp sale changed balance 220 → 236 and removed barley. Each stage survived reload. Phone garden panel inspected at 390 × 844.
+- 38 behavior tests pass, including garden reachability, water/energy/tool guards, save validation, crop growth, harvest capacity and trade. More scene inspection and final exports remain before checkpoint.
+- Soil review rejected the initial thick-furrow tiles: at gameplay scale they read as stacked boards. `garden-soil.png` (2 × 1, dry/wet) replaces cells 6–7 with flatter irregular earth. Crop stages inspected together beside the hero and Familiar. Well interaction confirmed jug 3 → 6.
+- Garden checkpoint: 38 tests, lint, typecheck, final web export and final Android/iOS exports passed. Five-hour goal remains active; next pass is sound overlap/foley and remaining presentation checks.

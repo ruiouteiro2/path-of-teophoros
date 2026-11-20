@@ -122,3 +122,11 @@ Do not use the old flat SVG scenery, the rejected fine-leaf `olive-tree.png`, or
 - `sanctuary-v4.png` supersedes v3 by removing baked fish; living animals must not be painted permanently into terrain. It retains the collision-mapped shoreline, dock and building positions.
 - `lake-fish.png`: 4 columns × 2 rows, overhead right-facing carp then perch, four tail phases. Render at 32 world units beneath the water shimmer, with reduced opacity. Keep routes and the entire sprite footprint inside the lake and away from the dock. Match the inventory species, without using side-view inventory icons as swimming sprites.
 - Ambient animation time survives menu pauses. Birds must return to their perches continuously, never disappear and restart across the map. Lake surface rings are occasional local disturbances with still intervals, not a perpetual fountain.
+
+## 13. Garden art and persistent growth
+
+- Six marked plots in the western grove. Each soil tile renders at 48 world units; crop cells at 44, with root contact from `crop-anchors.json`. Barley remains below human shoulder height and onion foliage stays smaller. Keep crop roots anchored across growth stages.
+- `crops.png`: 4 × 2; barley then onion, seed / shoot / young / ripe. `garden-items.png`: 4 × 2; barley seed, onion seed, harvested barley, harvested onion / unused rejected axe-like tool, watering jug, dry soil, wet soil. Never use cell 4 as a hoe; the separate `hoe.png` is the corrected tool.
+- Garden menus use the same game panels and inventory icons. Tools, seeds and crops share inventory/storage/trade. Garden save fields are optional for older saves; never replay the introduction or overwrite existing progress to add gardening.
+- Growth happens on sleep only when watered, once per night. Water uses a six-charge jug refilled at the well. Missing a watering delays growth. Harvesting a full stack must leave the mature plant intact.
+- Soil correction: render `garden-soil.png` (2 × 1 dry/wet), not cells 6–7 of `garden-items.png`. The older tiles looked like boards at gameplay scale. Soil is a flat ground layer with shallow furrows and irregular edges, never a raised wooden block.

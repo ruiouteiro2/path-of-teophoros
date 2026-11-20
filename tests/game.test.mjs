@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { homeLocations, cabinLocations } from "../src/worldLayout.ts";
+import { gardenPlots } from "../src/garden.ts";
 import {
   move,
   walkable,
@@ -64,6 +65,12 @@ for (const region of ["forest", "temple", "cabin"]) {
         points.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 48),
         "unreachable home interaction: " + name,
       );
+    if (region === "temple")
+      for (const p of gardenPlots)
+        assert(
+          points.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 30),
+          "unreachable garden plot: " + p.id,
+        );
     if (region === "forest")
       for (const p of [
         { x: 150, y: 760 },

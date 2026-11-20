@@ -1,4 +1,12 @@
 /** Persistent game progression. All transactions return a new value or the original on failure. */
+import {
+  cropDays,
+  gardenPlots,
+  emptyPlot,
+  growGarden,
+  validGarden,
+} from "./garden.ts";
+import type { Garden, CropKind } from "./garden.ts";
 export const itemIds = [
   "wood",
   "stone",
@@ -12,6 +20,12 @@ export const itemIds = [
   "reed",
   "torch",
   "rod",
+  "barleySeed",
+  "onionSeed",
+  "barley",
+  "onion",
+  "hoe",
+  "wateringJug",
 ] as const;
 export type ItemId = (typeof itemIds)[number];
 export type Bag = Partial<Record<ItemId, number>>;
@@ -34,6 +48,8 @@ export type Progression = {
   energy: number;
   restoredAltar: boolean;
   caught: number;
+  garden?: Garden;
+  water?: number;
 };
 export const items: Record<
   ItemId,
@@ -45,6 +61,41 @@ export const items: Record<
     energy?: number;
   }
 > = {
+  barleySeed: {
+    name: "Barley seed",
+    description: "Plant in tilled soil. Grows after 3 watered nights.",
+    sell: 2,
+    buy: 5,
+  },
+  onionSeed: {
+    name: "Onion seed",
+    description: "Plant in tilled soil. Grows after 4 watered nights.",
+    sell: 3,
+    buy: 8,
+  },
+  barley: {
+    name: "Golden barley",
+    description: "A harvest from your garden. Thaleia buys grain at the camp.",
+    sell: 16,
+  },
+  onion: {
+    name: "Red onion",
+    description: "A crisp garden onion. Restores 12 energy.",
+    sell: 24,
+    energy: 12,
+  },
+  hoe: {
+    name: "Bronze hoe",
+    description: "Prepare the six garden plots in the western grove.",
+    sell: 0,
+    buy: 25,
+  },
+  wateringJug: {
+    name: "Watering jug",
+    description: "Holds water for six plots. Refill at the sanctuary well.",
+    sell: 0,
+    buy: 20,
+  },
   wood: {
     name: "Olive wood",
     description: "A dry branch. Useful for repairs and crafting.",
@@ -132,6 +183,8 @@ export function newProgression(): Progression {
     energy: 35,
     restoredAltar: false,
     caught: 0,
+    garden: {},
+    water: 0,
   };
 }
 const whole = (n: unknown, max = 9999999): n is number =>
@@ -161,7 +214,9 @@ export function validProgression(value: unknown): value is Progression {
     p.day >= 1 &&
     whole(p.energy, 100) &&
     typeof p.restoredAltar === "boolean" &&
-    whole(p.caught)
+    whole(p.caught) &&
+    (p.garden === undefined || validGarden(p.garden)) &&
+    (p.water === undefined || whole(p.water, 6))
   );
 }
 export function count(bag: Bag, id: ItemId) {
@@ -285,11 +340,65 @@ export function advanceStory(p: Progression): Progression {
     return {
       ...next,
       money: p.money + 100,
-      bag: { ...p.bag, bread: count(p.bag, "bread") + 2 },
+      bag: {
+        ...p.bag,
+        bread: Math.min(999, count(p.bag, "bread") + 2),
+        hoe: Math.max(1, count(p.bag, "hoe")),
+        wateringJug: Math.max(1, count(p.bag, "wateringJug")),
+        barleySeed: Math.min(999, count(p.bag, "barleySeed") + 6),
+      },
+      water: 6,
       energy: 80,
     };
   return next;
 }
 export function rest(p: Progression): Progression {
-  return p.day >= 99999 ? p : { ...p, day: p.day + 1, energy: 100 };
+  return p.day >= 99999
+    ? p
+    : { ...p, day: p.day + 1, energy: 100, garden: growGarden(p.garden) };
+}
+
+export type GardenAction = "till" | "water" | "harvest" | CropKind;
+export function tendGarden(
+  p: Progression,
+  id: string,
+  action: GardenAction,
+): Progression {
+  if (!gardenPlots.some((plot) => plot.id === id) || p.story !== "complete")
+    return p;
+  const plot = p.garden?.[id] ?? emptyPlot;
+  let next = p,
+    changed = { ...plot };
+  if (action === "till") {
+    if (plot.tilled || !count(p.bag, "hoe") || p.energy < 4) return p;
+    next = { ...p, energy: p.energy - 4 };
+    changed.tilled = true;
+  } else if (action === "water") {
+    if (
+      !plot.tilled ||
+      plot.watered ||
+      !count(p.bag, "wateringJug") ||
+      !(p.water ?? 0) ||
+      p.energy < 2 ||
+      (plot.crop && plot.age >= cropDays[plot.crop])
+    )
+      return p;
+    next = { ...p, energy: p.energy - 2, water: (p.water ?? 0) - 1 };
+    changed.watered = true;
+  } else if (action === "harvest") {
+    if (!plot.crop || plot.age < cropDays[plot.crop]) return p;
+    next = addItem(p, plot.crop);
+    if (next === p) return p;
+    changed = { tilled: true, age: 0, watered: plot.watered };
+  } else {
+    if (action !== "barley" && action !== "onion") return p;
+    const seed = action === "barley" ? "barleySeed" : "onionSeed";
+    if (!plot.tilled || plot.crop || count(p.bag, seed) < 1) return p;
+    next = { ...p, bag: take(p.bag, seed, 1) };
+    changed = { ...plot, crop: action, age: 0 };
+  }
+  return { ...next, garden: { ...p.garden, [id]: changed } };
+}
+export function refillJug(p: Progression): Progression {
+  return !count(p.bag, "wateringJug") || p.water === 6 ? p : { ...p, water: 6 };
 }

@@ -45,10 +45,14 @@ import {
   count,
   ItemId,
   rest,
+  tendGarden,
+  refillJug,
 } from "../progression";
 import { nearestHome } from "../worldLayout";
 import { Conversation } from "./Conversation";
 import { Fishing } from "./Fishing";
+import { GardenPanel } from "./Garden";
+import { nearestPlot } from "../garden";
 
 const serif = gameFont;
 function Button({
@@ -94,6 +98,7 @@ export default function Game() {
   const [conversation, setConversation] = useState(false);
   const [sleepPrompt, setSleepPrompt] = useState(false);
   const [fishingSeed, setFishingSeed] = useState<number | null>(null);
+  const [gardenPlot, setGardenPlot] = useState<string | null>(null);
   const travelLock = useRef(false);
   const color = "#467d81";
   const [save, setSave] = useState<Save | null>(null),
@@ -135,7 +140,8 @@ export default function Game() {
       !inStory &&
       !conversation &&
       !sleepPrompt &&
-      fishingSeed === null,
+      fishingSeed === null &&
+      gardenPlot === null,
     session,
     checkpoint,
   );
@@ -184,15 +190,33 @@ export default function Game() {
       inStory ||
       conversation ||
       sleepPrompt ||
-      fishingSeed !== null
+      fishingSeed !== null ||
+      gardenPlot !== null
     )
       return;
     const m = getMotion();
     const live =
       m?.region === save.region ? { ...save, position: m.position } : save;
     const home = nearestHome(live.position, live.region);
+    const plot = nearestPlot(live.position, live.region);
+    if (plot) {
+      stop();
+      setGardenPlot(plot.id);
+      return;
+    }
     if (home) {
       stop();
+      if (home === "well") {
+        if (!save.progress || !count(save.progress.bag, "wateringJug")) {
+          setMessage("Bring a watering jug. Thaleia sells one at the camp.");
+          return;
+        }
+        setSave((v) =>
+          v?.progress ? { ...v, progress: refillJug(v.progress) } : v,
+        );
+        setMessage("Watering jug refilled · 6/6");
+        return;
+      }
       if (home === "priest" || home === "altar") {
         setConversation(true);
         return;
@@ -219,7 +243,11 @@ export default function Game() {
           );
           return;
         }
-        if (count(save.progress.bag, "carp") >= 999 || count(save.progress.bag, "perch") >= 999 || save.progress.caught >= 9999999) {
+        if (
+          count(save.progress.bag, "carp") >= 999 ||
+          count(save.progress.bag, "perch") >= 999 ||
+          save.progress.caught >= 9999999
+        ) {
           setMessage("Store or sell your fish before casting again.");
           return;
         }
@@ -304,6 +332,7 @@ export default function Game() {
     conversation,
     sleepPrompt,
     fishingSeed,
+    gardenPlot,
     getMotion,
     playEffect,
     stop,
@@ -326,7 +355,8 @@ export default function Game() {
       inStory ||
       conversation ||
       sleepPrompt ||
-      fishingSeed !== null
+      fishingSeed !== null ||
+      gardenPlot !== null
     )
       return;
     const key = (e: KeyboardEvent) => {
@@ -341,7 +371,15 @@ export default function Game() {
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, [playing, inStory, conversation, sleepPrompt, fishingSeed, stop]);
+  }, [
+    playing,
+    inStory,
+    conversation,
+    sleepPrompt,
+    fishingSeed,
+    gardenPlot,
+    stop,
+  ]);
   function start() {
     if (!name.trim() || !petName.trim()) return;
     setSession((v) => v + 1);
@@ -464,6 +502,7 @@ export default function Game() {
 
     const drop = nearestDrop(liveSave);
     const home = nearestHome(liveSave.position, liveSave.region);
+    const plot = nearestPlot(liveSave.position, liveSave.region);
     // Follow the player on narrow displays; keep the complete world on landscape screens.
     const WORLD = dimensions(save.region);
     const viewScale =
@@ -490,19 +529,36 @@ export default function Game() {
                 0,
                 Math.max(
                   height - worldH,
-                  height * (inStory && compact ? 0.29 : 0.5) - (camera.y * worldH) / WORLD.height,
+                  height * (inStory && compact ? 0.29 : 0.5) -
+                    (camera.y * worldH) / WORLD.height,
                 ),
               ),
             }}
           >
             <World
-              recovery={save.progress?.story === "awakening" ? "lying" : save.progress?.story === "world" || save.progress?.story === "calling" ? "sitting" : undefined}
+              garden={save.progress?.garden}
+              recovery={
+                save.progress?.story === "awakening"
+                  ? "lying"
+                  : save.progress?.story === "world" ||
+                      save.progress?.story === "calling"
+                    ? "sitting"
+                    : undefined
+              }
               region={save.region}
               hero={liveSave.position}
               pet={save.pet}
               showFamiliar={save.progress?.familiarGranted ?? true}
               restoredAltar={save.progress?.restoredAltar ?? false}
-              paused={journal || inStory || conversation || sleepPrompt || fishingSeed !== null || traveling}
+              paused={
+                journal ||
+                inStory ||
+                conversation ||
+                sleepPrompt ||
+                fishingSeed !== null ||
+                gardenPlot !== null ||
+                traveling
+              }
               facing={liveMotion?.facing || save.facing}
               heroFrame={
                 liveMotion?.moving ? Math.floor(liveMotion.distance / 8) % 8 : 0
@@ -623,25 +679,30 @@ export default function Game() {
                 {save.name} & {save.petName}
               </Text>
               <Button onPress={gather}>
-                {home === "lake"
-                  ? "Cast a fishing line"
-                  : home === "bed"
-                    ? "Rest for the night"
-                    : home === "wardrobe"
-                      ? "Change clothes"
-                      : home === "priest" || home === "altar"
-                        ? "Speak to the High Priest"
-                        : home === "chest"
-                          ? "Open storage"
-                          : home === "workbench"
-                            ? "Use workbench"
-                            : home === "provisions"
-                              ? "Trade provisions"
-                              : drop
-                                ? "Pick up " + drop.kind
-                                : nearest(liveSave) >= 0
-                                  ? "Gather " + regions[save.region].resource
-                                  : "Gather / pick up"}{" "}
+                {plot
+                  ? "Tend garden"
+                  : home === "well"
+                    ? "Refill watering jug"
+                    : home === "lake"
+                      ? "Cast a fishing line"
+                      : home === "bed"
+                        ? "Rest for the night"
+                        : home === "wardrobe"
+                          ? "Change clothes"
+                          : home === "priest" || home === "altar"
+                            ? "Speak to the High Priest"
+                            : home === "chest"
+                              ? "Open storage"
+                              : home === "workbench"
+                                ? "Use workbench"
+                                : home === "provisions"
+                                  ? "Trade provisions"
+                                  : drop
+                                    ? "Pick up " + drop.kind
+                                    : nearest(liveSave) >= 0
+                                      ? "Gather " +
+                                        regions[save.region].resource
+                                      : "Gather / pick up"}{" "}
                 · E
               </Button>
               <Text style={s.gameHint}>
@@ -698,6 +759,26 @@ export default function Game() {
               seed={fishingSeed}
               onCatch={caughtFish}
               onClose={() => setFishingSeed(null)}
+            />
+          )}
+          {gardenPlot && save.progress && (
+            <GardenPanel
+              id={gardenPlot}
+              progress={save.progress}
+              onClose={() => setGardenPlot(null)}
+              onAction={(action) => {
+                setSave((v) =>
+                  v?.progress
+                    ? {
+                        ...v,
+                        progress: tendGarden(v.progress, gardenPlot, action),
+                      }
+                    : v,
+                );
+                if (action === "harvest") playEffect("pickup");
+                else if (action === "till") playEffect("stone");
+                else if (action !== "water") playEffect("fiber");
+              }}
             />
           )}
           {sleepPrompt && (

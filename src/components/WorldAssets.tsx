@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { AtlasFrame } from "./AtlasFrame";
-import {Npc,npcFacing,npcBaseline,NpcKind} from './Npc';
+import { Npc, npcFacing, npcBaseline, NpcKind } from "./Npc";
 import { Hero, heroBaseline, recoveryBaseline, RecoveryPose } from "./Hero";
 import { Appearance, defaultAppearance } from "../appearance";
 import { ItemIcon } from "./ItemIcon";
+import { GardenPlots } from "./Garden";
+import type { Garden } from "../garden";
 import { homeLocations } from "../worldLayout";
 import { dropsFor } from "../inventory";
 import anchors from "../sprite-anchors.json";
@@ -152,6 +154,7 @@ export function Resource({
 }
 
 export type WorldProps = {
+  garden?: Garden;
   recovery?: RecoveryPose;
   region?: Region;
   hero?: Point;
@@ -175,6 +178,7 @@ export type WorldProps = {
   pickedDrops?: string[];
 };
 export function World({
+  garden,
   recovery,
   region = "forest",
   hero,
@@ -216,7 +220,11 @@ export function World({
   const petSize = pet === "Boxer" ? 43 : pet === "Owl" ? 33 : 32;
   const petAnchor =
     anchors[petKeys[pet]][petCell(petFacing, petFrame, petMoving, petPose)];
-  const heroAnchor = { y: recovery ? recoveryBaseline(appearance, recovery) : heroBaseline(appearance, facing, heroFrame) };
+  const heroAnchor = {
+    y: recovery
+      ? recoveryBaseline(appearance, recovery)
+      : heroBaseline(appearance, facing, heroFrame),
+  };
   const renderPet = () =>
     hero &&
     showFamiliar && (
@@ -284,6 +292,9 @@ export function World({
           paused={paused}
         />
       )}
+      {region === "temple" && (
+        <GardenPlots garden={garden} scale={scale} ox={ox} oy={oy} />
+      )}
       {dropsFor(seed, region)
         .filter((d) => !pickedDrops.includes(d.id))
         .map((d) => (
@@ -329,11 +340,23 @@ export function World({
           <Sprite name="sign" size={43 * scale} flip={region === "temple"} />
         </View>
       )}
-      {region === "temple" && (['priest','keeper'] as NpcKind[]).map(kind=>{
-        const position=kind==='priest'?homeLocations.priest:homeLocations.provisions;
-        const direction=npcFacing(position,hero);
-        return <View key={kind} style={[anchor(position,76,npcBaseline(kind,direction)),{zIndex:Math.round(position.y)}]}><Npc kind={kind} facing={direction} size={76*scale}/></View>;
-      })}
+      {region === "temple" &&
+        (["priest", "keeper"] as NpcKind[]).map((kind) => {
+          const position =
+            kind === "priest" ? homeLocations.priest : homeLocations.provisions;
+          const direction = npcFacing(position, hero);
+          return (
+            <View
+              key={kind}
+              style={[
+                anchor(position, 76, npcBaseline(kind, direction)),
+                { zIndex: Math.round(position.y) },
+              ]}
+            >
+              <Npc kind={kind} facing={direction} size={76 * scale} />
+            </View>
+          );
+        })}
       {region === "temple" && (
         <View
           style={[
@@ -371,8 +394,8 @@ export function World({
               { zIndex: Math.round(hero.y) },
             ]}
           >
-              <Hero
-                recovery={recovery}
+            <Hero
+              recovery={recovery}
               facing={facing}
               size={76 * scale}
               frame={heroFrame}

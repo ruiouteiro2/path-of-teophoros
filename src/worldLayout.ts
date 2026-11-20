@@ -13,6 +13,7 @@ export const homeLocations = {
   provisions: toWorld(278, 259),
   lake: toWorld(688, 506),
   altar: toWorld(500, 242),
+  well: toWorld(815, 350),
 };
 export type HomePlace = keyof typeof homeLocations;
 export type InteractionPlace = HomePlace | "bed" | "wardrobe";

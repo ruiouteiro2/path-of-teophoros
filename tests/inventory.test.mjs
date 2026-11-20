@@ -9,6 +9,7 @@ import {
 import { validSave, walkable } from "../src/game.ts";
 import { defaultAppearance } from "../src/appearance.ts";
 import { newProgression } from "../src/progression.ts";
+import { gardenPlots } from "../src/garden.ts";
 const fixture = () => ({
   name: "Test",
   petName: "Argos",
@@ -42,7 +43,13 @@ test("material layout is deterministic, varied, spaced and traversable", () => {
       assert.equal(new Set(drops.map((d) => d.id)).size, 60);
       for (const kind of ["wood", "stone", "fiber"])
         assert.equal(drops.filter((d) => d.kind === kind).length, 20);
-      for (const d of drops) assert(walkable(d, region));
+      for (const d of drops) {
+        assert(walkable(d, region));
+        if (region === "temple")
+          assert(
+            gardenPlots.every((p) => Math.hypot(p.x - d.x, p.y - d.y) >= 50),
+          );
+      }
     }
   assert.notDeepEqual(dropsFor(1234, "forest"), dropsFor(9876, "forest"));
 });

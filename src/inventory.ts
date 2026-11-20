@@ -1,6 +1,7 @@
 import type { Point, Region, Save } from "./game.ts";
 import { walkable, regions, resources } from "./game.ts";
 import { addItem } from "./progression.ts";
+import { gardenPlots } from "./garden.ts";
 export type Material = "wood" | "stone" | "fiber";
 export type Drop = Point & { id: string; kind: Material };
 const layoutCache = new Map<string, Drop[]>();
@@ -34,6 +35,39 @@ export function dropsFor(seed: number, region: Region): Drop[] {
       kind: (["wood", "stone", "fiber"] as const)[result.length % 3],
     });
   }
+  // Keep the original generation and IDs stable for old saves. Only relocate
+  // materials that would otherwise be hidden beneath the new garden plots.
+  if (region === "temple")
+    for (const drop of result) {
+      const overlaps = (p: Point) =>
+        gardenPlots.some((g) => Math.hypot(p.x - g.x, p.y - g.y) < 50);
+      if (!overlaps(drop)) continue;
+      let placed = false;
+      for (let radius = 60; radius <= 360 && !placed; radius += 30)
+        for (let angle = 0; angle < 16; angle++) {
+          const candidate = {
+            x: Math.round(drop.x + Math.cos((angle * Math.PI) / 8) * radius),
+            y: Math.round(drop.y + Math.sin((angle * Math.PI) / 8) * radius),
+          };
+          if (
+            !walkable(candidate, region) ||
+            overlaps(candidate) ||
+            result.some(
+              (d) =>
+                d !== drop &&
+                Math.hypot(d.x - candidate.x, d.y - candidate.y) < 28,
+            ) ||
+            resources[region].some(
+              (r) => Math.hypot(r.x - candidate.x, r.y - candidate.y) < 35,
+            )
+          )
+            continue;
+          drop.x = candidate.x;
+          drop.y = candidate.y;
+          placed = true;
+          break;
+        }
+    }
   if (layoutCache.size >= 16)
     layoutCache.delete(layoutCache.keys().next().value!);
   layoutCache.set(key, result);

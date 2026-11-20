@@ -26,7 +26,7 @@ export const opening: Record<
   },
   supplies: {
     title: "A place to begin",
-    text: "The small cabin is yours. Take these drachmae and bread. Gather wood, stone and fiber for the old altar, and return to me when you are ready. We will take the first step together.",
+    text: "The small cabin is yours. Take these drachmae, bread, garden tools and barley seed. The western grove has room to grow food; refill your jug at the well. Bring wood, stone and fiber for the old altar when you are ready.",
     answer: "Begin my journey",
   },
 };
