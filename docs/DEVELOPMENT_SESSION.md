@@ -135,3 +135,6 @@ Session remains active; the user's five-hour development period has not yet elap
 
 ### Exploration and travel guard
 - Movement, outdoor exits and cabin entrance now share the same exploration gate. All are suspended during dialogue, sleep confirmation, fishing, gardening, menus and an existing fade. Previously exit effects omitted several activity guards. Typecheck, lint and all 40 behavior tests passed; this is code-path verification rather than a claim of a forced overlap runtime test.
+
+### Navigation connectivity regression
+- Flood-filled actual walkable geometry from each map spawn on an 8-world-unit grid. All sanctuary home interactions, all harvest nodes, six garden plots, cabin entrance, cabin activities and each map exit are reachable. Added three connectivity regression tests (43 total passing). This proves navigation connectivity, not visual agreement between every polygon edge and the artwork; that inspection remains separate.
